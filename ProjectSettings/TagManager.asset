@@ -1,0 +1,62 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!78 &1
+TagManager:
+  serializedVersion: 2
+  tags:
+  - LeaderBoardRowEntry
+  layers:
+  - Default
+  - TransparentFX
+  - Ignore Raycast
+  - 
+  - Water
+  - UI
+  - Frame
+  - Enemy
+  - Player
+  - Ground
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  m_SortingLayers:
+  - name: HpBar
+    uniqueID: 161345859
+    locked: 0
+  - name: Background
+    uniqueID: 3332176329
+    locked: 0
+  - name: Default
+    uniqueID: 0
+    locked: 0
+  - name: Enemy
+    uniqueID: 2611975025
+    locked: 0
+  - name: Player
+    uniqueID: 3338472055
+    locked: 0
+  - name: frontUI
+    uniqueID: 2569404965
+    locked: 0
+  - name: menuUI
+    uniqueID: 3058251843
+    locked: 0
