@@ -196,7 +196,7 @@ public class SkellyAI : MonoBehaviour
 
     void TurnCtrl()
     {
-        if (statusTimer == 0.0f)
+        if (statusTimer <= 0.0f)
         {
             InitStatus(Status.Idle);
             graphic.flipX = !graphic.flipX;
@@ -227,10 +227,6 @@ public class SkellyAI : MonoBehaviour
         if (Mathf.Abs(player.transform.position.x- transform.position.x ) < attackRange)
         {
             InitStatus(Status.Attacking);
-        }
-        else
-        {
-            statusTimer = 1.0f;
         }
     }
 

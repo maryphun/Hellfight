@@ -173,7 +173,10 @@ public class EnemyControl : MonoBehaviour
             {
                 currentStatus = Status.Attacked;
                 statusChanged = true;
-                animator.Play(enemyName + "Hit");
+                if (FindAnimation(animator, enemyName + "Hit") != null)
+                {
+                    animator.Play(enemyName + "Hit");
+                }
             }
         }
 
@@ -390,7 +393,7 @@ public class EnemyControl : MonoBehaviour
     void SuperLanding()
     {
         //gameMng.ScreenImpactGround(0.04f, 0.4f);
-        AudioManager.Instance.PlaySFX("impact", 0.7f);
+        //AudioManager.Instance.PlaySFX("impact", 0.7f);
     }
 
     public void CreateAfterImage()
@@ -479,5 +482,10 @@ public class EnemyControl : MonoBehaviour
     public Controller GetPlayer()
     {
         return player;
+    }
+
+    public GameManager GetGameManager()
+    {
+        return gameMng;
     }
 }

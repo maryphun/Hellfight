@@ -72,6 +72,11 @@ public class JellySlimeAI : MonoBehaviour
             controller.AddMaxHp(30);
             attackDamageBase += Random.Range(1,3);
         }
+        if (level > 20)
+        {
+            controller.AddMaxHp(60);
+            attackDamageBase += Random.Range(2, 5);
+        }
     }
 
     private void FixedUpdate()
@@ -128,7 +133,9 @@ public class JellySlimeAI : MonoBehaviour
             case Status.Attacking:
                 break;
             case Status.Attacked:
-                statusTimer = controller.FindAnimation(animator, enemyName + "Hit").length;
+                int random = Random.Range(0, 2);
+                statusTimer = controller.FindAnimation(animator, enemyName + "Hit" + random.ToString()).length;
+                animator.Play(enemyName + "Hit" + random.ToString());
                 break;
             case Status.Turning:
                 animator.Play(enemyName + "Turn");
@@ -227,7 +234,7 @@ public class JellySlimeAI : MonoBehaviour
             dealDamageCnt -= Time.deltaTime;
             if (dealDamageCnt < 0.0f)
             {
-                if (Vector2.Distance(player.transform.position, transform.position ) < attackRange)
+                if (Vector2.Distance(player.transform.position, transform.position ) < attackRange && !player.IsJumping())
                 {
                     dealDamageCnt = dealDamageInterval;
                     player.DealDamage(attackDamageBase + Random.Range(0, attackDamageMax + 1), transform);

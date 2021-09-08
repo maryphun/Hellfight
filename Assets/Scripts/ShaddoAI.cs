@@ -62,7 +62,7 @@ public class ShaddoAI : MonoBehaviour
 
     private void SetScalingRule(int level)
     {
-        attackDamageBase += level * 3;
+        attackDamageBase += level * 2;
         attackDamageMax += level * (1 / 5);
         moveSpeed += 0.05f * (float)level;
         staminaRegenInterval = staminaRegenInterval / ((float)level/2);

@@ -25,6 +25,7 @@ public class Controller : MonoBehaviour
     [SerializeField] private float staminaRegenInterval = 0.5f;
     [SerializeField] private float pushEnemySpeedMultiplier = 0.15f;
     [SerializeField] private float criticalDamageMultiplier = 1.5f;
+    [SerializeField] private float potionSpeed = 1.5f;
 
     [Header("Parameters")]
     [SerializeField] private float jumpForce;
@@ -39,6 +40,8 @@ public class Controller : MonoBehaviour
     [SerializeField] private float afterEffectInterval = 0.1f;
     [SerializeField] private float hpRegenInterval = 1f;
     [SerializeField] private float comboResetTime = 1.0f;
+    [SerializeField] private Vector2 combatModeRange = new Vector2(3f, 1.5f);
+    [SerializeField] private float potionCooldown = 0.5f;
 
     [SerializeField] private float attackRange;
     [SerializeField] private float[] attackMoveRange;
@@ -58,6 +61,7 @@ public class Controller : MonoBehaviour
     float attackEndAttackTimer;
     GameManager gameMng;
     bool isKnockbacking;
+    bool isUsingPotion;
     bool isAlive;
     float superDropAfterImgTimer;
     float superDropAfterImgInterval = 0.05f;
@@ -97,6 +101,7 @@ public class Controller : MonoBehaviour
     [SerializeField] int dashFequency;   // frquency of spamming dash
     [SerializeField] float dashStaminaCooldown;
     [SerializeField] private bool invulnerable;
+    [SerializeField] private bool staminaRegenSlowed;
 
     List<EnemyControl> dashDamagedEnemy = new List<EnemyControl>();
 
@@ -108,6 +113,9 @@ public class Controller : MonoBehaviour
         public bool cancelJump;
         public bool attack; 
         public bool dash;
+        public bool crouch;
+        public bool use;
+        public bool cancelUse;
     }
 
     private void Awake()
@@ -177,12 +185,14 @@ public class Controller : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        //gameMng.SpawnFloatingText(transform.position, 1f, 1f, "Text", Color.white, new Vector2(0, 1), 50);
-        input.move = Input.GetAxisRaw("Horizontal");
-        input.jump = Input.GetKeyDown(KeyCode.Space) || Input.GetKeyDown(KeyCode.UpArrow) || Input.GetKeyDown(KeyCode.W);
-        input.cancelJump = Input.GetKeyUp(KeyCode.Space) || Input.GetKeyUp(KeyCode.UpArrow) || Input.GetKeyUp(KeyCode.W);
-        input.attack = Input.GetKeyDown(KeyCode.Z) || Input.GetKeyDown(KeyCode.J);
-        input.dash= Input.GetKeyDown(KeyCode.X) || Input.GetKeyDown(KeyCode.K);
+        input.move =        Mathf.RoundToInt(Input.GetAxisRaw("Horizontal")) + Mathf.RoundToInt(Input.GetAxisRaw("JoyPadHorizontal"));
+        input.jump =        Input.GetKeyDown(KeyCode.Space) || Input.GetKeyDown(KeyCode.UpArrow) || Input.GetKeyDown(KeyCode.W) || Input.GetButtonDown("Jump");
+        input.cancelJump =  Input.GetKeyUp(KeyCode.Space) || Input.GetKeyUp(KeyCode.UpArrow) || Input.GetKeyUp(KeyCode.W) || Input.GetButtonUp("Jump");
+        input.attack =      Input.GetKeyDown(KeyCode.Z) || Input.GetKeyDown(KeyCode.J) || Input.GetButtonDown("Attack");
+        input.dash =        Input.GetKeyDown(KeyCode.X) || Input.GetKeyDown(KeyCode.K) || Input.GetButtonDown("Dash");
+        input.crouch =      Input.GetKey(KeyCode.DownArrow) || Input.GetKey(KeyCode.S) || (Mathf.RoundToInt(Input.GetAxisRaw("JoyPadVertical")) == -1);
+        input.use =         Input.GetKeyDown(KeyCode.C) || Input.GetKeyDown(KeyCode.L);// || Input.GetButtonDown("Dash");
+        input.cancelUse =   Input.GetKeyUp(KeyCode.C) || Input.GetKeyUp(KeyCode.L);// || Input.GetButtonDown("Dash");
 
         if (!isAlive)
         {
@@ -214,9 +224,9 @@ public class Controller : MonoBehaviour
             }
             else if (((float)currentStamina / (float)maxStamina) < 0.2f)
             {
-                playerColor = new Color(0.5f, 0.5f, 1.0f);
+                playerColor = new Color(0.3f, 0.3f, 0.7f);
             }
-            if (invulnerable)
+            else if (invulnerable)
             {
                 playerColor = Color.yellow;
             }
@@ -373,7 +383,7 @@ public class Controller : MonoBehaviour
             // input detected
             if (input.attack)
             {
-                if (!isAttacking && !attackDisabled && !isDashing)
+                if (!isAttacking && !attackDisabled)
                 {
                     StartAttack();
                 }
@@ -388,7 +398,7 @@ public class Controller : MonoBehaviour
         // DASH
         {
             if (input.dash
-                && (!isAttacking || attackEndAttackTimer == 0.0f) && dashCooldownTimer == 0.0f && currentStamina > maxStamina /5)
+                && (!isAttacking || attackEndAttackTimer == 0.0f) && dashCooldownTimer == 0.0f)// && currentStamina > maxStamina /5)
             {
                 StartDash();
             }
@@ -398,9 +408,7 @@ public class Controller : MonoBehaviour
                 dashTimeCount = Mathf.Clamp(dashTimeCount - Time.deltaTime, 0.0f, dashTime);
                 if (dashTimeCount == 0.0f)
                 {
-                    isDashing = false;
-
-                    graphic.sortingLayerName = "Player";
+                    EndDash();
                 }
                 else
                 {
@@ -428,6 +436,44 @@ public class Controller : MonoBehaviour
                 {
                     dashFequency = 0;
                 }
+            }
+        }
+
+        // CROUCH
+        {
+            if (input.crouch && input.move == 0)
+            {
+                if (!IsJumping() && !IsDashing() && !IsAttacking() && !IsUsingPotion())
+                {
+                    animator.SetBool("Crouch", true);
+                    if (!animator.GetCurrentAnimatorStateInfo(0).IsName("Crouch"))
+                    {
+                        animator.Play("Crouch");
+                    }
+                }
+            }
+            else
+            {
+                animator.SetBool("Crouch", false);
+            }
+        }
+
+        // USE POTION
+        {
+            if (input.use)
+            {
+                if (!IsJumping() && !IsDashing() && !IsAttacking() && !input.crouch && input.move == 0)
+                {
+                    // Start Using Potion
+                    isUsingPotion = true;
+                    animator.SetBool("Use", true);
+                    animator.Play("Use");
+                }
+            }
+
+            else
+            {
+                animator.SetBool("Use", false);
             }
         }
 
@@ -459,6 +505,7 @@ public class Controller : MonoBehaviour
             {
                 calculatedMoveSpeed = moveSpeed / 2f;
             }
+            if (IsJumping()) calculatedMoveSpeed = Mathf.Clamp(calculatedMoveSpeed, 0f, 10f);
             RaycastHit2D hitwall = Physics2D.Raycast(transform.position, new Vector2(input.move, 0.0f), collider.bounds.size.x, frameLayer);
             RaycastHit2D hitenemy = Physics2D.Raycast(transform.position, new Vector2(input.move, 0.0f), collider.bounds.size.x * 0.5f, enemyLayer);
             if (!hitwall && !isAttacking && !isDashing)
@@ -492,25 +539,42 @@ public class Controller : MonoBehaviour
 
         // REGEN
         {
+            //CHECK IF THERE ARE MONSTER AROUND
+            bool monsterNearby = false;
+            List<EnemyControl> enemies = gameMng.GetMonsterList();
+            foreach (EnemyControl enemy in enemies)
+            {
+                if (Mathf.Abs(transform.position.x - enemy.transform.position.x) < combatModeRange.x &&
+                    Mathf.Abs(transform.position.y - enemy.transform.position.y) < combatModeRange.y * 1.75f &&
+                    enemy.IsAlive())
+                {
+                    monsterNearby = true;
+                    continue;
+                }
+            }
+
             float multiplier = 1.0f;
-            if (dashFequency > 2) multiplier /= dashFequency+1;
-            if (IsAttacking()) multiplier = 0.0f;
-            if (IsDashing()) multiplier *= 0.5f;
-            if (IsJumping()) multiplier *= 0.1f;
-            if (input.move != 0) multiplier = 0.2f;
+            if (dashFequency > 2)  multiplier /= dashFequency+1;
+            if (IsAttacking())     multiplier = 0.0f;
+            if (IsDashing())       multiplier *= 0.5f;
+            if (input.move != 0)   multiplier *= 0.8f;
+            if (IsJumping())       multiplier *= 0.5f;
+            if (monsterNearby)     multiplier = 0.2f;
             staminaRegenTimer = Mathf.Clamp(staminaRegenTimer - (Time.deltaTime * multiplier), 0.0f, staminaRegenInterval);
             if (staminaRegenTimer == 0.0f)
             {
                 staminaRegenTimer = staminaRegenInterval;
                 Regenerate(0, staminaRegen);
             }
+            staminaRegenSlowed = (multiplier <= 0.2f);
 
             multiplier = 1.0f;
+            //if (IsDashing()) multiplier = 0.0f;
+            //if (IsJumping()) multiplier = 0.0f;
+            if (monsterNearby) multiplier = 0.0f;
             if (IsAttacking()) multiplier = 0.0f;
-            if (IsDashing()) multiplier = 0.0f;
-            if (IsJumping()) multiplier = 0.0f;
-            if (input.move != 0) multiplier = 0.0f;
-            if (!IsAlive()) multiplier = 0.0f;
+            if (!IsAlive())    multiplier = 0.0f;
+            if (gameMng.IsLevelEnded()) multiplier = 0.0f;
             if (gameMng.IsLevelEnded()) multiplier = 0.0f;
             hpRegenTimer = Mathf.Clamp(hpRegenTimer - (Time.deltaTime * multiplier), 0.0f, hpRegenInterval);
             if (hpRegenTimer == 0.0f)
@@ -521,7 +585,7 @@ public class Controller : MonoBehaviour
         }
     }
 
-    void StartJump(bool reviveJump = false)
+    public void StartJump(bool reviveJump = false)
     {
         // set flag
         jumpCancelled = false;
@@ -538,7 +602,6 @@ public class Controller : MonoBehaviour
         // determine which type of jump this is
         if (reviveJump) // this is a revive jump
         {
-            Debug.Log("?");
             rigidbody.AddForce(new Vector2(0.0f, jumpForce * 1.2f));
             
         }
@@ -573,9 +636,18 @@ public class Controller : MonoBehaviour
         // check if stamina is enough
         if (currentStamina < staminaCostAttack)
         {
-            // reset combo is stamina is all gone
+            // reset combo if stamina is all gone
             attackCombo = 0;
             return;
+        }
+
+        // dash attack
+        if (IsDashing())
+        {
+            transform.DOKill(true);
+            dashDirection = graphic.flipX ? -1 : 1;
+            EndDash();
+            attackCombo = 2;
         }
 
         Regenerate(0, -staminaCostAttack);
@@ -608,7 +680,6 @@ public class Controller : MonoBehaviour
             {
                 transform.DOMoveX(transform.position.x + dashDirection * attackMoveRange[attackCombo % 3] * multiplier, animator.GetCurrentAnimatorStateInfo(0).length / 2.0f, false);
             }
-
         }
 
         // audio
@@ -632,7 +703,7 @@ public class Controller : MonoBehaviour
         List<EnemyControl> enemyList = gameMng.GetMonsterList();
 
         int direction = graphic.flipX ? -1 : 1;
-        Vector2 playerAttackOriginPoint = new Vector2(transform.position.x + (collider.bounds.size.x * direction), transform.position.y);
+        Vector2 playerAttackOriginPoint = new Vector2(transform.position.x + (attackRange * direction), transform.position.y);
         if (isDash)
         {
             playerAttackOriginPoint = transform.position;
@@ -649,7 +720,11 @@ public class Controller : MonoBehaviour
                 float calculatedAttackRange = attackRange;
                 if (isDash) calculatedAttackRange /= 2.25f;
 
-                if (Mathf.Abs(target.position.x - playerAttackOriginPoint.x) < calculatedAttackRange
+                float enemyHitLeft = target.position.x + (enemy.GetCollider().bounds.size.x / 2f * -direction);
+                float enemyHitRight = target.position.x + (enemy.GetCollider().bounds.size.x / 2f * direction);
+                Debug.DrawLine(new Vector2(playerAttackOriginPoint.x, playerAttackOriginPoint.y), new Vector2(enemyHitLeft, target.position.y), Color.red, 0.5f);
+                Debug.DrawLine(new Vector2(playerAttackOriginPoint.x, playerAttackOriginPoint.y), new Vector2(enemyHitRight, target.position.y), Color.red, 0.5f);
+                if ((Mathf.Abs(enemyHitLeft - playerAttackOriginPoint.x) < calculatedAttackRange || Mathf.Abs(enemyHitRight - playerAttackOriginPoint.x) < calculatedAttackRange)
                     && ((Mathf.Abs(target.position.y - playerAttackOriginPoint.y) < calculatedAttackRange * 0.75f )
                     || (Mathf.Abs((target.position.y + enemy.GetHeight()/2f) - playerAttackOriginPoint.y) < calculatedAttackRange * 0.75f ))
                     && enemy.IsAlive()
@@ -771,8 +846,6 @@ public class Controller : MonoBehaviour
 
         dashTimeCount = dashTime;
 
-        Regenerate(0, -staminaCostDash);
-
         graphic.sortingLayerName = "Default";
 
         if (rigidbody.velocity.y < 0.0f)
@@ -784,7 +857,7 @@ public class Controller : MonoBehaviour
         float calculateddashtime = dashTime;
         if ((float)currentStamina / (float)maxStamina < 0.2f)
         {
-            calculateddashrange *= 0.8f;
+            calculateddashrange *= 0.5f;
             calculateddashtime *= 1.1f;
         }
 
@@ -801,8 +874,18 @@ public class Controller : MonoBehaviour
 
         AfterEffectDuration(afterEffectInterval, calculateddashtime);
 
-        //SE
+        // SE
         AudioManager.Instance.PlaySFX("dash", 0.85f);
+
+        // CALCULATE STAMINA COST AT THE LAST
+        Regenerate(0, -staminaCostDash);
+    }
+
+    private void EndDash()
+    {
+        isDashing = false;
+
+        graphic.sortingLayerName = "Player";
     }
 
     public void CreateAfterImage(float alpha)
@@ -1094,6 +1177,11 @@ public class Controller : MonoBehaviour
         }
     }
 
+    public bool IsUsingPotion()
+    {
+        return isUsingPotion;
+    }
+
     public bool IsDashing()
     {
         return isDashing;
@@ -1113,6 +1201,11 @@ public class Controller : MonoBehaviour
     {
         return isAlive;
     }    
+
+    public bool IsStaminaRegenerateSlowed()
+    {
+        return staminaRegenSlowed;
+    }
 
     public void Pause(bool boolean)
     {
@@ -1180,5 +1273,9 @@ public class Controller : MonoBehaviour
     public bool GetSurvivor()
     {
         return survivor;
+    }
+    public bool IsFlip()
+    {
+        return graphic.flipX;
     }
 }

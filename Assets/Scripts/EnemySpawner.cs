@@ -100,6 +100,7 @@ public class EnemySpawner : MonoBehaviour
 
         EnemyControl tmp = Instantiate(monsterPrefab, DirectionToVector(direction), Quaternion.identity).GetComponent<EnemyControl>();
         tmp.transform.SetParent(world, true);
+        tmp.GetGraphic().maskInteraction = SpriteMaskInteraction.VisibleInsideMask;
         gameMng.RegisterMonsterInList(tmp);
         tmp.SetLevel(level);
 

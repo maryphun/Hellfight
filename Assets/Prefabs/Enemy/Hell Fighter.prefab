@@ -234,8 +234,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   haveTurnAnimation: 0
-  attackDamageBase: 20
-  attackDamageMax: 10
+  attackDamageBase: 19
+  attackDamageMax: 8
   allowAttack: 0
   moveSpeed: 15
   attackRange: 1.5

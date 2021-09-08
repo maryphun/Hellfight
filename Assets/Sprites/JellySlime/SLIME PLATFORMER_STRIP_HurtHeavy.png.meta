@@ -1,7 +1,28 @@
 fileFormatVersion: 2
 guid: 2c895ca52dc784b49a1b6ebe5f24dcfc
 TextureImporter:
-  internalIDToNameTable: []
+  internalIDToNameTable:
+  - first:
+      213: 5024131940290444632
+    second: SLIME PLATFORMER_STRIP_HurtHeavy_0
+  - first:
+      213: -2609758540710214206
+    second: SLIME PLATFORMER_STRIP_HurtHeavy_1
+  - first:
+      213: -2186112037558908875
+    second: SLIME PLATFORMER_STRIP_HurtHeavy_2
+  - first:
+      213: -5158617172740486918
+    second: SLIME PLATFORMER_STRIP_HurtHeavy_3
+  - first:
+      213: 8426421098496332684
+    second: SLIME PLATFORMER_STRIP_HurtHeavy_4
+  - first:
+      213: -4404707566957530647
+    second: SLIME PLATFORMER_STRIP_HurtHeavy_5
+  - first:
+      213: -5991624519892479166
+    second: SLIME PLATFORMER_STRIP_HurtHeavy_6
   externalObjects: {}
   serializedVersion: 11
   mipmaps:
@@ -89,7 +110,154 @@ TextureImporter:
     forceMaximumCompressionQuality_BC6H_BC7: 0
   spriteSheet:
     serializedVersion: 2
-    sprites: []
+    sprites:
+    - serializedVersion: 2
+      name: SLIME PLATFORMER_STRIP_HurtHeavy_0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 0
+        width: 64
+        height: 64
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 85db4b5716d49b540800000000000000
+      internalID: 5024131940290444632
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SLIME PLATFORMER_STRIP_HurtHeavy_1
+      rect:
+        serializedVersion: 2
+        x: 64
+        y: 0
+        width: 64
+        height: 64
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 2c50d6f2f6648cbd0800000000000000
+      internalID: -2609758540710214206
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SLIME PLATFORMER_STRIP_HurtHeavy_2
+      rect:
+        serializedVersion: 2
+        x: 128
+        y: 0
+        width: 64
+        height: 64
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 53888123fae59a1e0800000000000000
+      internalID: -2186112037558908875
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SLIME PLATFORMER_STRIP_HurtHeavy_3
+      rect:
+        serializedVersion: 2
+        x: 192
+        y: 0
+        width: 64
+        height: 64
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: af8c29e4309e868b0800000000000000
+      internalID: -5158617172740486918
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SLIME PLATFORMER_STRIP_HurtHeavy_4
+      rect:
+        serializedVersion: 2
+        x: 256
+        y: 0
+        width: 64
+        height: 64
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: c831bbf0859a0f470800000000000000
+      internalID: 8426421098496332684
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SLIME PLATFORMER_STRIP_HurtHeavy_5
+      rect:
+        serializedVersion: 2
+        x: 320
+        y: 0
+        width: 64
+        height: 64
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 9e175041ec55fd2c0800000000000000
+      internalID: -4404707566957530647
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SLIME PLATFORMER_STRIP_HurtHeavy_6
+      rect:
+        serializedVersion: 2
+        x: 384
+        y: 0
+        width: 64
+        height: 64
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 243d9408e3979dca0800000000000000
+      internalID: -5991624519892479166
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
     outline: []
     physicsShape: []
     bones: []

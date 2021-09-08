@@ -285,6 +285,7 @@ MonoBehaviour:
   immumeKnockback: 0
   statusChanged: 0
   criticalHitted: 0
+  invulnerable: 0
 --- !u!61 &2563176564286290609
 BoxCollider2D:
   m_ObjectHideFlags: 0

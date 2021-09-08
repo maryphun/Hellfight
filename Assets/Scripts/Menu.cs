@@ -8,13 +8,23 @@ using LootLocker.Requests;
 
 public class Menu : MonoBehaviour
 {
+    enum MenuState
+    {
+        NONE,
+        START,
+        NAME_INPUT,
+        MAIN_MENU,
+        LEADERBOARD,
+    }
+
     enum MenuSelection
     {
-        StartGame,
+        MainGame,
+        BossRushMode,
         Leaderboard,
         Option,
-        Credit,
-        EndGame,
+        ResetLocalData,
+        Exit,
 
         MaxIndex
     }
@@ -23,24 +33,27 @@ public class Menu : MonoBehaviour
     [SerializeField] Image background;
     [SerializeField] TMP_Text logo;
     [SerializeField] Image leaderboardBack;
-    [SerializeField] Image selectionback;
-    [SerializeField] RectTransform playerUI;
-    [SerializeField] TMP_Text selectionText;
     [SerializeField] TMP_Text versionText;
     [SerializeField] TMP_Text copyrightText;
-    [SerializeField] Animator leftArrow;
-    [SerializeField] Animator rightArrow;
     [SerializeField] Image menuAlpha;
     [SerializeField] GameManager gameMng;
     [SerializeField] TMP_InputField playerNameText;
     [SerializeField] Leaderboard leaderboardObject;
+    [SerializeField] RectTransform resetDataPanel;
+    [SerializeField] TMP_Text resetDataText;
     [SerializeField] TMP_Text startGameText;
+    [SerializeField] RectTransform selectionParent;
+    [SerializeField] RectTransform selectIcon;
+    [SerializeField] TMP_Text[] choiceText;
+    [SerializeField] RectTransform leftTransition;
+    [SerializeField] RectTransform rightTransition;
 
-    MenuSelection selectIndex;
+    [Header("Debug")]
+    [SerializeField] MenuSelection selectIndex;
+    [SerializeField] MenuState menuState;
 
     bool disableMenuControl = false;
     bool leaderboardclickable = false;
-    bool menuStarted = false;
 
     [SerializeField] Dictionary<string, string>[] leaderboardRankList;
     int leaderBoardTotalEntry;
@@ -48,8 +61,7 @@ public class Menu : MonoBehaviour
     private void Start()
     {
         // UI
-        selectIndex = MenuSelection.StartGame;
-        UpdateSelectionText(selectIndex);
+        selectIndex = MenuSelection.MainGame;
         disableMenuControl = true;
         leaderboardclickable = true;
 
@@ -79,135 +91,222 @@ public class Menu : MonoBehaviour
 
         // FADE IN
         menuAlpha.DOFade(0.0f, 2.0f);
+
+        // INIT
+        menuState = MenuState.START;
     }
 
     private void StartMenu()
     {
+        menuState = MenuState.NONE;
         AudioManager.Instance.PlaySFX("startgame");
-        StartCoroutine(StartMenuAnimation());
+        StartCoroutine(StartMenuAnimation(startGameText.gameObject));
     }
 
-    IEnumerator StartMenuAnimation()
+    private void FinishNameInput()
     {
-        startGameText.gameObject.SetActive(false);
-        yield return new WaitForSeconds(0.2f);
-        startGameText.gameObject.SetActive(true);
-        yield return new WaitForSeconds(0.2f);
-        startGameText.gameObject.SetActive(false);
-        yield return new WaitForSeconds(0.2f);
-        startGameText.gameObject.SetActive(true);
-        yield return new WaitForSeconds(0.2f);
-        startGameText.gameObject.SetActive(false);
-        yield return new WaitForSeconds(0.2f);
+        if (playerNameText.text.Length <= 0) return;
 
-        // ACTIVE UI COMPONENT
-        logo.gameObject.SetActive(true);
-        logo.rectTransform.DOMoveY(1.5f, 2f);
-        selectionText.gameObject.SetActive(true);
-        selectionback.gameObject.SetActive(true);
-        leftArrow.gameObject.SetActive(true);
-        rightArrow.gameObject.SetActive(true);
-        playerUI.gameObject.SetActive(true);
-        playerNameText.gameObject.SetActive(true);
-
+        // DISABLE MENU INPUT
+        menuState = MenuState.NONE;
+        // DISABLE NAME INPUT
+        playerNameText.DeactivateInputField();
+        // SET TO GAME MANAGER
+        gameMng.SetPlayerName(playerNameText.text);
         // SE
-        AudioManager.Instance.PlaySFX("decide");
-        AudioManager.Instance.PlayMusic("Battle-Sanctuary");
+        AudioManager.Instance.PlaySFX("startgame");
+        // ANIMATION
+        StartCoroutine(StartMenuAnimation(playerNameText.gameObject));
+    }
 
-        // FLAG
-        disableMenuControl = false;
-        menuStarted = true;
+    IEnumerator StartMenuAnimation(GameObject gameobj)
+    {
+        for (int i = 0; i < 7; i++)
+        {
+            gameobj.SetActive(!gameobj.activeSelf);
+            yield return new WaitForSeconds(0.18f);
+        }
+
+        // STATE
+        playerNameText.text = PlayerPrefs.GetString("PlayerName", string.Empty);
+        if (playerNameText.text == string.Empty)
+        {
+            menuState = MenuState.NAME_INPUT;
+        }
+        else
+        {
+            menuState = MenuState.MAIN_MENU;
+        }
+
+        switch (menuState)
+        {
+            case MenuState.MAIN_MENU:
+                // ACTIVE UI COMPONENT
+                logo.gameObject.SetActive(true);
+                selectionParent.gameObject.SetActive(true);
+                selectIndex = MenuSelection.MainGame;
+
+                // SE
+                AudioManager.Instance.PlaySFX("decide");
+                AudioManager.Instance.PlayMusic("Battle-Sanctuary");
+
+                // FLAG
+                disableMenuControl = false;
+
+                // Default selection choice
+                ChangeSelection(MenuSelection.MainGame, 107.375f);
+                break;
+            case MenuState.NAME_INPUT:
+                playerNameText.gameObject.SetActive(true);
+                break;
+        }
+        
     }
 
     private void Update()
     {
-        if (!menuStarted)
+        // INPUT FOR DIFFERENT STATE
+        switch (menuState)
         {
-            if (Input.anyKeyDown || Input.GetMouseButtonDown(0))
-            {
-                StartMenu();
-            }
-            return;
-        }
-
-        // INPUT
-        if (Input.GetKeyDown(KeyCode.LeftArrow))
-        {
-            SelectionLeft();
-        }
-        if (Input.GetKeyDown(KeyCode.RightArrow))
-        {
-            SelectionRight();
-        }
-        if (Input.GetKeyDown(KeyCode.KeypadEnter) || Input.GetKeyDown(KeyCode.Return) || Input.GetKeyDown(KeyCode.Z) || Input.GetKeyDown(KeyCode.J))
-        {
-            SelectSelection();
+            case MenuState.START:
+                if (Input.anyKeyDown)
+                {
+                    StartMenu();
+                }
+                break;
+            case MenuState.NAME_INPUT:
+                if (Input.GetKeyDown(KeyCode.KeypadEnter) || Input.GetKeyDown(KeyCode.Return) || Input.GetButtonDown("Start"))
+                {
+                    FinishNameInput();
+                }
+                break;
+            case MenuState.MAIN_MENU:
+                if (Input.GetKeyDown(KeyCode.DownArrow) || Input.GetKeyDown(KeyCode.S) || ((Input.anyKeyDown) && Input.GetAxisRaw("JoyPadVertical") == -1))
+                {
+                    SelectionDown();
+                }
+                if (Input.GetKeyDown(KeyCode.UpArrow) || Input.GetKeyDown(KeyCode.W) || ((Input.anyKeyDown) && Input.GetAxisRaw("JoyPadVertical") == 1))
+                {
+                    SelectionUp();
+                }
+                if (Input.GetKeyDown(KeyCode.KeypadEnter) || Input.GetKeyDown(KeyCode.Return) || Input.GetKeyDown(KeyCode.Z) || Input.GetKeyDown(KeyCode.J)
+                     || Input.GetButtonDown("Dash"))
+                {
+                    SelectSelection();
+                }
+                break;
+            case MenuState.LEADERBOARD:
+                if (Input.GetKeyDown(KeyCode.Escape)
+                     || Input.GetButtonDown("Spell"))
+                {
+                    HideLeaderBoard();
+                }
+                break;
         }
     }
 
-    public void SelectionLeft()
+    private void ChangeSelection(MenuSelection index, float offset = -1)
+    {
+        selectIcon.anchoredPosition = new Vector2(0f, choiceText[(int)index].GetComponent<RectTransform>().anchoredPosition.y);
+
+        RectTransform leftIcon = selectIcon.GetChild(0).GetComponent<RectTransform>();
+        RectTransform rightIcon = selectIcon.GetChild(1).GetComponent<RectTransform>();
+
+        float size = offset == -1 ? choiceText[(int)index].textBounds.size.x : offset;
+
+        leftIcon.anchoredPosition = new Vector2(-size / 2f - 20f, leftIcon.anchoredPosition.y);
+        rightIcon.anchoredPosition = new Vector2(size / 2f + 20f, rightIcon.anchoredPosition.y);
+
+        for (int i = 0; i < (int)MenuSelection.MaxIndex ;i++)
+        {
+            if (i == (int)index)
+            {
+                choiceText[i].color = Color.red;
+            }
+            else
+            {
+                choiceText[i].color = Color.white;
+            }
+        }
+    }
+
+    public void SelectionUp()
     {
         if (disableMenuControl) return;
+
         AudioManager.Instance.PlaySFX("cursor");
+
         selectIndex--;
         if (selectIndex < 0)
         {
             selectIndex = MenuSelection.MaxIndex - 1;
         }
-        UpdateSelectionText(selectIndex);
-        leftArrow.Play("LeftArrowSelected");
-        rightArrow.Play("rightArrowAnim", 0, 0f);
-        ChangeThemeColor();
-        playerUI.DOScaleX(-0.5f,0.0f);
+        ChangeSelection(selectIndex);
     }
-    public void SelectionRight()
+
+    public void SelectionDown()
     {
         if (disableMenuControl) return;
+
         AudioManager.Instance.PlaySFX("cursor");
+
         selectIndex++;
         if (selectIndex >= MenuSelection.MaxIndex)
         {
             selectIndex = 0;
         }
-        UpdateSelectionText(selectIndex);
-        leftArrow.Play("arrowAnim", 0, 0f);
-        rightArrow.Play("RightArrowSelected");
-        ChangeThemeColor();
-        playerUI.DOScaleX(0.5f,0.0f);
+        ChangeSelection(selectIndex);
     }
 
     public void SelectSelection()
     {
         if (disableMenuControl) return;
-        AudioManager.Instance.PlaySFX("decide");
-        playerUI.GetComponent<Animator>().Play("playerUIAttack");
         disableMenuControl = true;
         switch (selectIndex)
         {
-            case MenuSelection.StartGame:
+            case MenuSelection.MainGame:
                 RecordPlayerName();
                 AudioManager.Instance.StopMusicWithFade(0.1f);
                 menuAlpha.DOFade(1.0f, 1.0f);
                 StartCoroutine(startgame(1.1f));
+                AudioManager.Instance.PlaySFX("Confirm");
+                break;
+            case MenuSelection.BossRushMode:
+                disableMenuControl = false;
+                SelectionUp();
                 break;
             case MenuSelection.Leaderboard:
-                ShowLeaderBoard(false);
+                StartCoroutine(MenuTransition(3f));
+                AudioManager.Instance.PlaySFX("decide");
                 break;
             case MenuSelection.Option:
                 disableMenuControl = false;
-
+                SelectionUp();
                 break;
-            case MenuSelection.Credit:
-                disableMenuControl = false;
-
+            case MenuSelection.ResetLocalData:
+                AudioManager.Instance.PlaySFX("decide");
+                OpenResetDataMenu();
                 break;
-            case MenuSelection.EndGame:
+            case MenuSelection.Exit:
                 disableMenuControl = false;
-
+                SelectionUp();
                 break;
             default:
                 break;
         }
+    }
+
+    IEnumerator MenuTransition(float time)
+    {
+        leftTransition.DOAnchorPosX(-30f, time / 2f);
+        rightTransition.DOAnchorPosX(30f, time / 2f);
+
+        yield return new WaitForSecondsRealtime(time / 2f);
+        ShowLeaderBoard(false);
+        menuState = MenuState.LEADERBOARD;
+
+        leftTransition.DOAnchorPosX(-800f, time / 2f);
+        rightTransition.DOAnchorPosX(800f, time / 2f);
     }
 
     private void RecordPlayerName()
@@ -232,64 +331,6 @@ public class Menu : MonoBehaviour
         menuAlpha.DOFade(0.0f, 0.0f);
     }
 
-    private void UpdateSelectionText(MenuSelection index)
-    {
-        switch (index)
-        {
-            case MenuSelection.StartGame:
-                selectionText.SetText("Start Game");
-                break;
-            case MenuSelection.Leaderboard:
-                selectionText.SetText("Leaderboard");
-                break;
-            case MenuSelection.Option:
-                selectionText.SetText("Option");
-                break;
-            case MenuSelection.Credit:
-                selectionText.SetText("Credit");
-                break;
-            case MenuSelection.EndGame:
-                selectionText.SetText("Close Application");
-                break;
-            default:
-                UpdateSelectionText(0);
-                break;
-        }
-    }
-
-    public void ChangeThemeColor()
-    {
-        // one of the color must be 255 to make sure it's not a dark color
-        int rand = Random.Range(0, 3);
-        Color newColor = new Color();
-        switch (rand)
-        {
-            case 0:
-                newColor = new Color(1.0f, Random.Range(0.0f, 1.0f), Random.Range(0.0f, 1.0f));
-                break;
-            case 1:
-                newColor = new Color(Random.Range(0.0f, 1.0f), 1.0f, Random.Range(0.0f, 1.0f));
-                break;
-            case 2:
-                newColor = new Color(Random.Range(0.0f, 1.0f), Random.Range(0.0f, 1.0f), 1.0f);
-                break;
-            default:
-                newColor = new Color(0.0f, 0.0f, 0.0f);
-                break;
-        }
-
-        leftArrow.GetComponent<Image>().color = newColor;
-        rightArrow.GetComponent<Image>().color = newColor;
-        frame.color = newColor;
-        background.color = new Color(newColor.r / 10f, newColor.g / 10f, newColor.b/10f, 1f);
-        selectionText.color = newColor;
-        versionText.color = newColor;
-        copyrightText.color = newColor;
-        logo.color = newColor;
-        selectionback.color = new Color(newColor.r, newColor.g, newColor.b, 0.2f);
-        leaderboardBack.color = new Color(newColor.r, newColor.g, newColor.b, 1f);
-    }
-
     public void HideLeaderBoard()
     {
         // avoid clicking too fast
@@ -306,6 +347,7 @@ public class Menu : MonoBehaviour
         // RESET FLAG
         disableMenuControl = false;
         leaderboardObject.GetComponent<CanvasGroup>().blocksRaycasts = false;
+        menuState = MenuState.MAIN_MENU;
     }
 
     public void ShowLeaderBoard(bool refreshData)
@@ -342,7 +384,6 @@ public class Menu : MonoBehaviour
         leaderboardObject.SetValueScrollBar(0.1f, 1.0f);
     }
 
-
     private void GetLeaderboardData(bool refreshData = false)
     {
         for (int i = 0; i < 30; i++)
@@ -350,7 +391,7 @@ public class Menu : MonoBehaviour
             leaderboardRankList[i].Clear();
         }
 
-        LootLockerSDKManager.GetScoreList(399, 30, (response) =>
+        LootLockerSDKManager.GetScoreList(gameMng.GetLeaderboardID(), 30, (response) =>
         {
             if (response.success)
             {
@@ -373,6 +414,9 @@ public class Menu : MonoBehaviour
                     leaderboardRankList[i]["critical"] = LeaderboardValueSearchForKeyword(scores[i].member_id, "critical");
                     leaderboardRankList[i]["lifesteal"] = LeaderboardValueSearchForKeyword(scores[i].member_id, "lifesteal");
                     leaderboardRankList[i]["lifedrain"] = LeaderboardValueSearchForKeyword(scores[i].member_id, "lifedrain");
+
+                    // just name and level.
+                    leaderboardRankList[i]["name"] = scores[i].member_id;
 
                     //Debug.Log("<color=blue>----------------------------------------------------------------</color>");
                     //Debug.Log("<color=red>" + scores[i].rank.ToString() + ". " + leaderboardRankList[i]["name"] + " </color>");
@@ -426,5 +470,59 @@ public class Menu : MonoBehaviour
     public void SetLeaderboardButtonClickable(bool value)
     {
         leaderboardclickable = value;
+    }
+
+    public void ResetData()
+    {
+        // Delete Data
+        PlayerPrefs.DeleteAll();
+
+        // Close Menu
+        CloseResetDataMenu();
+        disableMenuControl = true;
+        AudioManager.Instance.PlaySFX("cleardata", 0.5f);
+
+        // close music
+        AudioManager.Instance.StopMusicWithFade(1.0f);
+        menuAlpha.DOFade(1.0f, 1.0f);
+
+        // Back to start menu
+        menuState = MenuState.START;
+        StartCoroutine(SetActiveDelay(startGameText.gameObject, true, 1.1f));
+        StartCoroutine(SetActiveDelay(logo.gameObject, false, 1.1f));
+        StartCoroutine(SetActiveDelay(selectionParent.gameObject, false, 1.1f));
+
+        StartCoroutine(RestartFromStartMenu(1.15f));
+    }
+
+    IEnumerator RestartFromStartMenu(float time)
+    {
+        yield return new WaitForSecondsRealtime(time);
+        menuAlpha.DOFade(0.0f, 1.0f);
+    }
+
+    public void OpenResetDataMenu()
+    {
+        AudioManager.Instance.PlaySFX("warning", 0.5f);
+        resetDataPanel.gameObject.SetActive(true);
+        resetDataPanel.GetComponent<CanvasGroup>().DOFade(1.0f, 0.5f);
+        resetDataText.SetText("Name: <color=white>" + PlayerPrefs.GetString("PlayerName") + "</color>\n" +
+                              "Best Level: <color=white>" + ProgressManager.Instance().LoadUnlockLevel() + "</color>\n" +
+                              "Last Death: <color=white>" + PlayerPrefs.GetInt("LastDeath", 0) + "</color>\n");
+    }
+
+    public void CloseResetDataMenu()
+    {
+        AudioManager.Instance.PlaySFX("decide", 0.5f);
+        resetDataPanel.GetComponent<CanvasGroup>().DOFade(0.0f, 0.5f);
+        StartCoroutine(SetActiveDelay(resetDataPanel.gameObject, false, 0.5f));
+        disableMenuControl = false;
+
+    }
+
+    IEnumerator SetActiveDelay(GameObject obj, bool boolean, float time)
+    {
+        yield return new WaitForSecondsRealtime(time);
+        obj.SetActive(boolean);
     }
 }
