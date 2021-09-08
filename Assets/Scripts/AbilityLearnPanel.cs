@@ -17,12 +17,24 @@ public enum Skill
     Stamina,
     StaminaRecoverSpeed,
     HPRegen,
-    Lifesteal,
     LifeDrain,
     Survivor,
     ComboMaster,
+    Windrunner,
+    Potion,
+    DashAttack,
+    BreakFall,
+    LightningLash,
 
     List_Number
+}
+
+public struct SelectionData
+{
+    public string skill_name;
+    public string skill_description;
+    public string skill_Icon;
+    public float value;
 }
 
 public class AbilityLearnPanel : MonoBehaviour
@@ -35,14 +47,6 @@ public class AbilityLearnPanel : MonoBehaviour
         [SerializeField] public Image skill_Icon;
         public SelectionData data;
         public Skill skillEnum;
-    }
-
-    struct SelectionData
-    {
-        public string skill_name;
-        public string skill_description;
-        public string skill_Icon;
-        public float value;
     }
 
     int selecting = -1;
@@ -204,6 +208,10 @@ public class AbilityLearnPanel : MonoBehaviour
             {
                 CheckAndAdd(possibleSkill, Skill.StaminaRecoverSpeed);
             }
+            if (unlockLevel >= 10 && !gameMng.IsPotionSelected())
+            {
+                CheckAndAdd(possibleSkill, Skill.Potion);
+            }
         }
         if (level >= 3)
         {
@@ -213,29 +221,36 @@ public class AbilityLearnPanel : MonoBehaviour
             }
             CheckAndAdd(possibleSkill, Skill.DashCooldown);
             CheckAndAdd(possibleSkill, Skill.HPRegen);
-
-            if (player.GetLifesteal() < 0.15f)
-            {
-                CheckAndAdd(possibleSkill, Skill.Lifesteal);
-            }
             CheckAndAdd(possibleSkill, Skill.LifeDrain);
+        }
+        if (unlockLevel >= 4 && level >= 5)
+        {
+            CheckAndAdd(possibleSkill, Skill.LightningLash);
         }
         if (level >= 5 && !gameMng.IsSurvivorSelected())
         {
             possibleSkill.Add(Skill.Survivor);
         }
-        if (unlockLevel >= 9 && level >= 9)
+        if (unlockLevel >= 9 && level >= 8)
         {
             CheckAndAdd(possibleSkill, Skill.ComboMaster);
+        }
+        if (unlockLevel >= 10 && level >= 13 && player.GetBreakFallCost() == 0f)
+        {
+            CheckAndAdd(possibleSkill, Skill.BreakFall);
+        }
+        if (unlockLevel >= 18 && level >= 10 && player.GetWindrunner() < 1.5f)
+        {
+            CheckAndAdd(possibleSkill, Skill.Windrunner);
         }
 
         for (int i = 0; i < 3; i++)
         {
-            // take random skill on the lis
+            // take random skill on the list
             Skill randomedSkill = possibleSkill[Random.Range(0, possibleSkill.Count)];
 
             // record
-            selection[i].data = EnumToData(randomedSkill);
+            selection[i].data = ProgressManager.Instance().EnumToData(randomedSkill);
 
             // remove the picked skill from the list
             possibleSkill.Remove(randomedSkill);
@@ -264,9 +279,14 @@ public class AbilityLearnPanel : MonoBehaviour
         // apply the effect
         player.ApplyBonus(selection[index].skillEnum, selection[index].data.value);
 
+        // Bonus that only come once
         if (selection[index].skillEnum == Skill.Survivor)
         {
             gameMng.Survivorselected();
+        }
+        if (selection[index].skillEnum == Skill.Potion)
+        {
+            gameMng.PotionSelected();
         }
     }
 
@@ -312,100 +332,5 @@ public class AbilityLearnPanel : MonoBehaviour
         gameMng.StartLevelCinematic();
         gameMng.NextLevel();
         Destroy(gameObject);
-    }
-
-    SelectionData EnumToData(Skill skill)
-    {
-        SelectionData rtn;
-        rtn.value = 0;
-        rtn.skill_name = string.Empty;
-        rtn.skill_description = string.Empty;
-        rtn.skill_Icon = string.Empty;
-
-        switch (skill)
-        {
-            case Skill.MoveSpeed:
-                rtn.value = 1 + Random.Range(0, 3);
-                rtn.skill_name = "<color=#ff00ffff>Move Speed</color>";
-                rtn.skill_description = "Increase your movement speed by <color=#ff00ffff>" + (rtn.value*10).ToString() + "</color>.";
-                rtn.skill_Icon = "movespeed";
-                break;
-            case Skill.BaseDamage:
-                rtn.value = 4 + Random.Range(0, 2);
-                rtn.skill_name = "<color=red>Base Damage</color>";
-                rtn.skill_description = "Increase your base attack damage by <color=red>" + ((int)rtn.value).ToString() + "</color>.";
-                rtn.skill_Icon = "basedamage";
-                break;
-            case Skill.MaxDamage:
-                rtn.value = 4 + Random.Range(0, 3);
-                rtn.skill_name = "<color=#800000ff>Max Damage</color>";
-                rtn.skill_description = "Increase your extra random damage output on top of your normal damage by <color=#800000ff>" + ((int)rtn.value).ToString() + "</color>.";
-                rtn.skill_Icon = "maxdamage";
-                break;
-            case Skill.Vitality:
-                rtn.value = 13 + Random.Range(0, 10);
-                rtn.skill_name = "<color=#00ff00ff>Vitality</color>";
-                rtn.skill_description = "Increase your max health by <color=#00ff00ff>" + rtn.value.ToString() + "</color>.";
-                rtn.skill_Icon = "vitality";
-                break;
-            case Skill.DashCooldown:
-                rtn.value = 12 + Random.Range(0, 8);
-                rtn.skill_name = "<color=#ffff00ff>Dash Cooldown</color>";
-                rtn.skill_description = "Decrease dash cooldown time by <color=#ffff00ff>" + rtn.value.ToString() + "%</color>.";
-                rtn.skill_Icon = "dashcooldown";
-                break;
-            case Skill.DashDamage:
-                rtn.value = 11 + Random.Range(0, 4);
-                rtn.skill_name = "<color=#008080ff>Dash Damage</color>";
-                rtn.skill_description = "Dashing deal <color=#008080ff>" + rtn.value.ToString() + " damage</color> but cooldown <color=red>0.5 sec</color> longer. The number will stack.";
-                rtn.skill_Icon = "dashdamage";
-                break;
-            case Skill.Stamina:
-                rtn.value = 15 + Random.Range(0, 9);
-                rtn.skill_name = "<color=blue>Max Stamina</color>";
-                rtn.skill_description = "Give you <color=blue>" + rtn.value.ToString() + "</color> more stamina point to spent.";
-                rtn.skill_Icon = "stamina";
-                break;
-            case Skill.StaminaRecoverSpeed:
-                rtn.value = 1;
-                rtn.skill_name = "<color=#00ff00ff>Stamina Recover</color>";
-                rtn.skill_description = "Increase stamina regenerate rate by <color=#00ff00ff>" + ((int)(((float)1)/((float)player.GetStaminaRegen()) * 100)).ToString() + "%</color>.";
-                rtn.skill_Icon = "staminarecover";
-                break;
-            case Skill.HPRegen:
-                rtn.value = 1;
-                rtn.skill_name = "<color=#008000ff>HP Regen</color>";
-                rtn.skill_description = "Heal <color=#008000ff>1</color> hp per seconds when you're not in combat. The number will stack.";
-                rtn.skill_Icon = "hpregen";
-                break;
-            case Skill.Lifesteal:
-                rtn.value = 4 + Random.Range(0, 3);
-                rtn.skill_name = "<color=#008000ff>Lifesteal</color>";
-                rtn.skill_description = "Allow you to gain <color=#008000ff>" + rtn.value + "%</color> of your damage dealt into HP when attack an enemy.";
-                rtn.skill_Icon = "lifesteal";
-                break;
-            case Skill.LifeDrain:
-                rtn.value = 7 + Random.Range(0, 4);
-                rtn.skill_name = "<color=#800000ff>Life Drain</color>";
-                rtn.skill_description = "Heal <color=#800000ff>" + rtn.value + "</color> hp when you kill an enemy. The number will stack.";
-                rtn.skill_Icon = "lifedrain";
-                break;
-            case Skill.Survivor:
-                rtn.value = 1;
-                rtn.skill_name = "<color=#ffff00ff>Survivor</color>";
-                rtn.skill_description = "Give you a second chance when you're dead.";
-                rtn.skill_Icon = "survive";
-                break;
-            case Skill.ComboMaster:
-                rtn.value = 7 + Random.Range(0, 4);
-                rtn.skill_name = "<color=blue>Combo Master</color>";
-                rtn.skill_description = "Gain " + rtn.value.ToString() + " stamina per combo when combo ended.";
-                rtn.skill_Icon = "combomaster";
-                break;
-            default:
-                Debug.Log("<color=red>skill data not found!</color>");
-                break;
-        }
-        return rtn;
     }
 }

@@ -237,9 +237,13 @@ public class Menu : MonoBehaviour
         AudioManager.Instance.PlaySFX("cursor");
 
         selectIndex--;
+        if (selectIndex == MenuSelection.BossRushMode || selectIndex == MenuSelection.Exit || selectIndex == MenuSelection.Option)
+        {
+            selectIndex--;
+        }
         if (selectIndex < 0)
         {
-            selectIndex = MenuSelection.MaxIndex - 1;
+            selectIndex = MenuSelection.MaxIndex - 2;
         }
         ChangeSelection(selectIndex);
     }
@@ -251,6 +255,10 @@ public class Menu : MonoBehaviour
         AudioManager.Instance.PlaySFX("cursor");
 
         selectIndex++;
+        if (selectIndex == MenuSelection.BossRushMode || selectIndex == MenuSelection.Exit || selectIndex == MenuSelection.Option)
+        {
+            selectIndex++;
+        }
         if (selectIndex >= MenuSelection.MaxIndex)
         {
             selectIndex = 0;

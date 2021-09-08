@@ -10,10 +10,13 @@ public class Controller : MonoBehaviour
     [SerializeField] private int maxDamage = 5;
     [SerializeField] private int dashDamage = 0;
     [SerializeField] private int hpRegen = 0;
-    [SerializeField] private float lifesteal = 0;
+    [SerializeField] private float lightningLash = 0;
     [SerializeField] private int lifedrain = 0;
     [SerializeField] private bool survivor = false;
     [SerializeField] private int comboMaster = 0;
+    [SerializeField] private float windrunner = 0;
+    [SerializeField] private int breakfallCost = 0;
+    [SerializeField] private int potionHeal = 0;
     [SerializeField] private int staminaCostAttack = 15;
     [SerializeField] private int staminaCostDash = 20;
     [SerializeField] private int maxHP = 5;
@@ -42,6 +45,7 @@ public class Controller : MonoBehaviour
     [SerializeField] private float comboResetTime = 1.0f;
     [SerializeField] private Vector2 combatModeRange = new Vector2(3f, 1.5f);
     [SerializeField] private float potionCooldown = 0.5f;
+    [SerializeField, Range(0.0f, 1.5f)] float windrunnerBuffTimer;
 
     [SerializeField] private float attackRange;
     [SerializeField] private float[] attackMoveRange;
@@ -55,14 +59,15 @@ public class Controller : MonoBehaviour
     float afterEffectCd;
     PlayerInput input;
     float staminaRegenTimer;
-    float hpRegenTimer;
     bool alreadyDealDamage;
     float attackDealDamageTimer;
     float attackEndAttackTimer;
     GameManager gameMng;
     bool isKnockbacking;
     bool isUsingPotion;
+    bool isPotionUsed;
     bool isAlive;
+    float usingPotionTime;
     float superDropAfterImgTimer;
     float superDropAfterImgInterval = 0.05f;
     float hitTaintTime = 0.2f;
@@ -71,6 +76,10 @@ public class Controller : MonoBehaviour
     private GameObject hitParticleEffect;
     private GameObject hitFXEffect;
     private GameObject jumpDustEffect;
+    private GameObject shieldEffect;
+    private GameObject potionHealEffect;
+    private GameObject chargeEffect;
+    private GameObject chargeEffectInstantiated;
 
     [Header("References")]
     [SerializeField] SpriteRenderer graphic;
@@ -78,6 +87,8 @@ public class Controller : MonoBehaviour
     [SerializeField] AudioSource walkAudio;
     [SerializeField] GameObject reviveParticle;
     [SerializeField] Transform world;
+    [SerializeField] Transform potionProgressBar;
+    [SerializeField] Transform potionProgressBarFill;
 
     [Header("States")]
     [SerializeField] private int attackCombo;
@@ -102,6 +113,7 @@ public class Controller : MonoBehaviour
     [SerializeField] float dashStaminaCooldown;
     [SerializeField] private bool invulnerable;
     [SerializeField] private bool staminaRegenSlowed;
+    [SerializeField] private bool lightningLashAttack;
 
     List<EnemyControl> dashDamagedEnemy = new List<EnemyControl>();
 
@@ -120,10 +132,13 @@ public class Controller : MonoBehaviour
 
     private void Awake()
     {
+        shieldEffect = Resources.Load("Prefabs/ShieldPlayer") as GameObject;
         impactParticleEffect = Resources.Load("Prefabs/ImpactGround") as GameObject;
         hitParticleEffect = Resources.Load("Prefabs/HitParticle") as GameObject;
         hitFXEffect = Resources.Load("Prefabs/HitFX") as GameObject;
         jumpDustEffect = Resources.Load("Prefabs/JumpDust") as GameObject;
+        chargeEffect = Resources.Load("Prefabs/ChargePlayer") as GameObject;
+        potionHealEffect = Resources.Load("Prefabs/PotionHeal") as GameObject;
     }
 
     public void ResetPlayer()
@@ -133,7 +148,7 @@ public class Controller : MonoBehaviour
         maxDamage = 0;
         dashDamage = 0;
         hpRegen = 0;
-        lifesteal = 0;
+        lightningLash = 0;
         lifedrain = 0;
         survivor = false;
         comboMaster = 0;
@@ -191,9 +206,12 @@ public class Controller : MonoBehaviour
         input.attack =      Input.GetKeyDown(KeyCode.Z) || Input.GetKeyDown(KeyCode.J) || Input.GetButtonDown("Attack");
         input.dash =        Input.GetKeyDown(KeyCode.X) || Input.GetKeyDown(KeyCode.K) || Input.GetButtonDown("Dash");
         input.crouch =      Input.GetKey(KeyCode.DownArrow) || Input.GetKey(KeyCode.S) || (Mathf.RoundToInt(Input.GetAxisRaw("JoyPadVertical")) == -1);
-        input.use =         Input.GetKeyDown(KeyCode.C) || Input.GetKeyDown(KeyCode.L);// || Input.GetButtonDown("Dash");
-        input.cancelUse =   Input.GetKeyUp(KeyCode.C) || Input.GetKeyUp(KeyCode.L);// || Input.GetButtonDown("Dash");
-
+        input.use =         Input.GetKeyDown(KeyCode.C) || Input.GetKeyDown(KeyCode.L) || Input.GetAxisRaw("Item") == 1;
+        input.cancelUse =   Input.GetKeyUp(KeyCode.C) || Input.GetKeyUp(KeyCode.L) || Input.GetButtonUp("Item");
+        if (input.use)
+        {
+            Debug.Log(input.use);
+        }
         if (!isAlive)
         {
             input.move = 0;
@@ -459,21 +477,53 @@ public class Controller : MonoBehaviour
         }
 
         // USE POTION
+        if (gameMng.IsPotionSelected())
         {
             if (input.use)
             {
-                if (!IsJumping() && !IsDashing() && !IsAttacking() && !input.crouch && input.move == 0)
+                if (!IsJumping() && !IsDashing() && !IsAttacking() && !input.crouch && input.move == 0 && !isPotionUsed)
                 {
-                    // Start Using Potion
+                    // START USING POTION
                     isUsingPotion = true;
                     animator.SetBool("Use", true);
                     animator.Play("Use");
+                    potionProgressBarFill.DOScaleX(0.0f, 0.0f);
+                    potionProgressBar.gameObject.SetActive(true);
+                    usingPotionTime = 0.0f;
+                    AudioManager.Instance.PlaySFX("potionUsing");
+
+                    chargeEffectInstantiated = Instantiate(chargeEffect, new Vector2(transform.position.x, transform.position.y + 0.1f), Quaternion.identity);
+                    chargeEffectInstantiated.transform.SetParent(world);
                 }
             }
-
-            else
+            else if (input.cancelUse && IsUsingPotion())
             {
-                animator.SetBool("Use", false);
+                CancelUsingPotion();
+            }
+
+            // LOOP
+            if (IsUsingPotion())
+            {
+                if (IsJumping() || IsDashing() || IsAttacking() || input.crouch || input.move != 0)
+                {
+                    CancelUsingPotion();
+                }
+
+                // PROGRESSING
+                usingPotionTime += Time.deltaTime;
+                potionProgressBarFill.DOScaleX(Mathf.Lerp(0.0f, 9.792632f, usingPotionTime / potionSpeed), 0.0f);
+
+                // SUCCESS
+                if (usingPotionTime >= potionSpeed)
+                {
+                    CancelUsingPotion(true);
+                    Regenerate(potionHeal);
+                    gameMng.SetItemCooldownAmount(1.0f);
+                    isPotionUsed = true;
+                    AudioManager.Instance.PlaySFX("potionHeal");
+                    GameObject tmp = Instantiate(potionHealEffect, new Vector2(transform.position.x, -1.46f), Quaternion.identity);
+                    tmp.transform.SetParent(world);
+                }
             }
         }
 
@@ -506,6 +556,7 @@ public class Controller : MonoBehaviour
                 calculatedMoveSpeed = moveSpeed / 2f;
             }
             if (IsJumping()) calculatedMoveSpeed = Mathf.Clamp(calculatedMoveSpeed, 0f, 10f);
+            if (windrunnerBuffTimer > 0.0f) calculatedMoveSpeed += 6;
             RaycastHit2D hitwall = Physics2D.Raycast(transform.position, new Vector2(input.move, 0.0f), collider.bounds.size.x, frameLayer);
             RaycastHit2D hitenemy = Physics2D.Raycast(transform.position, new Vector2(input.move, 0.0f), collider.bounds.size.x * 0.5f, enemyLayer);
             if (!hitwall && !isAttacking && !isDashing)
@@ -568,20 +619,25 @@ public class Controller : MonoBehaviour
             }
             staminaRegenSlowed = (multiplier <= 0.2f);
 
-            multiplier = 1.0f;
-            //if (IsDashing()) multiplier = 0.0f;
-            //if (IsJumping()) multiplier = 0.0f;
-            if (monsterNearby) multiplier = 0.0f;
-            if (IsAttacking()) multiplier = 0.0f;
-            if (!IsAlive())    multiplier = 0.0f;
-            if (gameMng.IsLevelEnded()) multiplier = 0.0f;
-            if (gameMng.IsLevelEnded()) multiplier = 0.0f;
-            hpRegenTimer = Mathf.Clamp(hpRegenTimer - (Time.deltaTime * multiplier), 0.0f, hpRegenInterval);
-            if (hpRegenTimer == 0.0f)
-            {
-                hpRegenTimer = hpRegenInterval;
-                Regenerate(hpRegen);
-            }
+            //multiplier = 1.0f;
+            ////if (IsDashing()) multiplier = 0.0f;
+            ////if (IsJumping()) multiplier = 0.0f;
+            //if (monsterNearby) multiplier = 0.0f;
+            //if (IsAttacking()) multiplier = 0.0f;
+            //if (!IsAlive())    multiplier = 0.0f;
+            //if (gameMng.IsLevelEnded()) multiplier = 0.0f;
+            //if (gameMng.IsLevelEnded()) multiplier = 0.0f;
+            //hpRegenTimer = Mathf.Clamp(hpRegenTimer - (Time.deltaTime * multiplier), 0.0f, hpRegenInterval);
+            //if (hpRegenTimer == 0.0f)
+            //{
+            //    hpRegenTimer = hpRegenInterval;
+            //    Regenerate(hpRegen);
+            //}
+        }
+
+        // WINDRUNNER
+        {
+            windrunnerBuffTimer = Mathf.Clamp(windrunnerBuffTimer - Time.deltaTime, 0.0f, windrunner);
         }
     }
 
@@ -633,24 +689,38 @@ public class Controller : MonoBehaviour
 
     void StartAttack()
     {
+        bool costStamina = true;
+        lightningLashAttack = false;
+
+        // dash attack
+        if (IsDashing())
+        {
+            transform.DOKill(false);
+            dashDirection = graphic.flipX ? -1 : 1;
+            EndDash();
+            attackCombo = 2;
+            if (lightningLash > 0.0f)
+            {
+                // talent bonus
+                costStamina = false;
+                lightningLashAttack = true;
+            }
+        }
+
         // check if stamina is enough
-        if (currentStamina < staminaCostAttack)
+        int calculatedStaminaCost = staminaCostAttack;
+        if (windrunnerBuffTimer > 0.0f) calculatedStaminaCost /= 2;
+        if (currentStamina < calculatedStaminaCost && costStamina)
         {
             // reset combo if stamina is all gone
             attackCombo = 0;
             return;
         }
 
-        // dash attack
-        if (IsDashing())
+        if (costStamina)
         {
-            transform.DOKill(true);
-            dashDirection = graphic.flipX ? -1 : 1;
-            EndDash();
-            attackCombo = 2;
+            Regenerate(0, -calculatedStaminaCost);
         }
-
-        Regenerate(0, -staminaCostAttack);
 
         alreadyDealDamage = false;
         attackEndAttackTimer = FindAnimation(animator, "Attack" + (attackCombo % 3).ToString()).length * attackEndTiming[(attackCombo % 3)];
@@ -738,7 +808,7 @@ public class Controller : MonoBehaviour
                     calculatedDamage = attackCombo % 3 == 0 ? (int)((float)calculatedDamage * 1.5f) : calculatedDamage;
 
                     // check critical
-                    isCriticalHit = enemy.CheckIfCriticalHit(playerAttackOriginPoint);
+                    isCriticalHit = enemy.CheckIfCriticalHit(playerAttackOriginPoint) || lightningLashAttack;
                     if (isCriticalHit)
                     {
                         calculatedDamage = Mathf.FloorToInt((float)calculatedDamage * criticalDamageMultiplier);
@@ -765,9 +835,9 @@ public class Controller : MonoBehaviour
                     bool kill = enemy.DealDamage(calculatedDamage);
 
                     // apply lifesteal
-                    if (lifesteal > 0.0f)
+                    if (lightningLash > 0.0f && lightningLashAttack)
                     {
-                        Regenerate((int)(((float)calculatedDamage) * lifesteal));
+                        Regenerate((int)(((float)calculatedDamage) * lightningLash));
                     }
 
                     // apply lifedrain
@@ -834,6 +904,24 @@ public class Controller : MonoBehaviour
         }
     }
 
+    void CancelUsingPotion(bool success = false)
+    {
+        isUsingPotion = false;
+        animator.SetBool("Use", false);
+        potionProgressBarFill.DOScaleX(0.0f, 0.0f);
+        potionProgressBar.gameObject.SetActive(false);
+
+        if (chargeEffectInstantiated != null)
+        {
+            Destroy(chargeEffectInstantiated);
+        }
+
+        if (!success)
+        {
+            AudioManager.Instance.PlaySFX("potionCancel");
+        }
+    }
+
     void StartDash()
     {
         dashDamagedEnemy.Clear();
@@ -886,6 +974,13 @@ public class Controller : MonoBehaviour
         isDashing = false;
 
         graphic.sortingLayerName = "Player";
+
+        // windrunner effect
+        if (windrunner > 0.0f)
+        {
+            windrunnerBuffTimer = windrunner;
+            AfterEffectDuration(afterEffectInterval /2f, windrunner);
+        }
     }
 
     public void CreateAfterImage(float alpha)
@@ -943,12 +1038,12 @@ public class Controller : MonoBehaviour
         return maxStamina;
     }
 
-    public void Regenerate(int hp, int stamina = 0)
+    public void Regenerate(int hp, int stamina = 0, bool showFloatingText = true)
     {
         currentHP = Mathf.Clamp(currentHP + hp, 0, maxHP);
         currentStamina = Mathf.Clamp(currentStamina + stamina, 0, maxStamina);
 
-        if (hp > 0)
+        if (hp > 0 && showFloatingText)
         {
             // floating text
             const float floatSize = 90;
@@ -984,6 +1079,16 @@ public class Controller : MonoBehaviour
         if (invulnerable) return false;
         if (value <= 0) return false;
 
+        // Break-fall effect
+        if (breakfallCost > 0 && currentStamina >= breakfallCost && animator.GetCurrentAnimatorStateInfo(0).IsName("Crouch"))
+        {
+            Regenerate(0, -breakfallCost);
+
+            AudioManager.Instance.PlaySFX("defend3");
+            Instantiate(shieldEffect, Vector2.Lerp(source.position, transform.position, 0.5f), Quaternion.identity);
+            return false;
+        }
+
         gameMng.ResetCombo(currentCombo);
         currentCombo = -1;
 
@@ -999,7 +1104,12 @@ public class Controller : MonoBehaviour
 
         hitTaintTimer = hitTaintTime;
 
-        if (input.move == 0)
+        if (IsUsingPotion())
+        {
+            CancelUsingPotion();
+        }
+
+        if (input.move == 0 && !animator.GetCurrentAnimatorStateInfo(0).IsName("Crouch"))
         {
             animator.Play("Hurt");
         }
@@ -1038,7 +1148,7 @@ public class Controller : MonoBehaviour
             survivor = false;
             StartJump(true);
             currentHP = maxHP;
-            AfterEffectDuration(afterEffectInterval, 0.5f);
+            AfterEffectDuration(afterEffectInterval, 0.75f);
             gameMng.SpawnFloatingText(new Vector2(transform.position.x, transform.position.y + collider.bounds.size.y / 2f), 5f, 30f,
                                      "RESURRECTION", new Color(1f, 8.43f, 0.0f), new Vector2(0f, 1f), 100f);
 
@@ -1119,6 +1229,8 @@ public class Controller : MonoBehaviour
     {
         gameMng.ScreenImpactGround(0.04f, 0.4f);
         gameMng.ScreenChangeTheme();
+        gameMng.SetItemCooldownAmount(0.0f);
+        ResetPotionUse();
         GameObject tmp = Instantiate(impactParticleEffect, Vector2.Lerp(transform.position, new Vector2(transform.position.x, transform.position.y - collider.bounds.size.y /2f),0.5f)
             , Quaternion.identity);
         tmp.GetComponent<ParticleScript>().SetParticleColor(gameMng.GetThemeColor());
@@ -1159,8 +1271,8 @@ public class Controller : MonoBehaviour
             case Skill.HPRegen:
                 hpRegen += (int)value;
                 break;
-            case Skill.Lifesteal:
-                lifesteal += value/100f;
+            case Skill.LightningLash:
+                lightningLash += value/100f;
                 break;
             case Skill.LifeDrain:
                 lifedrain += (int)value;
@@ -1171,6 +1283,15 @@ public class Controller : MonoBehaviour
             case Skill.ComboMaster:
                 comboMaster += (int)value;
                 break;
+            case Skill.Windrunner:
+                windrunner += value/100f;
+                break;
+            case Skill.BreakFall:
+                breakfallCost += (int)value;
+                break;
+            case Skill.Potion:
+                potionHeal += (int)value;
+                break;
                 Debug.Log("<color=red>skill data not found!</color>");
             default:
                 break;
@@ -1180,6 +1301,11 @@ public class Controller : MonoBehaviour
     public bool IsUsingPotion()
     {
         return isUsingPotion;
+    }
+
+    public void ResetPotionUse()
+    {
+        isPotionUsed = false;
     }
 
     public bool IsDashing()
@@ -1253,9 +1379,9 @@ public class Controller : MonoBehaviour
     {
         return 0;
     }
-    public float GetLifesteal()
+    public float GetLightningDash()
     {
-        return lifesteal;
+        return lightningLash;
     }
 
     public int GetLifeDrain()
@@ -1265,6 +1391,18 @@ public class Controller : MonoBehaviour
     public int GetComboMaster()
     {
         return comboMaster;
+    }
+    public float GetWindrunner()
+    {
+        return windrunner;
+    }
+    public int GetBreakFallCost()
+    {
+        return breakfallCost;
+    }
+    public int GetPotionHeal()
+    {
+        return potionHeal;
     }
     public float GetDashCD()
     {

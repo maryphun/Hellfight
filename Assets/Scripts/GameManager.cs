@@ -42,6 +42,7 @@ public class GameManager : MonoBehaviour
     [SerializeField] Image gameOverAlpha;
     [SerializeField] TMP_Text comboText;
     [SerializeField] bool survivorSelected = false;
+    [SerializeField] bool potionSelected = false;
     [SerializeField] GameObject menuCanvas;
     [SerializeField] GameObject backCanvas;
     [SerializeField] string playerName;
@@ -50,9 +51,15 @@ public class GameManager : MonoBehaviour
     [SerializeField] SpriteRenderer monsterAlertArrowLeft;
     [SerializeField] SpriteRenderer monsterAlertArrowRight;
     [SerializeField] Transform playerCorpse;
+    [SerializeField] RectTransform itemUI;
+    [SerializeField] Image itemUICooldown;
+    [SerializeField] GameObject newUnlockMenu;
+    [SerializeField] TMP_Text newUnlockName;
+    [SerializeField] Image newUnlockIcon;
+    [SerializeField] Image newUnlockAlpha;
+    [SerializeField] NewGroundAPI newGroundsAPI;
     [SerializeField] string[] musicList;
     [SerializeField] Transform[] parallaxList;
-    [SerializeField] NewGroundAPI newGroundsAPI;
 
 
     [Header("Debug")]
@@ -69,6 +76,7 @@ public class GameManager : MonoBehaviour
     private bool allowRestart;
     private int monsterSpawnCount;
     Coroutine roundTimer;
+    List<Skill> newUnlock = new List<Skill>();
 
 
     // Start is called before the first frame update
@@ -85,6 +93,7 @@ public class GameManager : MonoBehaviour
         backgroundFrame.color = new Color(0, 0, 0, 0);
         openButton.SetActive(false);
         lastSpawnedSkill = new Skill[3];
+        newUnlock.Clear();
         for (int i = 0; i < 3; i++)
         {
             lastSpawnedSkill[i] = Skill.ComboMaster;
@@ -120,6 +129,7 @@ public class GameManager : MonoBehaviour
     public void StartGame()
     {
         survivorSelected = false;
+        potionSelected = false;
         screenAlpha.DOFade(1.0f, 0.0f);
         screenAlpha.DOFade(0.0f, 1.0f);
         menuCanvas.SetActive(false);
@@ -127,6 +137,7 @@ public class GameManager : MonoBehaviour
         frontCanvas.gameObject.SetActive(true);
         SetStatusBarVisible(false);
         player.gameObject.SetActive(false);
+        newUnlock.Clear();
         currentLevel = 1;
         ProgressManager.Instance().LoadUnlockLevel();
         StartCoroutine(StartGameCinematic());
@@ -170,6 +181,12 @@ public class GameManager : MonoBehaviour
         staminaBar.SetActive(boolean);
         hpBarText.SetActive(boolean);
         staminaBarText.SetActive(boolean);
+
+        // only show item UI if potion is available
+        if (IsPotionSelected() || !boolean)
+        {
+            itemUI.gameObject.SetActive(boolean);
+        }
     }
 
     public void ScreenImpactGround(float time, float magnitude)
@@ -304,6 +321,14 @@ public class GameManager : MonoBehaviour
         {
             newGroundsAPI.NGUnlockMedal(65058);
         }
+        if (player.GetMaxHP() >= 100)
+        {
+            newGroundsAPI.NGUnlockMedal(65096);
+        }
+        if (player.GetMaxStamina() >= 200)
+        {
+            newGroundsAPI.NGUnlockMedal(65095);
+        }
     }
 
     public Transform RandomParallax()
@@ -345,17 +370,33 @@ public class GameManager : MonoBehaviour
         monsterSpawnCount = 0;
         
         int record = ProgressManager.Instance().GetUnlockLevel();
-        if (level == 1 && record <= level)
+        if (level == 1 && (record <= level || (record >= 10 && PlayerPrefs.GetInt("TutorialPotion", 0) != 1)))
         {
-            if (ControlPattern.Instance().IsJoystickConnected())
+            if (record > 10)
             {
-                tipsText.SetText(Input.GetJoystickNames()[0] + "\n<font=pixelinput SDF>4</font> ATTACK <font=pixelinput SDF>5</font> JUMP <font=pixelinput SDF>7</font> DASH");
+                PlayerPrefs.SetInt("TutorialPotion", 1);
+                if (ControlPattern.Instance().IsJoystickConnected())
+                {
+                    tipsText.SetText("\n<font=pixelinput SDF>+</font> USE ITEM");
+                }
+                else
+                {
+                    tipsText.SetText("<font=pixelinput SDF>c</font> USE ITEM");
+                }
             }
             else
             {
-                tipsText.SetText("<font=pixelinput SDF>W</font>\n<font=pixelinput SDF>ASD</font>\nMOVE\n<font=pixelinput SDF>z</font> ATTACK <font=pixelinput SDF>x</font> DASH");
+                if (ControlPattern.Instance().IsJoystickConnected())
+                {
+                    tipsText.SetText(Input.GetJoystickNames()[0] + "\n<font=pixelinput SDF>4</font> ATTACK <font=pixelinput SDF>7</font> JUMP <font=pixelinput SDF>5</font> DASH");
+                }
+                else
+                {
+                    tipsText.SetText("<font=pixelinput SDF>W</font>\n<font=pixelinput SDF>ASD</font>\nMOVE\n<font=pixelinput SDF>z</font> ATTACK <font=pixelinput SDF>x</font> DASH");
+                }
             }
             tipsText.DOFade(1.0f, 0.5f);
+
         } 
         else if (level == 2 && record <= level)
         {
@@ -386,7 +427,7 @@ public class GameManager : MonoBehaviour
         }
         else if (level == 10 && record <= level)
         {
-            tipsText.SetText("Find his weakness");
+            tipsText.SetText("Find his weakness, try to jump!");
             tipsText.DOFade(1.0f, 0.5f);
         }
         else if (level == 15 && record <= level)
@@ -486,7 +527,8 @@ public class GameManager : MonoBehaviour
     {
         if (collision.GetComponent<Controller>() != null)
         {
-            player.RegeneratePercentage(0.1f, 1.0f);
+            player.Regenerate(player.GetHPRegen() + (player.GetMaxHP() / 10), 0, false);
+            itemUICooldown.fillAmount = 1f;
             openButton.SetActive(false);
             screenAlpha.DOFade(0.9f, 1.0f);
             collision.gameObject.SetActive(false);
@@ -586,9 +628,9 @@ public class GameManager : MonoBehaviour
         PlayerPrefs.SetInt("LastDeath", currentLevel);
         PlayerPrefs.SetFloat("LastDeathPosition", player.transform.position.x);
         PlayerPrefs.SetInt("LastDeathFlip", boolToInt(player.IsFlip()));
-        PlayerPrefs.Save();
-
-        bool IsNewStuffUnlocked = ProgressManager.Instance().NewStuffUnlocked(currentLevel);
+        PlayerPrefs.Save(); 
+        
+        newUnlock = ProgressManager.Instance().NewStuffUnlocked(currentLevel);
 
         // SUBMIT NEWGROUNDS SCOREBOARD
         newGroundsAPI.NGSubmitScore(10762, currentLevel);
@@ -613,7 +655,7 @@ public class GameManager : MonoBehaviour
         memberID += "[dashDmg=" + player.GetDashDamage().ToString() + "]";
         memberID += "[dashCD=" + player.GetDashCD().ToString() + "]";
         memberID += "[critical=" + player.GetCritical().ToString() + "]";
-        memberID += "[lifesteal=" + player.GetLifesteal().ToString() + "]";
+        memberID += "[lifesteal=" + player.GetLightningDash().ToString() + "]";
         memberID += "[lifedrain=" + player.GetLifeDrain().ToString() + "]";
         memberID += "[combomaster=" + player.GetComboMaster().ToString() + "]";
         memberID += "[localtime=" + System.DateTime.Now.ToLocalTime().ToString() + "]";
@@ -631,7 +673,8 @@ public class GameManager : MonoBehaviour
 
                 if (rank == 1)
                 {
-                    gameoverText.SetText(gameoverText.text + "\nWhat a legend");
+                    newGroundsAPI.NGUnlockMedal(65097);
+                    gameoverText.SetText(gameoverText.text + "\nWhat a legend!!");
                 }
                 else if (rank <= 10)
                 {
@@ -643,6 +686,7 @@ public class GameManager : MonoBehaviour
                 }
                 else if (rank <= 30)
                 {
+                    newGroundsAPI.NGUnlockMedal(65098);
                     gameoverText.SetText(gameoverText.text + "\nYour parent is proud of you!");
                 }
             }
@@ -661,22 +705,74 @@ public class GameManager : MonoBehaviour
         if (!allowRestart) return;
         allowRestart = false;
         screenAlpha.DOFade(1.0f, 0.5f).SetUpdate(true);
-        Time.timeScale = 1.0f;
-        StartCoroutine(RestartDelay(1.0f));
         AudioManager.Instance.PlaySFX("restart");
+
+        // determine need to enter new unlock phase or not
+        if (newUnlock.Count > 0)
+        {
+            StartCoroutine(NewUnlockMenuPhase(RestartDelay(0.5f)));
+        }
+        else
+        {
+            // there are no new unlock. restart the game.
+            Time.timeScale = 1.0f;
+            StartCoroutine(RestartDelay(2.0f));
+        }
+    }
+
+    IEnumerator NewUnlockMenuPhase(IEnumerator nextPhase)
+    {
+        yield return new WaitForSecondsRealtime(1.0f);
+        newUnlockAlpha.DOFade(1.0f, 0.0f).SetUpdate(true);
+        // CHECK IF NEW STUFF UNLOCKED
+        newUnlockMenu.SetActive(true);
+
+        bool showMenu = true;
+        while (showMenu)
+        {
+            newUnlockAlpha.DOFade(0.0f, 0.25f).SetUpdate(true);
+            AudioManager.Instance.PlaySFX("Unlock", 0.85f);
+            SelectionData data = ProgressManager.Instance().EnumToData(newUnlock[0]);
+            newUnlockIcon.sprite = Resources.Load<Sprite>("Icon/" + data.skill_Icon);
+            newUnlockName.SetText(data.skill_name);
+
+            while (!(Input.anyKeyDown || Input.GetMouseButtonDown(0)))
+            {
+                yield return null;
+            }
+
+            if (newUnlock.Count == 1)
+            {
+                Debug.Log("no more unlock, stop showing menu");
+                showMenu = false;
+            }
+            else
+            {
+                newUnlockAlpha.DOFade(1.0f, 0.25f).SetUpdate(true);
+                yield return new WaitForSecondsRealtime(0.25f);
+                newUnlock.RemoveAt(0);
+                Debug.Log(newUnlock.Count.ToString() + " unlock left");
+            }
+        }
+
+        newUnlockAlpha.DOFade(1.0f, 0.5f).SetUpdate(true);
+
+        yield return new WaitForSecondsRealtime(1.0f);
+
+        newUnlockMenu.SetActive(false);
+
+        Time.timeScale = 1.0f;
+        StartCoroutine(nextPhase);
     }
 
     IEnumerator RestartDelay(float waitTime)
     {
         yield return new WaitForSeconds(waitTime);
-        //Scene scene = SceneManager.GetActiveScene();
-        // SceneManager.LoadScene(scene.name);
-
-        yield return new WaitForSeconds(waitTime);
         // initialize
         // Reset Color
         background.color = new Color(0, 0, 0, 1);
         backgroundFrame.color = new Color(0, 0, 0, 0);
+        backgroundSprite.GetComponent<Animator>().enabled = false;
         backgroundSprite.sprite = null;
         ResetParallax();
 
@@ -692,6 +788,7 @@ public class GameManager : MonoBehaviour
         player.transform.position = new Vector2(0f, 6.9f);
         player.gameObject.SetActive(false);
         player.ResetPlayer();
+        playerCorpse.gameObject.SetActive(false);
 
         //reset UI
         openButton.SetActive(true);
@@ -759,6 +856,29 @@ public class GameManager : MonoBehaviour
         survivorSelected = true;
     }
 
+    public bool IsPotionSelected()
+    {
+        return potionSelected;
+    }
+
+    public void PotionSelected()
+    {
+        potionSelected = true;
+
+        // Open Potion UI
+        itemUI.gameObject.SetActive(true);
+        itemUI.GetComponent<CanvasGroup>().alpha = 0.0f;
+        itemUI.GetComponent<CanvasGroup>().DOFade(1.0f, 1.0f);
+        SetItemCooldownAmount(1.0f);
+    }
+
+    public void SetItemCooldownAmount(float value)
+    {
+        if (!itemUI.gameObject.activeSelf) return;
+
+        itemUICooldown.DOFillAmount(value, 0.2f);
+    }
+
     public void SkillSpawnedRecord(Skill skill, int index)
     {
         lastSpawnedSkill[index] = skill;
@@ -809,6 +929,7 @@ public class GameManager : MonoBehaviour
         }
 
         NarrativeText.SetText("<color=red>You've over stayed</color>");
+        newGroundsAPI.NGUnlockMedal(65099);
 
         while (currentLevel <= level && !levelEnded)
         {

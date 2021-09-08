@@ -25,7 +25,7 @@ public class StaminaBar : MonoBehaviour
         rectTransform = GetComponent<RectTransform>();
     }
 
-    void Update()
+    void FixedUpdate()
     {
         SetRectTransformLeft(rectTransform, Mathf.MoveTowards(rectTransform.offsetMin.x, 400f - Mathf.Min((float)player.GetMaxStamina() * 1.5f, 300.0f), 1.0f));
         SetRectTransformRight(rectTransform, Mathf.MoveTowards(-rectTransform.offsetMax.x, 400f - Mathf.Min((float)player.GetMaxStamina() * 1.5f, 300.0f), 1.0f));

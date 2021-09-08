@@ -313,13 +313,12 @@ public class JinAI : MonoBehaviour
 
     void AttackCtrl()
     {
-        if (animator.GetCurrentAnimatorClipInfo(0)[0].clip.name != enemyName + "Attack")
+        if (!animator.GetCurrentAnimatorStateInfo(0).IsName(enemyName + "Attack"))
         {
             InitStatus(Status.Idle);
         }
 
         dealDamageCnt += Time.deltaTime;
-        Debug.Log(dealDamageCnt);
         if (dealDamageCnt > dealDamageDelay)
         {
             if (!startedCharge)
