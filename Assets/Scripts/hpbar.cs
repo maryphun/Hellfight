@@ -24,8 +24,8 @@ public class hpbar : MonoBehaviour
     // Update is called once per frame
     void FixedUpdate()
     {
-        SetRectTransformLeft(rectTransform, Mathf.MoveTowards(rectTransform.offsetMin.x, 400f - Mathf.Min((float)player.GetMaxHP() * 3f, 300.0f), 1.0f));
-        SetRectTransformRight(rectTransform, Mathf.MoveTowards(-rectTransform.offsetMax.x, 400f - Mathf.Min((float)player.GetMaxHP() * 3f, 300.0f), 1.0f));
+        SetRectTransformLeft(rectTransform, Mathf.MoveTowards(rectTransform.offsetMin.x, 400f - Mathf.Min((float)player.GetMaxHP() * 3f, 300.0f), 100.0f * Time.fixedDeltaTime));
+        SetRectTransformRight(rectTransform, Mathf.MoveTowards(-rectTransform.offsetMax.x, 400f - Mathf.Min((float)player.GetMaxHP() * 3f, 300.0f), 100.0f * Time.fixedDeltaTime));
         //GetComponent<RectTransform>().DOScaleX(Mathf.Min((player.GetMaxHP() / 100.0f) * maxSize, maxSize), 0.5f);
         fill.DOFillAmount((float)player.GetCurrentHP() / (float)player.GetMaxHP(), 0.5f);
         delayfill.DOFillAmount(fill.fillAmount, 0.5f);

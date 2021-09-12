@@ -59,9 +59,11 @@ public class NewGroundAPI : MonoBehaviour
     public void NGUnlockMedal(int medal_id)
     {
         if (!EnableNewGroundsAPI) return;
-        io.newgrounds.connectStatus tmp = new io.newgrounds.connectStatus();
-        if (tmp.success)
+        Debug.Log("medalunlock");
+        io.newgrounds.SessionResult tmp = new io.newgrounds.SessionResult();
+        if (tmp.session.user != null)
         {
+            Debug.Log("medal unlock success! id: " + medal_id);
             io.newgrounds.components.Medal.unlock medal_unlock = new io.newgrounds.components.Medal.unlock();
 
             medal_unlock.id = medal_id;

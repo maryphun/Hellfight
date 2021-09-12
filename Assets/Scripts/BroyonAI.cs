@@ -134,7 +134,9 @@ public class BroyonAI : MonoBehaviour
                 statusTimer = idleDelay; // a delay before the next action
                 break;
             case Status.Attacking:
+                AudioManager.Instance.PlaySFX("heartbeat");
                 animator.Play(enemyName + "Attack");
+                AudioManager.Instance.PlaySFX("Whoosh 8_1");
                 statusTimer = controller.FindAnimation(animator, enemyName + "Attack").length + 0.1f;
                 dealDamageCnt = 0.0f;
                 dealDamageAlready = false;
@@ -146,7 +148,6 @@ public class BroyonAI : MonoBehaviour
             case Status.Turning:
                 break;
             case Status.Chasing:
-                AudioManager.Instance.PlaySFX(enemyName + "GonnaAttack");
                 animator.Play(enemyName + "Move");
                 animator.SetBool("Move", true);
                 break;
@@ -318,9 +319,10 @@ public class BroyonAI : MonoBehaviour
         jumpCdTimer = jumpCooldown;
 
         // FX
-        if (transform.position.y < -2f)
+        if (transform.position.y < -1f)
         {
             Transform tmp = Instantiate(jumpDustEffect, new Vector2(transform.position.x, -2.619f), Quaternion.identity).transform;
+            tmp.SetParent(transform.parent);
             tmp.transform.DOScale(2.0f, 0.0f);
         }
 

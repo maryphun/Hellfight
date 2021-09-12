@@ -157,14 +157,16 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   enemyName: Kobrod
-  maxHp: 55
+  maxHp: 70
   maxStamina: 90
+  maxArmor: 20
   fadeOutAfterDead: 1
   attackedStopAttack: 0
   mass: 1.3
   critialHitOnly: 0
   backSideOnly: 0
   alwaysIgnoreKnockback: 0
+  haveArmor: 0
   enableWeaknessPoint: 0
   weaknessPointPivot: {x: 0, y: 0}
   weaknessPointRange: 0
@@ -174,6 +176,8 @@ MonoBehaviour:
     m_Bits: 256
   hpbar: {fileID: 217423647418916146}
   hpbarFade: {fileID: 217423646662769300}
+  armorbar: {fileID: 0}
+  armorFade: {fileID: 0}
   graphic: {fileID: 217423647515436716}
   frameLayer:
     serializedVersion: 2
@@ -181,9 +185,11 @@ MonoBehaviour:
   currentStatus: 0
   currentHp: 0
   currentStamina: 0
+  currentArmor: 0
   immumeKnockback: 0
   statusChanged: 0
   criticalHitted: 0
+  invulnerable: 0
 --- !u!61 &217423646980540019
 BoxCollider2D:
   m_ObjectHideFlags: 0

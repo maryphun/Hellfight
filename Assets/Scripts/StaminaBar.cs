@@ -27,9 +27,9 @@ public class StaminaBar : MonoBehaviour
 
     void FixedUpdate()
     {
-        SetRectTransformLeft(rectTransform, Mathf.MoveTowards(rectTransform.offsetMin.x, 400f - Mathf.Min((float)player.GetMaxStamina() * 1.5f, 300.0f), 1.0f));
-        SetRectTransformRight(rectTransform, Mathf.MoveTowards(-rectTransform.offsetMax.x, 400f - Mathf.Min((float)player.GetMaxStamina() * 1.5f, 300.0f), 1.0f));
-        fill.DOFillAmount((float)player.GetCurrentStamina() / (float)player.GetMaxStamina(), 1.0f);
+        SetRectTransformLeft(rectTransform, Mathf.MoveTowards(rectTransform.offsetMin.x, 400f - Mathf.Min((float)player.GetMaxStamina() * 1.5f, 300.0f), 100.0f * Time.fixedDeltaTime));
+        SetRectTransformRight(rectTransform, Mathf.MoveTowards(-rectTransform.offsetMax.x, 400f - Mathf.Min((float)player.GetMaxStamina() * 1.5f, 300.0f), 100.0f * Time.fixedDeltaTime));
+        fill.DOFillAmount((float)player.GetCurrentStamina() / (float)player.GetMaxStamina(), 0.5f);
         delayfill.DOFillAmount(fill.fillAmount, 0.5f);
 
         bool isSlowed = player.IsStaminaRegenerateSlowed();

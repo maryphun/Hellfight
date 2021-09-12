@@ -76,6 +76,7 @@ public class SkellyAI : MonoBehaviour
         switch (controller.GetCurrentStatus())
         {
             case Status.Idle:
+                animator.SetBool("Move", false);
                 IdleCtrl();
                 break;
             case Status.Attacking:
@@ -89,6 +90,7 @@ public class SkellyAI : MonoBehaviour
                 }
                 break;
             case Status.Turning:
+                animator.SetBool("Move", false);
                 TurnCtrl();
                 break;
             case Status.Chasing:
@@ -133,11 +135,15 @@ public class SkellyAI : MonoBehaviour
                 }
                 else
                 {
-                    animator.Play(enemyName + "Idle");
                     statusTimer = turningTime;
                 }
                 break;
             case Status.Chasing:
+                if (!controller.IsFacingPlayer())
+                {
+                    InitStatus(Status.Turning);
+                    return;
+                }
                 isDashing = true;
                 animator.Play(enemyName + "Move");
                 animator.SetBool("Move", true);
@@ -207,13 +213,8 @@ public class SkellyAI : MonoBehaviour
     void ChasingCtrl()
     {
         // turn around if player at the opposite side
-        if ((player.transform.position.x > controller.transform.position.x
-            && graphic.flipX)
-            ||
-            (player.transform.position.x < controller.transform.position.x
-            && !graphic.flipX))
+        if (!controller.IsFacingPlayer())
         {
-            animator.SetBool("Move", false);
             InitStatus(Status.Turning);
             return;
         }

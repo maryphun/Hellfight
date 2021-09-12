@@ -25,6 +25,9 @@ public enum Skill
     DashAttack,
     BreakFall,
     LightningLash,
+    Deflect,
+    Berserker,
+    Recover,
 
     List_Number
 }
@@ -182,7 +185,7 @@ public class AbilityLearnPanel : MonoBehaviour
             // reset transparent
             selection[i].skill_Icon.color = Color.white;
             selection[i].skill_description.color = new Color(selection[i].skill_description.color.r, 
-                selection[i].skill_description.color.g, selection[i].skill_description.color.b, 1.0f);
+            selection[i].skill_description.color.g, selection[i].skill_description.color.b, 1.0f);
             selection[i].skill_name.color = Color.white;
         }
 
@@ -194,6 +197,7 @@ public class AbilityLearnPanel : MonoBehaviour
         int unlockLevel = ProgressManager.Instance().GetUnlockLevel();
         List<Skill> possibleSkill = new List<Skill>();
 
+        // Add Possible Skill
         if (level >= 1)
         {
             CheckAndAdd(possibleSkill, Skill.MoveSpeed);
@@ -223,17 +227,39 @@ public class AbilityLearnPanel : MonoBehaviour
             CheckAndAdd(possibleSkill, Skill.HPRegen);
             CheckAndAdd(possibleSkill, Skill.LifeDrain);
         }
-        if (unlockLevel >= 4 && level >= 5)
+
+        if (level >= 5)
         {
-            CheckAndAdd(possibleSkill, Skill.LightningLash);
+            if (unlockLevel >= 12 && !player.GetDeflect())
+            {
+                CheckAndAdd(possibleSkill, Skill.Deflect);
+            }
+            if (unlockLevel >= 4 && player.GetLightningLash() < 0.15f)
+            {
+                CheckAndAdd(possibleSkill, Skill.LightningLash);
+            }
+            if (!gameMng.IsSurvivorSelected())
+            {
+                possibleSkill.Add(Skill.Survivor);
+            }
         }
-        if (level >= 5 && !gameMng.IsSurvivorSelected())
+        if (unlockLevel >= 7 && level >= 7)
         {
-            possibleSkill.Add(Skill.Survivor);
+            if (!player.GetIsRecover())
+            {
+                CheckAndAdd(possibleSkill, Skill.Recover);
+            }
         }
         if (unlockLevel >= 9 && level >= 8)
         {
-            CheckAndAdd(possibleSkill, Skill.ComboMaster);
+            if (unlockLevel >= 9)
+            {
+                CheckAndAdd(possibleSkill, Skill.ComboMaster);
+            }
+            if (unlockLevel >= 13)
+            {
+                CheckAndAdd(possibleSkill, Skill.Berserker);
+            }
         }
         if (unlockLevel >= 10 && level >= 13 && player.GetBreakFallCost() == 0f)
         {

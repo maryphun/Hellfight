@@ -9,6 +9,7 @@ public class EnemyControl : MonoBehaviour
     [SerializeField] private string enemyName = "JellySlime";
     [SerializeField] private int maxHp = 20;
     [SerializeField] private int maxStamina = 100;
+    [SerializeField] private int maxArmor = 20;
     [SerializeField] private bool fadeOutAfterDead = false;
     [SerializeField] private bool attackedStopAttack = true;
     [SerializeField, Range(0.1f, 3.0f)] private float mass = 1.0f;
@@ -17,6 +18,7 @@ public class EnemyControl : MonoBehaviour
     [SerializeField] private bool critialHitOnly = false;
     [SerializeField] private bool backSideOnly = false;
     [SerializeField] private bool alwaysIgnoreKnockback = false;
+    [SerializeField] private bool haveArmor = false;
 
     [Header("CriticalPart")]
     [SerializeField] private bool enableWeaknessPoint = false;
@@ -28,6 +30,8 @@ public class EnemyControl : MonoBehaviour
     [SerializeField] private LayerMask playerLayer;
     [SerializeField] private SpriteRenderer hpbar;
     [SerializeField] private SpriteRenderer hpbarFade;
+    [SerializeField] private SpriteRenderer armorbar;
+    [SerializeField] private SpriteRenderer armorFade;
     [SerializeField] private SpriteRenderer graphic;
     [SerializeField] private LayerMask frameLayer;
 
@@ -35,6 +39,7 @@ public class EnemyControl : MonoBehaviour
     [SerializeField] private Status currentStatus;
     [SerializeField] private int currentHp;
     [SerializeField] private int currentStamina;
+    [SerializeField] private int currentArmor;
     [SerializeField] private bool immumeKnockback = false;
     [SerializeField] private bool statusChanged = false;
     [SerializeField] private bool criticalHitted = false;
@@ -44,6 +49,7 @@ public class EnemyControl : MonoBehaviour
     private Rigidbody2D rigidbody;
     private bool isAlive;
     private float originalHpBarScale;
+    private float originalArmorBarScale;
     GameManager gameMng;
     private bool superland;
     private float afterImgInterval = 0.2f, afterImgCnt;
@@ -65,12 +71,24 @@ public class EnemyControl : MonoBehaviour
         collider = GetComponent<Collider2D>();
         rigidbody = GetComponent<Rigidbody2D>();
         currentHp = maxHp;
+        currentArmor = maxArmor;
         isAlive = true;
         criticalHitted = false;
-        originalHpBarScale = hpbar.transform.localScale.x;
         gameMng = Object.FindObjectOfType<GameManager>();
-        hpbar.DOFade(0.0f, 0.0f);
-        hpbarFade.DOFade(0.0f, 0.0f);
+
+        if (hpbar != null)
+        {
+            originalHpBarScale = hpbar.transform.localScale.x;
+            hpbar.DOFade(0.0f, 0.0f);
+            hpbarFade.DOFade(0.0f, 0.0f);
+        }
+
+        if (armorbar != null)
+        {
+            originalArmorBarScale = armorbar.transform.localScale.x;
+            armorbar.DOFade(0.0f, 0.0f);
+            armorFade.DOFade(0.0f, 0.0f);
+        }
     }
 
     // Update is called once per frame
@@ -221,6 +239,40 @@ public class EnemyControl : MonoBehaviour
                 Instantiate(shieldEffect, Vector2.Lerp(damageSource, transform.position, 0.5f), Quaternion.identity);
                 return true;
             }
+        }
+
+        return false;
+    }
+
+    public bool CheckIfHaveArmor(int damage, Vector2 damageSource)
+    {
+        if (!haveArmor) return false;
+
+        if (currentArmor > 0)
+        {
+            // reduce armor
+            currentArmor = Mathf.Max(currentArmor - damage, 0);
+
+            // effects
+            GameObject tmp = Instantiate(shieldEffect, Vector2.Lerp(damageSource, transform.position, 0.5f), Quaternion.identity);
+            tmp.transform.SetParent(transform.parent);
+
+            // color tint
+            graphic.DOColor(Color.blue, 0.0f);
+            graphic.DOColor(Color.white, 0.5f);
+
+            // rescale armor bar
+            armorbar.transform.DOScaleX(((float)currentArmor / (float)maxArmor) * originalArmorBarScale, 0.0f);
+            armorFade.transform.DOScaleX(((float)currentArmor / (float)maxArmor) * originalArmorBarScale, 1f);
+
+            // show and fade
+            armorbar.DOFade(1.0f, 0.0f);
+            armorFade.DOFade(1.0f, 0.0f);
+
+            armorbar.DOFade(0.0f, 0.85f);
+            armorFade.DOFade(0.0f, 0.85f);
+
+            return true;
         }
 
         return false;
@@ -468,6 +520,11 @@ public class EnemyControl : MonoBehaviour
     {
         return ((player.transform.position.x > transform.position.x && !graphic.flipX) || (player.transform.position.x < transform.position.x && graphic.flipX));
     }
+    
+    public int GetDirectionInteger()
+    {
+        return graphic.flipX ? -1 : 1;
+    }
 
     public Collider2D GetCollider()
     {
@@ -487,5 +544,40 @@ public class EnemyControl : MonoBehaviour
     public GameManager GetGameManager()
     {
         return gameMng;
+    }
+
+    public int GetCurrentArmor()
+    {
+        return currentArmor;
+    }
+    public int GetMaxArmor()
+    {
+        return maxArmor;
+    }
+
+    public void SetArmor(int value)
+    {
+        currentArmor = Mathf.Clamp(value, 0, maxArmor);
+    }
+
+    public void ShowArmorBar()
+    {
+        // rescale armor bar
+        armorbar.transform.DOScaleX(((float)currentArmor / (float)maxArmor) * originalArmorBarScale, 0.5f);
+        armorFade.transform.DOScaleX(((float)currentArmor / (float)maxArmor) * originalArmorBarScale, 0.5f);
+
+        armorbar.DOFade(1.0f, 0.0f);
+        armorbar.DOFade(0.0f, 2f);
+    }
+
+    public void RegeneraeArmor(int value)
+    {
+        currentArmor = Mathf.Clamp(currentArmor + value, 0, maxArmor);
+        ShowArmorBar();
+        if (value > 0)
+        {
+            gameMng.SpawnFloatingText(new Vector2(transform.position.x, transform.position.y + collider.bounds.size.y / 2f), 2f, 25f,
+                                        value.ToString(), new Color(0.3f, 0.3f, 1.0f), new Vector2(0, 1), 80f);
+        }
     }
 }

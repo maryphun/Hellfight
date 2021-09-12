@@ -64,6 +64,16 @@ public class KobrodAI : MonoBehaviour
         //staminaRegenInterval = staminaRegenInterval / ((float)level / 2);
 
         controller.AddMaxHp(level * 5);
+
+        if (level > 10)
+        {
+            controller.AddMaxHp(25);
+        }
+        if (level > 20)
+        {
+            controller.AddMaxHp(20);
+            attackDamageBase += Random.Range(2, 5);
+        }
     }
 
     private void FixedUpdate()
@@ -334,26 +344,22 @@ public class KobrodAI : MonoBehaviour
         int fleedirection = (transform.position.x > player.transform.position.x) ? 1 : -1;
 
         //Debug.Log(player.transform.position.x + (fleedirection * (attackRange * 2.5f)));
-        return player.transform.position.x + (fleedirection * (attackRange * 2.5f));
+        return Mathf.Clamp(player.transform.position.x + (fleedirection * (attackRange * 2.5f)), -9.5f, 9.5f);
     }
 
     void AttackCtrl()
     {
-        if (animator.GetCurrentAnimatorClipInfo(0)[0].clip.name != "KobrodAttack")
-        {
-            InitStatus(Status.Idle);
-        }
-
         dealDamageCnt += Time.deltaTime;
 
         if (dealDamageCnt > dealDamageDelay)
         {
             if (!startedCharge)
             {
-                AudioManager.Instance.PlaySFX(enemyName + "Charge", 0.5f);
+                AudioManager.Instance.PlaySFX(enemyName + "Charge", 0.75f);
                 controller.SetImmumetoKnockback(true);
                 controller.UseAllStamina();
                 startedCharge = true;
+                animator.Play(enemyName + "Attack", 0, dealDamageDelay / controller.FindAnimation(animator, enemyName + "Attack").length);
             }
 
             // deal damage 
@@ -370,6 +376,13 @@ public class KobrodAI : MonoBehaviour
 
             // dash toward
             transform.position = new Vector2(transform.position.x + direction * (moveSpeed * 3f) * Time.deltaTime, transform.position.y);
+
+            // offscreen
+            if (   (transform.position.x > 8.5f && direction == 1) 
+                || (transform.position.x < -8.5f && direction == -1))
+            {
+                statusTimer = 0.0f;
+            }
 
             // after image
             afterImgCnt -= Time.deltaTime;

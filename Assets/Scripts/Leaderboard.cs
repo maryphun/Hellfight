@@ -8,6 +8,9 @@ using DG.Tweening;
 public class Leaderboard : MonoBehaviour
 {
     [SerializeField] GameObject rankListPrefab;
+    [SerializeField] TMP_Text rankType;
+    [SerializeField] TMP_Text title;
+    [SerializeField] TMP_Text description;
     [SerializeField] RectTransform listParent;
     [SerializeField] RectTransform head;
     [SerializeField] RectTransform detailCheckerPanel;
@@ -40,8 +43,10 @@ public class Leaderboard : MonoBehaviour
                 tmp.transform.GetChild(0).GetComponent<TMP_Text>().SetText((i + 1).ToString() + ".");
                 tmp.transform.GetChild(1).GetComponent<TMP_Text>().SetText(data[i]["name"]);
                 tmp.transform.GetChild(2).GetComponent<DetailChecker>().InsertDetail(data[i]);
-                tmp.transform.GetChild(3).GetComponent<TMP_Text>().SetText(data[i]["date"]);
-                tmp.transform.GetChild(4).GetComponent<TMP_Text>().SetText(data[i]["level"]);
+                //tmp.transform.GetChild(3).GetComponent<TMP_Text>().SetText(data[i]["date"]);
+                int dataInt;
+                int.TryParse(data[i]["data"], out dataInt);
+                tmp.transform.GetChild(4).GetComponent<TMP_Text>().SetText(DataToStringConvertion(dataInt, menu.GetLeaderboardType()));
             }
 
             ranklist[i] = tmp;
@@ -49,7 +54,60 @@ public class Leaderboard : MonoBehaviour
         initialized = true;
     }
 
-     public void Refresh(Dictionary<string, string>[] data, int total)
+    public void SetLeaderboardType(LeaderboardType type)
+    {
+        switch (type)
+        {
+            case LeaderboardType.Level:
+                rankType.SetText("LEVEL");
+                title.SetText("BEST LEVEL");
+                description.SetText("Player that explored the deepest of the dungeon");
+                break;
+            case LeaderboardType.SpeedRunLevel10:
+                rankType.SetText("TIME");
+                title.SetText("SPEEDRUN LEVEL10");
+                description.SetText("Player that slayed Broyon with the fastest way possible.");
+                break;
+            case LeaderboardType.SpeedRunLevel20:
+                rankType.SetText("TIME");
+                title.SetText("SPEEDRUN LEVEL20");
+                description.SetText("Player that slayed Hell Fighter with the fastest way possible.");
+                break;
+            case LeaderboardType.Legacy:
+                rankType.SetText("LEVEL");
+                title.SetText("LEGACY LEGENDS");
+                description.SetText("The old time glory from the player in version 1.1.0beta");
+                break;
+            default:
+                Debug.Log("<color=red>LEADERBOARD TYPE NOT FOUND</color>");
+                break;
+        }
+    }
+
+    private string DataToStringConvertion(int data, LeaderboardType type)
+    {
+        string rtn = data.ToString();
+        switch (type)
+        {
+            case LeaderboardType.Level:
+            case LeaderboardType.Legacy:
+                // do nothing
+                break;
+            case LeaderboardType.SpeedRunLevel10:
+                rtn = (data / 60).ToString() + "m" + (data % 60).ToString() + "s";
+                break;
+            case LeaderboardType.SpeedRunLevel20:
+                rtn = (data / 60).ToString() + "m" + (data % 60).ToString() + "s";
+                break;
+            default:
+                Debug.Log("<color=red>LEADERBOARD TYPE NOT FOUND</color>");
+                break;
+        }
+
+        return rtn;
+    }
+
+    public void Refresh(Dictionary<string, string>[] data, int total)
     {
         listParent.sizeDelta = new Vector2(0, total * 40f + 70);
         head.anchoredPosition = new Vector3(0f, listParent.sizeDelta.y / 2f - head.sizeDelta.y / 2f + 22.5f, 0f);

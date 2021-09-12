@@ -1,10 +1,22 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.InputSystem;
 using UnityEngine.UI;
 using DG.Tweening;
 using TMPro;
 using LootLocker.Requests;
+
+public enum LeaderboardType
+{
+    Level,
+    SpeedRunLevel10,
+    SpeedRunLevel20,
+    Legacy,
+
+    Min = Level,
+    Max = Legacy,
+}
 
 public class Menu : MonoBehaviour
 {
@@ -48,15 +60,20 @@ public class Menu : MonoBehaviour
     [SerializeField] RectTransform leftTransition;
     [SerializeField] RectTransform rightTransition;
 
+    [Header("Input")]
+    public bool anyKey;
+
     [Header("Debug")]
     [SerializeField] MenuSelection selectIndex;
     [SerializeField] MenuState menuState;
+    [SerializeField] LeaderboardType leaderboardType;
 
     bool disableMenuControl = false;
     bool leaderboardclickable = false;
 
     [SerializeField] Dictionary<string, string>[] leaderboardRankList;
     int leaderBoardTotalEntry;
+    public PlayerInput _input;
 
     private void Start()
     {
@@ -79,9 +96,12 @@ public class Menu : MonoBehaviour
                 leaderboardRankList = new Dictionary<string, string>[30];
                 for (int i = 0; i < 30; i++)
                 {
-                    leaderboardRankList[i]= new Dictionary<string, string>();
+                    leaderboardRankList[i] = new Dictionary<string, string>();
                 }
-                GetLeaderboardData();
+                leaderboardType = LeaderboardType.Level;
+                if (ProgressManager.Instance().LoadUnlockLevel() > 10 ) leaderboardType = LeaderboardType.SpeedRunLevel10;
+                if (ProgressManager.Instance().LoadUnlockLevel() > 20 ) leaderboardType = LeaderboardType.SpeedRunLevel20;
+                GetLeaderboardData(leaderboardType);
             }
         });
 
@@ -94,6 +114,10 @@ public class Menu : MonoBehaviour
 
         // INIT
         menuState = MenuState.START;
+
+        // INPUT SYSTEM
+        _input = new PlayerInput();
+        _input.MenuControls.
     }
 
     private void StartMenu()
@@ -169,7 +193,9 @@ public class Menu : MonoBehaviour
         switch (menuState)
         {
             case MenuState.START:
-                if (Input.anyKeyDown)
+                if (Keyboard.current.anyKey.wasPressedThisFrame ||
+                    Gamepad.current.startButton.wasPressedThisFrame ||
+                    Mouse.current.leftButton.wasPressedThisFrame)
                 {
                     StartMenu();
                 }
@@ -341,6 +367,7 @@ public class Menu : MonoBehaviour
 
     public void HideLeaderBoard()
     {
+        Debug.Log("!!!");
         // avoid clicking too fast
         if (!leaderboardclickable) return;
         leaderboardObject.SetUnactiveLeaderboardButtonForSecond(0.5f);
@@ -356,6 +383,32 @@ public class Menu : MonoBehaviour
         disableMenuControl = false;
         leaderboardObject.GetComponent<CanvasGroup>().blocksRaycasts = false;
         menuState = MenuState.MAIN_MENU;
+    }
+
+    public void ChangeLeaderboard(int value)
+    {
+        // avoid clicking too fast
+        if (!leaderboardclickable) return;
+        leaderboardObject.SetUnactiveLeaderboardButtonForSecond(0.25f);
+
+        int previousboard = (int)leaderboardType;
+        previousboard += value;
+        if (previousboard < 0) previousboard = (int)LeaderboardType.Max;
+        if (previousboard > (int)LeaderboardType.Max) previousboard = (int)LeaderboardType.Min;
+
+        // apply
+        leaderboardType = (LeaderboardType)previousboard;
+
+        // Refresh
+        GetLeaderboardData(leaderboardType, true);
+
+        // SE
+        AudioManager.Instance.PlaySFX("page");
+    }
+
+    public LeaderboardType GetLeaderboardType()
+    {
+        return leaderboardType;
     }
 
     public void ShowLeaderBoard(bool refreshData)
@@ -377,11 +430,12 @@ public class Menu : MonoBehaviour
             {
                 leaderboardRankList[i] = new Dictionary<string, string>();
             }
-            GetLeaderboardData(true);
+            GetLeaderboardData(leaderboardType, true);
         }
         else
         {
             // INITIATE
+            leaderboardObject.SetLeaderboardType(leaderboardType);
             leaderboardObject.Initialize(leaderboardRankList, leaderBoardTotalEntry);
         }
 
@@ -392,14 +446,14 @@ public class Menu : MonoBehaviour
         leaderboardObject.SetValueScrollBar(0.1f, 1.0f);
     }
 
-    private void GetLeaderboardData(bool refreshData = false)
+    private void GetLeaderboardData(LeaderboardType type, bool refreshData = false)
     {
         for (int i = 0; i < 30; i++)
         {
             leaderboardRankList[i].Clear();
         }
 
-        LootLockerSDKManager.GetScoreList(gameMng.GetLeaderboardID(), 30, (response) =>
+        LootLockerSDKManager.GetScoreList(gameMng.GetLeaderboardID(leaderboardType), 30, (response) =>
         {
             if (response.success)
             {
@@ -408,20 +462,20 @@ public class Menu : MonoBehaviour
                 for (int i = 0; i < scores.Length; i++)
                 {
                     // rank
-                    leaderboardRankList[i]["level"] = scores[i].score.ToString();
-                    leaderboardRankList[i]["name"] = LeaderboardValueSearchForKeyword(scores[i].member_id, "name");
-                    leaderboardRankList[i]["version"] = LeaderboardValueSearchForKeyword(scores[i].member_id, "version");
-                    leaderboardRankList[i]["date"] = LeaderboardValueSearchForKeyword(scores[i].member_id, "date");
-                    leaderboardRankList[i]["hp"] = LeaderboardValueSearchForKeyword(scores[i].member_id, "hp");
-                    leaderboardRankList[i]["hpregen"] = LeaderboardValueSearchForKeyword(scores[i].member_id, "hpregen");
-                    leaderboardRankList[i]["stamina"] = LeaderboardValueSearchForKeyword(scores[i].member_id, "stamina");
-                    leaderboardRankList[i]["movespeed"] = LeaderboardValueSearchForKeyword(scores[i].member_id, "movespeed");
-                    leaderboardRankList[i]["atkDmg"] = LeaderboardValueSearchForKeyword(scores[i].member_id, "atkDmg");
-                    leaderboardRankList[i]["dashDmg"] = LeaderboardValueSearchForKeyword(scores[i].member_id, "dashDmg");
-                    leaderboardRankList[i]["dashCD"] = LeaderboardValueSearchForKeyword(scores[i].member_id, "dashCD");
-                    leaderboardRankList[i]["critical"] = LeaderboardValueSearchForKeyword(scores[i].member_id, "critical");
-                    leaderboardRankList[i]["lifesteal"] = LeaderboardValueSearchForKeyword(scores[i].member_id, "lifesteal");
-                    leaderboardRankList[i]["lifedrain"] = LeaderboardValueSearchForKeyword(scores[i].member_id, "lifedrain");
+                    leaderboardRankList[i]["data"] = scores[i].score.ToString();
+                    //leaderboardRankList[i]["name"] = LeaderboardValueSearchForKeyword(scores[i].member_id, "name");
+                    //leaderboardRankList[i]["version"] = LeaderboardValueSearchForKeyword(scores[i].member_id, "version");
+                    //leaderboardRankList[i]["date"] = LeaderboardValueSearchForKeyword(scores[i].member_id, "date");
+                    //leaderboardRankList[i]["hp"] = LeaderboardValueSearchForKeyword(scores[i].member_id, "hp");
+                    //leaderboardRankList[i]["hpregen"] = LeaderboardValueSearchForKeyword(scores[i].member_id, "hpregen");
+                    //leaderboardRankList[i]["stamina"] = LeaderboardValueSearchForKeyword(scores[i].member_id, "stamina");
+                    //leaderboardRankList[i]["movespeed"] = LeaderboardValueSearchForKeyword(scores[i].member_id, "movespeed");
+                    //leaderboardRankList[i]["atkDmg"] = LeaderboardValueSearchForKeyword(scores[i].member_id, "atkDmg");
+                    //leaderboardRankList[i]["dashDmg"] = LeaderboardValueSearchForKeyword(scores[i].member_id, "dashDmg");
+                    //leaderboardRankList[i]["dashCD"] = LeaderboardValueSearchForKeyword(scores[i].member_id, "dashCD");
+                    //leaderboardRankList[i]["critical"] = LeaderboardValueSearchForKeyword(scores[i].member_id, "critical");
+                    //leaderboardRankList[i]["lifesteal"] = LeaderboardValueSearchForKeyword(scores[i].member_id, "lifesteal");
+                    //leaderboardRankList[i]["lifedrain"] = LeaderboardValueSearchForKeyword(scores[i].member_id, "lifedrain");
 
                     // just name and level.
                     leaderboardRankList[i]["name"] = scores[i].member_id;
@@ -450,6 +504,7 @@ public class Menu : MonoBehaviour
                 if (refreshData)
                 {
                     // UPDATE
+                    leaderboardObject.SetLeaderboardType(leaderboardType);
                     leaderboardObject.Refresh(leaderboardRankList, leaderBoardTotalEntry);
                 }
             }
@@ -502,6 +557,7 @@ public class Menu : MonoBehaviour
 
         StartCoroutine(RestartFromStartMenu(1.15f));
     }
+
 
     IEnumerator RestartFromStartMenu(float time)
     {

@@ -256,14 +256,16 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   enemyName: HellFighter
-  maxHp: 400
+  maxHp: 600
   maxStamina: 20
+  maxArmor: 20
   fadeOutAfterDead: 0
   attackedStopAttack: 0
   mass: 1.34
   critialHitOnly: 0
   backSideOnly: 0
   alwaysIgnoreKnockback: 0
+  haveArmor: 0
   enableWeaknessPoint: 0
   weaknessPointPivot: {x: 0, y: 0}
   weaknessPointRange: 0
@@ -273,6 +275,8 @@ MonoBehaviour:
     m_Bits: 256
   hpbar: {fileID: 8186940804802273174}
   hpbarFade: {fileID: 8186940806294534192}
+  armorbar: {fileID: 0}
+  armorFade: {fileID: 0}
   graphic: {fileID: 8186940804990903304}
   frameLayer:
     serializedVersion: 2
@@ -280,6 +284,7 @@ MonoBehaviour:
   currentStatus: 0
   currentHp: 0
   currentStamina: 0
+  currentArmor: 0
   immumeKnockback: 0
   statusChanged: 0
   criticalHitted: 0

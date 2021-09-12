@@ -1,85 +1,95 @@
+using DG.Tweening;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using DG.Tweening;
+using OPS.AntiCheat;
+using OPS.AntiCheat.Field;
 
 public class Controller : MonoBehaviour
 {
     [Header("Stats")]
-    [SerializeField] private int baseDamage = 5;
-    [SerializeField] private int maxDamage = 5;
-    [SerializeField] private int dashDamage = 0;
-    [SerializeField] private int hpRegen = 0;
-    [SerializeField] private float lightningLash = 0;
-    [SerializeField] private int lifedrain = 0;
+    [SerializeField] private ProtectedUInt16 baseDamage = 5;
+    [SerializeField] private ProtectedUInt16 maxDamage = 5;
+    [SerializeField] private ProtectedUInt16 dashDamage = 0;
+    [SerializeField] private ProtectedUInt16 hpRegen = 0;
+    [SerializeField] private ProtectedUInt16 berserker = 0;
+    [SerializeField] private ProtectedFloat lightningLash = 0;
+    [SerializeField] private ProtectedUInt16 lifedrain = 0;
     [SerializeField] private bool survivor = false;
-    [SerializeField] private int comboMaster = 0;
-    [SerializeField] private float windrunner = 0;
-    [SerializeField] private int breakfallCost = 0;
-    [SerializeField] private int potionHeal = 0;
-    [SerializeField] private int staminaCostAttack = 15;
-    [SerializeField] private int staminaCostDash = 20;
-    [SerializeField] private int maxHP = 5;
-    [SerializeField] private int maxStamina = 50;
-    [SerializeField] private float moveSpeed = 11.0f;
-    [SerializeField] private float dashRange = 3.0f;
-    [SerializeField] private float dashCooldown = 1.0f;
-    [SerializeField] private int staminaRegen = 1;
-    [SerializeField] private float staminaRegenInterval = 0.5f;
-    [SerializeField] private float pushEnemySpeedMultiplier = 0.15f;
-    [SerializeField] private float criticalDamageMultiplier = 1.5f;
-    [SerializeField] private float potionSpeed = 1.5f;
+    [SerializeField] private bool deflect = false;
+    [SerializeField] private bool recover = false;
+    [SerializeField] private ProtectedUInt16 comboMaster = 0;
+    [SerializeField] private ProtectedFloat windrunner = 0;
+    [SerializeField] private ProtectedUInt16 breakfallCost = 0;
+    [SerializeField] private ProtectedUInt16 potionHeal = 0;
+    [SerializeField] private ProtectedUInt16 staminaCostAttackBase = 2;
+    [SerializeField] private ProtectedUInt16 staminaCostDash = 20;
+    [SerializeField] private ProtectedUInt16 maxHP = 5;
+    [SerializeField] private ProtectedUInt16 maxStamina = 50;
+    [SerializeField] private ProtectedFloat moveSpeed = 11.0f;
+    [SerializeField] private ProtectedFloat dashRange = 3.0f;
+    [SerializeField] private ProtectedFloat dashCooldown = 1.0f;
+    [SerializeField] private ProtectedUInt16 staminaRegen = 1;
+    [SerializeField] private ProtectedFloat staminaRegenInterval = 0.5f;
+    [SerializeField] private ProtectedFloat pushEnemySpeedMultiplier = 0.15f;
+    [SerializeField] private ProtectedFloat criticalDamageMultiplier = 1.5f;
+    [SerializeField] private ProtectedFloat potionSpeed = 1.5f;
 
     [Header("Parameters")]
-    [SerializeField] private float jumpForce;
-    [SerializeField] private float jumpPressMemoryTime = 0.2f;
-    [SerializeField] private float attackPressMemoryTime = 0.5f;
+    [SerializeField] private ProtectedFloat jumpForce = 650;
+    [SerializeField] private ProtectedFloat jumpPressMemoryTime = 0.2f;
+    [SerializeField] private ProtectedFloat attackPressMemoryTime = 0.25f;
+    [SerializeField] private ProtectedFloat dashPressMemoryTime = 0.3f;
     [SerializeField] private LayerMask frameLayer;
     [SerializeField] private LayerMask enemyLayer;
-    [SerializeField] private float comboTimeLast = 1.0f;
-    [SerializeField] private float dashTime = 0.4f;
-    [SerializeField] private float tailTime = 0.2f;
+    [SerializeField] private ProtectedFloat comboTimeLast = 0.7f;
+    [SerializeField] private ProtectedFloat dashTime = 0.4f;
+    [SerializeField] private ProtectedFloat tailTime = 0.2f;
     [SerializeField, Range(0.0f, 1.0f)] private float initialTailAlpha = 0.5f;
-    [SerializeField] private float afterEffectInterval = 0.1f;
-    [SerializeField] private float hpRegenInterval = 1f;
-    [SerializeField] private float comboResetTime = 1.0f;
+    [SerializeField] private ProtectedFloat afterEffectInterval = 0.05f;
+    [SerializeField] private ProtectedFloat comboResetTime = 1.0f;
     [SerializeField] private Vector2 combatModeRange = new Vector2(3f, 1.5f);
-    [SerializeField] private float potionCooldown = 0.5f;
+    [SerializeField] private ProtectedFloat potionCooldown = 0.5f;
     [SerializeField, Range(0.0f, 1.5f)] float windrunnerBuffTimer;
+    [SerializeField] private ProtectedFloat staminaRegenDelay = 1.0f;
+    [SerializeField, Range(0.0f, 1.0f)] private float staminaRegenDelayCounter = 1.0f;
 
-    [SerializeField] private float attackRange;
+    [SerializeField] private ProtectedFloat attackRange = 1.3f;
     [SerializeField] private float[] attackMoveRange;
     [SerializeField] private float[] attackDealTiming;
     [SerializeField] private float[] attackEndTiming;
 
     Rigidbody2D rigidbody;
     Collider2D collider;
-    float dashDirection;
-    float dashCooldownTimer;
-    float afterEffectCd;
+    ProtectedFloat dashDirection;
+    ProtectedFloat dashCooldownTimer;
+    ProtectedFloat afterEffectCd;
     PlayerInput input;
-    float staminaRegenTimer;
+    ProtectedFloat staminaRegenTimer;
     bool alreadyDealDamage;
-    float attackDealDamageTimer;
-    float attackEndAttackTimer;
+    ProtectedFloat attackDealDamageTimer;
+    ProtectedFloat attackEndAttackTimer;
     GameManager gameMng;
     bool isKnockbacking;
     bool isUsingPotion;
     bool isPotionUsed;
     bool isAlive;
-    float usingPotionTime;
-    float superDropAfterImgTimer;
-    float superDropAfterImgInterval = 0.05f;
-    float hitTaintTime = 0.2f;
+    ProtectedFloat usingPotionTime;
+    ProtectedFloat superDropAfterImgTimer;
+    ProtectedFloat superDropAfterImgInterval = 0.05f;
+    ProtectedFloat hitTaintTime = 0.2f;
     Color playerColor;
+    bool deflectSucceed;
     private GameObject impactParticleEffect;
     private GameObject hitParticleEffect;
     private GameObject hitFXEffect;
     private GameObject jumpDustEffect;
     private GameObject shieldEffect;
     private GameObject potionHealEffect;
+    private GameObject lightningLashEffect;
     private GameObject chargeEffect;
     private GameObject chargeEffectInstantiated;
+    private GameObject bloodEffect;
 
     [Header("References")]
     [SerializeField] SpriteRenderer graphic;
@@ -88,7 +98,7 @@ public class Controller : MonoBehaviour
     [SerializeField] GameObject reviveParticle;
     [SerializeField] Transform world;
     [SerializeField] Transform potionProgressBar;
-    [SerializeField] Transform potionProgressBarFill;
+    [SerializeField] SpriteRenderer potionProgressBarFill;
 
     [Header("States")]
     [SerializeField] private int attackCombo;
@@ -97,6 +107,7 @@ public class Controller : MonoBehaviour
     [SerializeField] private bool jumpCancelled;
     [SerializeField, Range(0.0f, 0.2f)] private float jumpPressMemoryDelay;
     [SerializeField, Range(0.0f, 0.5f)] private float attackPressMemoryDelay;
+    [SerializeField, Range(0.0f, 0.5f)] private float dashPressMemoryDelay;
     [SerializeField, Range(0.0f, 1.0f)] private float comboResetTimer;
     [SerializeField] private int currentCombo;
     [SerializeField] private bool isAttacking;
@@ -110,10 +121,10 @@ public class Controller : MonoBehaviour
     [SerializeField] private bool superDrop;
     [SerializeField] private float hitTaintTimer;
     [SerializeField] int dashFequency;   // frquency of spamming dash
-    [SerializeField] float dashStaminaCooldown;
+    [SerializeField] ProtectedFloat dashStaminaCooldown;
     [SerializeField] private bool invulnerable;
     [SerializeField] private bool staminaRegenSlowed;
-    [SerializeField] private bool lightningLashAttack;
+    [SerializeField] private bool islightningLashAttack;
 
     List<EnemyControl> dashDamagedEnemy = new List<EnemyControl>();
 
@@ -139,6 +150,8 @@ public class Controller : MonoBehaviour
         jumpDustEffect = Resources.Load("Prefabs/JumpDust") as GameObject;
         chargeEffect = Resources.Load("Prefabs/ChargePlayer") as GameObject;
         potionHealEffect = Resources.Load("Prefabs/PotionHeal") as GameObject;
+        lightningLashEffect = Resources.Load("Prefabs/LightningSlashPlayer") as GameObject;
+        bloodEffect = Resources.Load("Prefabs/BloodPlayer") as GameObject;
     }
 
     public void ResetPlayer()
@@ -148,11 +161,14 @@ public class Controller : MonoBehaviour
         maxDamage = 0;
         dashDamage = 0;
         hpRegen = 0;
+        berserker = 0;
         lightningLash = 0;
         lifedrain = 0;
         survivor = false;
+        deflect = false;
+        recover = false;
         comboMaster = 0;
-        staminaCostAttack = 20;
+        staminaCostAttackBase = 2;
         staminaCostDash = 40;
         maxHP = 50;
         maxStamina = 100;
@@ -163,6 +179,9 @@ public class Controller : MonoBehaviour
         staminaRegenInterval = 0.05f;
         pushEnemySpeedMultiplier = 0.15f;
         criticalDamageMultiplier = 1.5f;
+        potionHeal = 0;
+        windrunner = 0.0f;
+        breakfallCost = 0;
 
         // basic parameter
         isAlive = true;
@@ -208,10 +227,7 @@ public class Controller : MonoBehaviour
         input.crouch =      Input.GetKey(KeyCode.DownArrow) || Input.GetKey(KeyCode.S) || (Mathf.RoundToInt(Input.GetAxisRaw("JoyPadVertical")) == -1);
         input.use =         Input.GetKeyDown(KeyCode.C) || Input.GetKeyDown(KeyCode.L) || Input.GetAxisRaw("Item") == 1;
         input.cancelUse =   Input.GetKeyUp(KeyCode.C) || Input.GetKeyUp(KeyCode.L) || Input.GetButtonUp("Item");
-        if (input.use)
-        {
-            Debug.Log(input.use);
-        }
+
         if (!isAlive)
         {
             input.move = 0;
@@ -415,10 +431,18 @@ public class Controller : MonoBehaviour
 
         // DASH
         {
-            if (input.dash
-                && (!isAttacking || attackEndAttackTimer == 0.0f) && dashCooldownTimer == 0.0f)// && currentStamina > maxStamina /5)
+            dashPressMemoryDelay = Mathf.Max(dashPressMemoryDelay - Time.deltaTime, 0.0f);
+
+            if (input.dash || dashPressMemoryDelay > 0.0f)
             {
-                StartDash();
+                if ((!isAttacking || attackEndAttackTimer == 0.0f) && dashCooldownTimer == 0.0f)
+                {
+                    StartDash();
+                }
+                else if (input.dash)
+                {
+                    dashPressMemoryDelay = dashPressMemoryTime;
+                }
             }
 
             if (isDashing)
@@ -431,6 +455,7 @@ public class Controller : MonoBehaviour
                 else
                 {
                     if (dashDamage > 0) CheckHitEnemy(true);
+                    if (deflect) CheckDeflectEnemy();
 
                     // collision check
                     RaycastHit2D hit = Physics2D.Raycast(transform.position, new Vector2(dashDirection, 0.0f), collider.bounds.size.x, frameLayer);
@@ -466,6 +491,7 @@ public class Controller : MonoBehaviour
                     animator.SetBool("Crouch", true);
                     if (!animator.GetCurrentAnimatorStateInfo(0).IsName("Crouch"))
                     {
+                        staminaRegenDelayCounter = 0.0f;    // reset stamina regen delay
                         animator.Play("Crouch");
                     }
                 }
@@ -487,7 +513,7 @@ public class Controller : MonoBehaviour
                     isUsingPotion = true;
                     animator.SetBool("Use", true);
                     animator.Play("Use");
-                    potionProgressBarFill.DOScaleX(0.0f, 0.0f);
+                    potionProgressBarFill.size = new Vector2(0.0f, potionProgressBarFill.size.y);
                     potionProgressBar.gameObject.SetActive(true);
                     usingPotionTime = 0.0f;
                     AudioManager.Instance.PlaySFX("potionUsing");
@@ -511,16 +537,17 @@ public class Controller : MonoBehaviour
 
                 // PROGRESSING
                 usingPotionTime += Time.deltaTime;
-                potionProgressBarFill.DOScaleX(Mathf.Lerp(0.0f, 9.792632f, usingPotionTime / potionSpeed), 0.0f);
+                potionProgressBarFill.size = new Vector2(Mathf.Lerp(0.0f, 1.846f, usingPotionTime / potionSpeed), potionProgressBarFill.size.y);
 
                 // SUCCESS
                 if (usingPotionTime >= potionSpeed)
                 {
                     CancelUsingPotion(true);
-                    Regenerate(potionHeal);
+                    Regenerate((int)((((float)(potionHeal))/100f) * GetMaxHP()));
                     gameMng.SetItemCooldownAmount(1.0f);
                     isPotionUsed = true;
-                    AudioManager.Instance.PlaySFX("potionHeal");
+                    AudioManager.Instance.PlaySFX("potionHeal", 1.25f);
+                    AudioManager.Instance.PlaySFX("Heal", 1.25f);
                     GameObject tmp = Instantiate(potionHealEffect, new Vector2(transform.position.x, -1.46f), Quaternion.identity);
                     tmp.transform.SetParent(world);
                 }
@@ -604,6 +631,8 @@ public class Controller : MonoBehaviour
                 }
             }
 
+            if (recover && input.crouch) monsterNearby = false;
+
             float multiplier = 1.0f;
             if (dashFequency > 2)  multiplier /= dashFequency+1;
             if (IsAttacking())     multiplier = 0.0f;
@@ -611,6 +640,9 @@ public class Controller : MonoBehaviour
             if (input.move != 0)   multiplier *= 0.8f;
             if (IsJumping())       multiplier *= 0.5f;
             if (monsterNearby)     multiplier = 0.2f;
+            if (staminaRegenDelayCounter > 0.0f) multiplier = 0.0f;
+
+            staminaRegenDelayCounter = Mathf.Max(staminaRegenDelayCounter - Time.deltaTime, 0.0f);
             staminaRegenTimer = Mathf.Clamp(staminaRegenTimer - (Time.deltaTime * multiplier), 0.0f, staminaRegenInterval);
             if (staminaRegenTimer == 0.0f)
             {
@@ -668,7 +700,7 @@ public class Controller : MonoBehaviour
         }
         else if ((float)currentStamina / (float)maxStamina < 0.2f)   // no stamina
         {
-            rigidbody.AddForce(new Vector2(0.0f, jumpForce / 2f));
+            rigidbody.AddForce(new Vector2(0.0f, jumpForce / 1.4f));
         }
         else // standard jump
         {
@@ -690,25 +722,26 @@ public class Controller : MonoBehaviour
     void StartAttack()
     {
         bool costStamina = true;
-        lightningLashAttack = false;
+        bool dashAttack = false;
+        islightningLashAttack = false;
 
         // dash attack
         if (IsDashing())
         {
-            transform.DOKill(false);
+            dashAttack = true;
+            //transform.DOKill(false);
             dashDirection = graphic.flipX ? -1 : 1;
             EndDash();
             attackCombo = 2;
-            if (lightningLash > 0.0f)
+            if (lightningLash > 0.0f && !IsJumping())
             {
                 // talent bonus
-                costStamina = false;
-                lightningLashAttack = true;
+                islightningLashAttack = true;
             }
         }
 
-        // check if stamina is enough
-        int calculatedStaminaCost = staminaCostAttack;
+        // STAMINA RELATED
+        int calculatedStaminaCost = GetAttackDamage() + GetMaxDamage() + staminaCostAttackBase;
         if (windrunnerBuffTimer > 0.0f) calculatedStaminaCost /= 2;
         if (currentStamina < calculatedStaminaCost && costStamina)
         {
@@ -722,6 +755,10 @@ public class Controller : MonoBehaviour
             Regenerate(0, -calculatedStaminaCost);
         }
 
+        staminaRegenDelayCounter = staminaRegenDelay;
+
+
+        // ANIMATION RELATED
         alreadyDealDamage = false;
         attackEndAttackTimer = FindAnimation(animator, "Attack" + (attackCombo % 3).ToString()).length * attackEndTiming[(attackCombo % 3)];
         attackDealDamageTimer = 0.0f;
@@ -730,6 +767,23 @@ public class Controller : MonoBehaviour
         animator.Play("Attack" + (attackCombo % 3).ToString());
         comboTimer = comboTimeLast;
 
+        if (dashAttack)
+        {
+            attackEndAttackTimer = attackEndAttackTimer * 0.75f;
+            animator.Play("Attack" + (attackCombo % 3).ToString(), 0, 0.25f);
+            attackDealDamageTimer = attackDealTiming[(attackCombo % 3)] * 0.5f;
+
+            if (islightningLashAttack)
+            {
+                GameObject tmp = Instantiate(lightningLashEffect, new Vector2(transform.position.x + (dashDirection * attackRange), -1.75f), Quaternion.identity);
+                tmp.transform.SetParent(transform);
+                tmp.GetComponent<SpriteRenderer>().flipX = graphic.flipX;
+                AudioManager.Instance.PlaySFX("thunder");
+            }
+        }
+
+
+        // KNOCKBACK RELATED
         dashDirection = graphic.flipX ? -1 : 1;
         float multiplier = rigidbody.velocity.y == 0.0f ? 1f : 0.5f;
         RaycastHit2D hit = Physics2D.Raycast(transform.position, new Vector2(dashDirection, 0.0f), collider.bounds.size.x, frameLayer);
@@ -788,7 +842,7 @@ public class Controller : MonoBehaviour
             {
                 Transform target = enemy.transform;
                 float calculatedAttackRange = attackRange;
-                if (isDash) calculatedAttackRange /= 2.25f;
+                if (isDash) calculatedAttackRange /= 1.5f;
 
                 float enemyHitLeft = target.position.x + (enemy.GetCollider().bounds.size.x / 2f * -direction);
                 float enemyHitRight = target.position.x + (enemy.GetCollider().bounds.size.x / 2f * direction);
@@ -808,7 +862,7 @@ public class Controller : MonoBehaviour
                     calculatedDamage = attackCombo % 3 == 0 ? (int)((float)calculatedDamage * 1.5f) : calculatedDamage;
 
                     // check critical
-                    isCriticalHit = enemy.CheckIfCriticalHit(playerAttackOriginPoint) || lightningLashAttack;
+                    isCriticalHit = enemy.CheckIfCriticalHit(playerAttackOriginPoint) || islightningLashAttack;
                     if (isCriticalHit)
                     {
                         calculatedDamage = Mathf.FloorToInt((float)calculatedDamage * criticalDamageMultiplier);
@@ -822,8 +876,8 @@ public class Controller : MonoBehaviour
                         dashDamagedEnemy.Add(enemy);
                     }
 
-                    // check defend
-                    isDefended = enemy.CheckIfDefended(playerAttackOriginPoint);
+                    // check defend and armor
+                    isDefended = enemy.CheckIfDefended(playerAttackOriginPoint) || enemy.CheckIfHaveArmor(calculatedDamage, playerAttackOriginPoint);
                     if (isDefended)
                     {
                         AudioManager.Instance.PlaySFX("defend" + Random.Range(0, 4).ToString(), 0.8f);
@@ -834,17 +888,30 @@ public class Controller : MonoBehaviour
                     // apply damage
                     bool kill = enemy.DealDamage(calculatedDamage);
 
-                    // apply lifesteal
-                    if (lightningLash > 0.0f && lightningLashAttack)
+                    // calculate lightninglash lifesteal
+                    int regenerate = 0;
+                    if (lightningLash > 0.0f && islightningLashAttack)
                     {
-                        Regenerate((int)(((float)calculatedDamage) * lightningLash));
+                        regenerate += (int)(((float)calculatedDamage) * lightningLash);
                     }
 
-                    // apply lifedrain
+                    // calculate berserker lifesteal
+                    if (((float)currentHP / (float)maxHP) < 0.2f && berserker > 0)
+                    {
+                        regenerate += berserker;
+
+                        GameObject tmp = Instantiate(bloodEffect, Vector2.Lerp(transform.position, enemy.transform.position, Random.RandomRange(0.6f, 0.9f)), Quaternion.identity);
+                        tmp.transform.SetParent(world);
+                    }
+
+                    // calculate lifedrain
                     if (lifedrain > 0 && kill)
                     {
-                        Regenerate(lifedrain);
+                        regenerate += lifedrain;
                     }
+
+                    // apply lifesteals
+                    Regenerate(regenerate);
 
                     // calculate knockback distance
                     float baseDistance = attackMoveRange[(Mathf.Max((attackCombo - 1), 0) % 3)];
@@ -852,7 +919,7 @@ public class Controller : MonoBehaviour
                     enemy.Knockback(baseDistance * multiplier, direction, 0.15f);
 
                     isHitEnemy = true;
-
+                    
                     // create particle effect
                     GameObject particle = Instantiate(hitParticleEffect, Vector2.Lerp(transform.position, enemy.transform.position, 0.5f) , Quaternion.identity);
                     particle.GetComponent<ParticleScript>().SetParticleColor(gameMng.GetThemeColor());
@@ -904,11 +971,44 @@ public class Controller : MonoBehaviour
         }
     }
 
+    void CheckDeflectEnemy()
+    {
+        if (deflectSucceed) return;
+
+        List<EnemyControl> enemyList = gameMng.GetMonsterList();
+
+        if (enemyList.Count > 0)
+        {
+            foreach (EnemyControl enemy in enemyList)
+            {
+                if (deflectSucceed) continue;
+                if (enemy.GetCollider().bounds.Contains(transform.position)
+                    && enemy.GetCurrentStatus() == Status.Attacking
+                    && enemy.IsAlive())
+                {
+                    deflectSucceed = true;
+                }
+            }
+        }
+
+        if (deflectSucceed)
+        {
+            // STAMINA
+            gameMng.SpawnFloatingText(new Vector2(transform.position.x, transform.position.y + collider.bounds.size.y / 2f), 2f, 25f,
+                                        (GetStaminaMax() - currentStamina).ToString(), Color.blue, new Vector2(0, 1), 80f);
+
+            RegeneratePercentage(0, 1.0f);
+
+            AudioManager.Instance.PlaySFX("deflect");
+            AudioManager.Instance.PlaySFX("comboMaster");
+        }
+    }
+
     void CancelUsingPotion(bool success = false)
     {
         isUsingPotion = false;
         animator.SetBool("Use", false);
-        potionProgressBarFill.DOScaleX(0.0f, 0.0f);
+        potionProgressBarFill.size = new Vector2(0.0f, potionProgressBarFill.size.y);
         potionProgressBar.gameObject.SetActive(false);
 
         if (chargeEffectInstantiated != null)
@@ -925,6 +1025,7 @@ public class Controller : MonoBehaviour
     void StartDash()
     {
         dashDamagedEnemy.Clear();
+        deflectSucceed = false;
         isDashing = true;
         dashCooldownTimer = dashCooldown;
         dashStaminaCooldown = Mathf.Min(dashStaminaCooldown + dashCooldown * 2f , 3f);
@@ -967,6 +1068,7 @@ public class Controller : MonoBehaviour
 
         // CALCULATE STAMINA COST AT THE LAST
         Regenerate(0, -staminaCostDash);
+        staminaRegenDelayCounter = staminaRegenDelay;
     }
 
     private void EndDash()
@@ -1124,6 +1226,7 @@ public class Controller : MonoBehaviour
             animator.Play("Dead");
             isAlive = false;
             AudioManager.Instance.PlaySFX("criticalplayerHit", 0.8f);
+            AudioManager.Instance.PlaySFX("Body Fall", 1f);
             StartCoroutine(Dead(FindAnimation(animator, "Dead").length));
             return true;
         }
@@ -1245,52 +1348,61 @@ public class Controller : MonoBehaviour
                 moveSpeed += value;
                 break;
             case Skill.BaseDamage:
-                baseDamage += (int)value;
+                baseDamage += (ProtectedUInt16)value;
                 break;
             case Skill.MaxDamage:
-                maxDamage += (int)value;
+                maxDamage += (ProtectedUInt16)value;
                 break;
             case Skill.Vitality:
-                maxHP += (int)value;
-                currentHP += (int)value;
+                maxHP += (ProtectedUInt16)value;
+                currentHP += (ProtectedUInt16)value;
                 break;
             case Skill.DashCooldown:
                 dashCooldown = dashCooldown - (dashCooldown * (value/100f));
                 break;
             case Skill.DashDamage:
-                dashDamage += (int)value;
+                dashDamage += (ProtectedUInt16)value;
                 dashCooldown += 0.5f;
                 break;
             case Skill.Stamina:
-                maxStamina += (int)value;
-                currentStamina+= (int)value;
+                maxStamina += (ProtectedUInt16)value;
+                currentStamina+= (ProtectedUInt16)value;
                 break;
             case Skill.StaminaRecoverSpeed:
-                staminaRegen += (int)value;
+                staminaRegen += (ProtectedUInt16)value;
                 break;
             case Skill.HPRegen:
-                hpRegen += (int)value;
+                hpRegen += (ProtectedUInt16)value;
                 break;
             case Skill.LightningLash:
                 lightningLash += value/100f;
                 break;
             case Skill.LifeDrain:
-                lifedrain += (int)value;
+                lifedrain += (ProtectedUInt16)value;
                 break;
             case Skill.Survivor:
                 survivor = true;
                 break;
             case Skill.ComboMaster:
-                comboMaster += (int)value;
+                comboMaster += (ProtectedUInt16)value;
                 break;
             case Skill.Windrunner:
                 windrunner += value/100f;
                 break;
             case Skill.BreakFall:
-                breakfallCost += (int)value;
+                breakfallCost += (ProtectedUInt16)value;
                 break;
             case Skill.Potion:
-                potionHeal += (int)value;
+                potionHeal += (ProtectedUInt16)value;
+                break;
+            case Skill.Deflect:
+                deflect = true;
+                break;
+            case Skill.Berserker:
+                berserker += (ProtectedUInt16)value;
+                break;
+            case Skill.Recover:
+                recover = true;
                 break;
                 Debug.Log("<color=red>skill data not found!</color>");
             default:
@@ -1379,9 +1491,13 @@ public class Controller : MonoBehaviour
     {
         return 0;
     }
-    public float GetLightningDash()
+    public float GetLightningLash()
     {
         return lightningLash;
+    }
+    public LayerMask GetFrameLayer()
+    {
+        return frameLayer;
     }
 
     public int GetLifeDrain()
@@ -1392,6 +1508,10 @@ public class Controller : MonoBehaviour
     {
         return comboMaster;
     }
+    public bool GetIsRecover()
+    {
+        return recover;
+    }
     public float GetWindrunner()
     {
         return windrunner;
@@ -1399,6 +1519,10 @@ public class Controller : MonoBehaviour
     public int GetBreakFallCost()
     {
         return breakfallCost;
+    }
+    public bool GetDeflect()
+    {
+        return deflect;
     }
     public int GetPotionHeal()
     {

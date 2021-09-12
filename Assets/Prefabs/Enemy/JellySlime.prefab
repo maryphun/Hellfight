@@ -153,14 +153,16 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   enemyName: JellySlime
-  maxHp: 50
+  maxHp: 60
   maxStamina: 60
+  maxArmor: 20
   fadeOutAfterDead: 1
   attackedStopAttack: 1
   mass: 1
   critialHitOnly: 0
   backSideOnly: 0
   alwaysIgnoreKnockback: 0
+  haveArmor: 0
   enableWeaknessPoint: 0
   weaknessPointPivot: {x: 0, y: 0}
   weaknessPointRange: 0
@@ -170,6 +172,8 @@ MonoBehaviour:
     m_Bits: 256
   hpbar: {fileID: 1176884459882682222}
   hpbarFade: {fileID: 1176884458923110600}
+  armorbar: {fileID: 0}
+  armorFade: {fileID: 0}
   graphic: {fileID: 1176884459685670128}
   frameLayer:
     serializedVersion: 2
@@ -177,9 +181,11 @@ MonoBehaviour:
   currentStatus: 0
   currentHp: 0
   currentStamina: 0
+  currentArmor: 0
   immumeKnockback: 0
   statusChanged: 0
   criticalHitted: 0
+  invulnerable: 0
 --- !u!61 &1176884459242982447
 BoxCollider2D:
   m_ObjectHideFlags: 0

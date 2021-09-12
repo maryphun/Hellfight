@@ -339,14 +339,16 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   enemyName: Skelly
-  maxHp: 70
+  maxHp: 100
   maxStamina: 20
+  maxArmor: 20
   fadeOutAfterDead: 1
   attackedStopAttack: 0
   mass: 1.49
   critialHitOnly: 0
   backSideOnly: 0
   alwaysIgnoreKnockback: 0
+  haveArmor: 0
   enableWeaknessPoint: 0
   weaknessPointPivot: {x: 0, y: 0}
   weaknessPointRange: 0
@@ -356,6 +358,8 @@ MonoBehaviour:
     m_Bits: 256
   hpbar: {fileID: 4133860274701596234}
   hpbarFade: {fileID: 4133860276025545196}
+  armorbar: {fileID: 0}
+  armorFade: {fileID: 0}
   graphic: {fileID: 4133860274646945236}
   frameLayer:
     serializedVersion: 2
@@ -363,9 +367,11 @@ MonoBehaviour:
   currentStatus: 0
   currentHp: 0
   currentStamina: 0
+  currentArmor: 0
   immumeKnockback: 0
   statusChanged: 0
   criticalHitted: 0
+  invulnerable: 0
 --- !u!61 &4133860276208987403
 BoxCollider2D:
   m_ObjectHideFlags: 0

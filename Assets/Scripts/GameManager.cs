@@ -7,13 +7,22 @@ using UnityEngine.UI;
 using UnityEngine.SceneManagement;
 using LootLocker.Requests;
 using UnityEngine.Events;
+using OPS.AntiCheat.Prefs;
+using OPS.AntiCheat.Detector;
+
 
 public class GameManager : MonoBehaviour
 {
-    [SerializeField] int leaderBoardID = 402;
+    [SerializeField] int levelLeaderBoardID = 402;
+    [SerializeField] int SpeedRun10LeaderBoardID = 402;
+    [SerializeField] int SpeedRun20LeaderBoardID = 402;
+    [SerializeField] int legacyLeaderboardID = 402;
+    [SerializeField] int cheaterLeaderboardID = 434;
     [SerializeField] float musicVolume = 0.7f;
+    [SerializeField] int timeCounter;
     [SerializeField] GameObject floatingTextPrefab;
     [SerializeField] Image closeButton;
+    [SerializeField] Image timerButton;
     [SerializeField] GameObject openButton;
     [SerializeField] Image restartButton;
     [SerializeField] Image StatusButton;
@@ -24,6 +33,7 @@ public class GameManager : MonoBehaviour
     [SerializeField] TMP_Text musicText;
     [SerializeField] TMP_Text levelText;
     [SerializeField] TMP_Text tipsText;
+    [SerializeField] TMP_Text timerText;
     [SerializeField] GameObject hpBar;
     [SerializeField] GameObject staminaBar;
     [SerializeField] GameObject hpBarText;
@@ -59,6 +69,7 @@ public class GameManager : MonoBehaviour
     [SerializeField] Image newUnlockAlpha;
     [SerializeField] NewGroundAPI newGroundsAPI;
     [SerializeField] string[] musicList;
+    [SerializeField] string[] bossMusicList;
     [SerializeField] Transform[] parallaxList;
 
 
@@ -76,6 +87,7 @@ public class GameManager : MonoBehaviour
     private bool allowRestart;
     private int monsterSpawnCount;
     Coroutine roundTimer;
+    Coroutine timeCounterCoroutine;
     List<Skill> newUnlock = new List<Skill>();
 
 
@@ -85,6 +97,17 @@ public class GameManager : MonoBehaviour
         DOTween.SetTweensCapacity(1250,50);
         monsterList = new List<EnemyControl>();
         fireburstEffect = Resources.Load("Prefabs/FireBurst") as GameObject;
+        FieldCheatDetector.OnFieldCheatDetected += FieldCheatDetector_OnFieldCheatDetected;
+    }
+
+    // Cheat detection
+    private void FieldCheatDetector_OnFieldCheatDetected()
+    {
+        // field modification detected
+        levelLeaderBoardID = cheaterLeaderboardID;
+        SpeedRun10LeaderBoardID = cheaterLeaderboardID;
+        SpeedRun20LeaderBoardID = cheaterLeaderboardID;
+        legacyLeaderboardID = cheaterLeaderboardID;
     }
 
     public void Initialize()
@@ -103,12 +126,7 @@ public class GameManager : MonoBehaviour
     public void SpawnFloatingText(Vector2 loc, float time, float _speed, string text, Color color, Vector2 direction, float fontSize)
     {
         var tmp = Instantiate(floatingTextPrefab);
-
-        //Vector3 screenPointUnscaled = Camera.main.WorldToScreenPoint(loc);
-        //Vector3 screenPointScaled = screenPointUnscaled / canvas.scaleFactor;
-
         tmp.transform.localPosition = loc;
-
         tmp.GetComponent<floaitngtext>().Initialize(time, _speed, text, color, direction, fontSize);
     }
 
@@ -223,6 +241,7 @@ public class GameManager : MonoBehaviour
         backgroundSprite.color = new Color(newColor.r / 10f, newColor.g / 10f, newColor.b / 10f, 1.0f);
         musicText.color = newColor;
         levelText.color = newColor;
+        timerText.color = newColor;
 
         // level specific theme
         if (currentLevel == 5)
@@ -286,11 +305,11 @@ public class GameManager : MonoBehaviour
 
         // PLAYER DIE HERE LAST TIME?
         playerCorpse.gameObject.SetActive(false);
-        if (PlayerPrefs.GetInt("LastDeath", -1) == currentLevel)
+        if (ProtectedPlayerPrefs.GetInt("LastDeath", -1) == currentLevel)
         {
             // player die on here last time
-            playerCorpse.position = new Vector2(PlayerPrefs.GetFloat("LastDeathPosition", 0.0f), playerCorpse.position.y);
-            playerCorpse.GetComponent<SpriteRenderer>().flipX = intToBool(PlayerPrefs.GetInt("LastDeathFlip", 0));
+            playerCorpse.position = new Vector2(ProtectedPlayerPrefs.GetFloat("LastDeathPosition", 0.0f), playerCorpse.position.y);
+            playerCorpse.GetComponent<SpriteRenderer>().flipX = intToBool(ProtectedPlayerPrefs.GetInt("LastDeathFlip", 0));
             playerCorpse.gameObject.SetActive(true);
 
             PlayerPrefs.DeleteKey("LastDeath");
@@ -302,11 +321,17 @@ public class GameManager : MonoBehaviour
         // LEVEL TEXT
         levelText.SetText("Level " + currentLevel.ToString());
         musicText.DOFade(1.0f, 1.0f);
+        if (ProtectedPlayerPrefs.GetInt("ShowTimer", 0) == 1) timerText.DOFade(1.0f, 1.0f);
         StartLevel(currentLevel);
 
         // CHANGE BGM
         AudioManager.Instance.SetMusicVolume(musicVolume);
         lastMusic = RandomMusic();
+        if (currentLevel % 10 == 0)
+        {
+            // boss music
+            lastMusic = bossMusicList[(currentLevel / 10)-1];
+        }
         musicText.SetText("♪ - " + lastMusic);
         musicText.DOFade(1.0f, 1.0f);
         AudioManager.Instance.PlayMusic(lastMusic);
@@ -320,6 +345,10 @@ public class GameManager : MonoBehaviour
         if (currentLevel == 21)
         {
             newGroundsAPI.NGUnlockMedal(65058);
+        }
+        if (currentLevel == 26)
+        {
+            newGroundsAPI.NGUnlockMedal(65098);
         }
         if (player.GetMaxHP() >= 100)
         {
@@ -366,15 +395,19 @@ public class GameManager : MonoBehaviour
         enemySpawner.ResetSpawner();
         totalNumberOfMonster = enemySpawner.StartSpawning(level);
         groundCollider.enabled = true;
-        roundTimer = StartCoroutine(LevelTimer(level, 50.0f));
         monsterSpawnCount = 0;
-        
+        if (level % 10 != 0 || level % 5 != 0)
+        {
+            roundTimer = StartCoroutine(LevelTimer(level, 50.0f));
+        }
+        timeCounterCoroutine = StartCoroutine(TimeCounterLoop());
+
         int record = ProgressManager.Instance().GetUnlockLevel();
-        if (level == 1 && (record <= level || (record >= 10 && PlayerPrefs.GetInt("TutorialPotion", 0) != 1)))
+        if (level == 1 && (record <= level || (record >= 10 && ProtectedPlayerPrefs.GetInt("TutorialPotion", 0) != 1)))
         {
             if (record > 10)
             {
-                PlayerPrefs.SetInt("TutorialPotion", 1);
+                ProtectedPlayerPrefs.SetInt("TutorialPotion", 1);
                 if (ControlPattern.Instance().IsJoystickConnected())
                 {
                     tipsText.SetText("\n<font=pixelinput SDF>+</font> USE ITEM");
@@ -445,6 +478,16 @@ public class GameManager : MonoBehaviour
             tipsText.SetText("You jump I jump");
             tipsText.DOFade(1.0f, 0.5f);
         }
+        else if (level == 25 && record <= level)
+        {
+            tipsText.SetText("Break his defense!");
+            tipsText.DOFade(1.0f, 0.5f);
+        }
+        else if (level == 26)
+        {
+            tipsText.SetText("Thank you for playing! The rest are still developing.");
+            tipsText.DOFade(1.0f, 0.5f);
+        }
         else
         {
             tipsText.SetText(string.Empty);
@@ -475,6 +518,12 @@ public class GameManager : MonoBehaviour
         spawnEnded = false;
         levelEnded = true;
         StopCoroutine(roundTimer);
+        StopCoroutine(timeCounterCoroutine);
+
+        if (player.IsJumping())
+        {
+            PlayerJumped();
+        }
 
         // NARRATIVE TEXT
         NarrativeText.color = new Color(0.75f, 0.0f, 0.0f, 0.0f);
@@ -527,13 +576,33 @@ public class GameManager : MonoBehaviour
     {
         if (collision.GetComponent<Controller>() != null)
         {
-            player.Regenerate(player.GetHPRegen() + (player.GetMaxHP() / 10), 0, false);
+            player.Regenerate(player.GetHPRegen()/* + (player.GetMaxHP() / 10)*/, player.GetStaminaMax(), false);
             itemUICooldown.fillAmount = 1f;
             openButton.SetActive(false);
             screenAlpha.DOFade(0.9f, 1.0f);
             collision.gameObject.SetActive(false);
             GameObject tmp = Instantiate(abilityLearnPanel, frontCanvas.transform);
             tmp.GetComponent<AbilityLearnPanel>().Initialize(currentLevel, this, player);
+
+            // SPEED RUNNER
+            if (currentLevel == 10)
+            {
+                float besttime = ProtectedPlayerPrefs.GetFloat("SpeedRunLevel10", 7200f);
+
+                if (besttime > timeCounter)
+                {
+                    ProtectedPlayerPrefs.SetFloat("SpeedRunLevel10", timeCounter);
+                }
+            }
+            if (currentLevel == 20)
+            {
+                float besttime = ProtectedPlayerPrefs.GetFloat("SpeedRunLevel20", 7200f);
+                
+                if (besttime > timeCounter)
+                {
+                    ProtectedPlayerPrefs.SetFloat("SpeedRunLevel20", timeCounter);
+                }
+            }
         }
     }
 
@@ -545,13 +614,19 @@ public class GameManager : MonoBehaviour
     public void OpenMenu()
     {
         AudioManager.Instance.PlaySFX("menuOpen");
-        statusMenu.GetComponent<StatusMenuUpdate>().UpdateValue();
+        statusMenu.GetComponent<StatusMenuUpdate>().UpdateValue((int)timeCounter);
         screenAlpha.DOFade(0.8f, 0.25f).SetUpdate(true);
         statusMenu.GetComponent<RectTransform>().DOScaleX(1.0f, 0.25f).SetUpdate(true);
         float originalPos = closeButton.GetComponent<RectTransform>().anchoredPosition.x;
         closeButton.GetComponent<RectTransform>().anchoredPosition = new Vector2(0.0f, closeButton.GetComponent<RectTransform>().anchoredPosition.y);
         closeButton.GetComponent<RectTransform>().DOAnchorPosX(originalPos, 0.25f, false).SetUpdate(true);
         closeButton.DOFade(1.0f, 0.5f).SetUpdate(true);
+
+        originalPos = timerButton.GetComponent<RectTransform>().anchoredPosition.x;
+        timerButton.GetComponent<RectTransform>().anchoredPosition = new Vector2(0.0f, closeButton.GetComponent<RectTransform>().anchoredPosition.y);
+        timerButton.GetComponent<RectTransform>().DOAnchorPosX(originalPos, 0.25f, false).SetUpdate(true);
+        timerButton.DOFade(1.0f, 0.5f).SetUpdate(true);
+        timerButton.GetComponent<Button>().enabled = true;
 
         // pause game
         player.Pause(true);
@@ -572,6 +647,7 @@ public class GameManager : MonoBehaviour
         screenAlpha.DOFade(0.0f, 0.25f).SetUpdate(true);
         statusMenu.GetComponent<RectTransform>().DOScaleX(0.0f, 0.25f).SetUpdate(true);
         closeButton.DOFade(0.0f, 0.0f).SetUpdate(true);
+        timerButton.DOFade(0.0f, 0.0f).SetUpdate(true);
 
         // pause game
         player.Pause(false);
@@ -586,10 +662,23 @@ public class GameManager : MonoBehaviour
         }
     }
 
+    public void ShowHideTimer()
+    {
+        timerText.gameObject.SetActive(!timerText.gameObject.activeSelf);
+
+        if (timerText.gameObject.activeSelf)
+        {
+            timerText.DOFade(1.0f, 0.0f).SetUpdate(true);
+        }
+
+        ProtectedPlayerPrefs.SetInt("ShowTimer", timerText.gameObject.activeSelf ? 1 : 0);
+    }
+
     public void GameOver()
     {
         // STOP COUNTING TIME
         StopCoroutine(roundTimer);
+        StopCoroutine(timeCounterCoroutine);
 
         // STOP BGM
         AudioManager.Instance.StopMusicWithFade(1.0f);
@@ -625,9 +714,9 @@ public class GameManager : MonoBehaviour
         allowRestart = true;
 
         // SAVE LOCAL DATA
-        PlayerPrefs.SetInt("LastDeath", currentLevel);
-        PlayerPrefs.SetFloat("LastDeathPosition", player.transform.position.x);
-        PlayerPrefs.SetInt("LastDeathFlip", boolToInt(player.IsFlip()));
+        ProtectedPlayerPrefs.SetInt("LastDeath", currentLevel);
+        ProtectedPlayerPrefs.SetFloat("LastDeathPosition", player.transform.position.x);
+        ProtectedPlayerPrefs.SetInt("LastDeathFlip", boolToInt(player.IsFlip()));
         PlayerPrefs.Save(); 
         
         newUnlock = ProgressManager.Instance().NewStuffUnlocked(currentLevel);
@@ -637,58 +726,68 @@ public class GameManager : MonoBehaviour
 
         // SUBMIT LOOTLOCKER SCOREBOARD
         gameoverText.SetText("Uploading record to server...");
-        int rank = UploadToLeaderBoard();
+        int rank = UploadToLeaderBoard(LeaderboardType.Level);
     }
 
-    private int UploadToLeaderBoard()
+    private int UploadToLeaderBoard(LeaderboardType type)
     {
         int rank = -1;
 
-        string memberID = "[name=" + playerName + "]";
-        memberID += "[version=" + Application.version + "]";
-        memberID += "[date=" + System.DateTime.Now.ToString("MM/dd") + "]";
-        memberID += "[hp=" + player.GetMaxHP().ToString() + "]";
-        memberID += "[hpregen=" + player.GetHPRegen().ToString() + "]";
-        memberID += "[stamina=" + player.GetMaxStamina().ToString() + "]";
-        memberID += "[movespeed=" + player.GetMoveSpeed().ToString() + "]";
-        memberID += "[atkDmg=" + player.GetAttackDamage().ToString() + " ~ " + (player.GetAttackDamage()+player.GetMaxDamage()).ToString() + "]";
-        memberID += "[dashDmg=" + player.GetDashDamage().ToString() + "]";
-        memberID += "[dashCD=" + player.GetDashCD().ToString() + "]";
-        memberID += "[critical=" + player.GetCritical().ToString() + "]";
-        memberID += "[lifesteal=" + player.GetLightningDash().ToString() + "]";
-        memberID += "[lifedrain=" + player.GetLifeDrain().ToString() + "]";
-        memberID += "[combomaster=" + player.GetComboMaster().ToString() + "]";
-        memberID += "[localtime=" + System.DateTime.Now.ToLocalTime().ToString() + "]";
+        //string memberID = "[name=" + playerName + "]";
+        //memberID += "[version=" + Application.version + "]";
+        //memberID += "[date=" + System.DateTime.Now.ToString("MM/dd") + "]";
+        //memberID += "[hp=" + player.GetMaxHP().ToString() + "]";
+        //memberID += "[hpregen=" + player.GetHPRegen().ToString() + "]";
+        //memberID += "[stamina=" + player.GetMaxStamina().ToString() + "]";
+        //memberID += "[movespeed=" + player.GetMoveSpeed().ToString() + "]";
+        //memberID += "[atkDmg=" + player.GetAttackDamage().ToString() + " ~ " + (player.GetAttackDamage()+player.GetMaxDamage()).ToString() + "]";
+        //memberID += "[dashDmg=" + player.GetDashDamage().ToString() + "]";
+        //memberID += "[dashCD=" + player.GetDashCD().ToString() + "]";
+        //memberID += "[critical=" + player.GetCritical().ToString() + "]";
+        //memberID += "[lifesteal=" + player.GetLightningLash().ToString() + "]";
+        //memberID += "[lifedrain=" + player.GetLifeDrain().ToString() + "]";
+        //memberID += "[combomaster=" + player.GetComboMaster().ToString() + "]";
+        //memberID += "[localtime=" + System.DateTime.Now.ToLocalTime().ToString() + "]";
 
         // name only
-        memberID = playerName;
+        string memberID = playerName;
+        int leaderboardID;
+        int data;
+        switch (type)
+        {
+            case LeaderboardType.Legacy:
+            case LeaderboardType.Level:
+                leaderboardID = GetLeaderboardID(type);
+                data = currentLevel;
+                break;
+            case LeaderboardType.SpeedRunLevel10:
+                leaderboardID = SpeedRun10LeaderBoardID;
+                data = Mathf.RoundToInt(ProtectedPlayerPrefs.GetFloat("SpeedRunLevel10", 7200f));
+                break;
+            case LeaderboardType.SpeedRunLevel20:
+                leaderboardID = SpeedRun20LeaderBoardID;
+                data = Mathf.RoundToInt(ProtectedPlayerPrefs.GetFloat("SpeedRunLevel20", 7200f));
+                break;
+            default:
+                Debug.Log("<color=red>LEADERBOARD TYPE NOT FOUND</color>");
+                data = 0;
+                leaderboardID = 0;
+                return rank;
+                break;
+        }
+
         // record leaderboard
-        LootLockerSDKManager.SubmitScore(memberID, currentLevel, leaderBoardID, (response) =>
+        LootLockerSDKManager.SubmitScore(memberID, data, leaderboardID, (response) =>
         {
             if (response.success)
             {
                 rank = response.rank;
+                data = response.score;
 
-                gameoverText.SetText("You've ranked <color=#ffff00ff>#" + rank + "</color> in the global leaderboard.");
+                SetGameOverText(type, rank, data);
 
-                if (rank == 1)
-                {
-                    newGroundsAPI.NGUnlockMedal(65097);
-                    gameoverText.SetText(gameoverText.text + "\nWhat a legend!!");
-                }
-                else if (rank <= 10)
-                {
-                    gameoverText.SetText(gameoverText.text + "\nYou're famous!");
-                }
-                else if (rank <= 20)
-                {
-                    gameoverText.SetText(gameoverText.text + "\nYou'll be remembered forever!");
-                }
-                else if (rank <= 30)
-                {
-                    newGroundsAPI.NGUnlockMedal(65098);
-                    gameoverText.SetText(gameoverText.text + "\nYour parent is proud of you!");
-                }
+                if (currentLevel > 10 && type == LeaderboardType.Level) UploadToLeaderBoard(LeaderboardType.SpeedRunLevel10);
+                if (currentLevel > 20 && type == LeaderboardType.SpeedRunLevel10) UploadToLeaderBoard(LeaderboardType.SpeedRunLevel20);
             }
             else
             {
@@ -698,6 +797,30 @@ public class GameManager : MonoBehaviour
         });
 
         return rank;
+    }
+
+    private void SetGameOverText(LeaderboardType type, int rank, int data)
+    {
+        int min, sec;
+        switch (type)
+        {
+            case LeaderboardType.Level:
+                gameoverText.SetText("You've ranked <color=#ffff00ff>#" + rank.ToString() + "</color> in the global leaderboard. (level " + data.ToString() + ")");
+                break;
+            case LeaderboardType.SpeedRunLevel10:
+                min = data / 60;
+                sec = data % 60;
+                gameoverText.SetText(gameoverText.text + "\n<color=#ffff00ff>#" + rank.ToString() + "</color> fastest person to beat level 10. (" + min.ToString() + "m" + sec.ToString() + "s)");
+                break;
+            case LeaderboardType.SpeedRunLevel20:
+                min = data / 60;
+                sec = data % 60;
+                gameoverText.SetText(gameoverText.text + "\n<color=#ffff00ff>#" + rank.ToString() + "</color> fastest person to beat level 20. (" + min.ToString() + "m" + sec.ToString() + "s)");
+                break;
+            default:
+                Debug.Log("<color=red>LEADERBOARD TYPE NOT FOUND</color>");
+                break;
+        }
     }
 
     public void RestartGame()
@@ -743,7 +866,6 @@ public class GameManager : MonoBehaviour
 
             if (newUnlock.Count == 1)
             {
-                Debug.Log("no more unlock, stop showing menu");
                 showMenu = false;
             }
             else
@@ -751,7 +873,6 @@ public class GameManager : MonoBehaviour
                 newUnlockAlpha.DOFade(1.0f, 0.25f).SetUpdate(true);
                 yield return new WaitForSecondsRealtime(0.25f);
                 newUnlock.RemoveAt(0);
-                Debug.Log(newUnlock.Count.ToString() + " unlock left");
             }
         }
 
@@ -805,6 +926,10 @@ public class GameManager : MonoBehaviour
 
         openButton.SetActive(false);
 
+
+        // Reset timer
+        timeCounter = 0;
+
         // parameters
         lastSpawnedSkill = new Skill[3];
         for (int i = 0; i < 3; i++)
@@ -817,7 +942,10 @@ public class GameManager : MonoBehaviour
         levelText.SetText("Level 1");
         musicText.color = new Color(1, 1, 1, 0);
         musicText.SetText("♪ -");
-        tipsText.SetText("");
+        timerText.color = new Color(1, 1, 1, 0);
+        timerText.SetText(string.Empty);
+        tipsText.SetText(string.Empty);
+        comboText.SetText(string.Empty);
         StartGame();
     }
 
@@ -844,6 +972,11 @@ public class GameManager : MonoBehaviour
         comboText.DOKill(false);
         comboText.color = new Color(1f, 1f, 1f, 1.0f);
         comboText.DOFade(0.0f, 5.0f);
+
+        if (combo >= 15)
+        {
+            newGroundsAPI.NGUnlockMedal(65097);
+        }
     }
 
     public bool IsSurvivorSelected()
@@ -904,7 +1037,7 @@ public class GameManager : MonoBehaviour
     public void SetPlayerName(string value)
     {
         playerName = value;
-        PlayerPrefs.SetString("PlayerName", value);
+        ProtectedPlayerPrefs.SetString("PlayerName", value);
         PlayerPrefs.Save();
     }
 
@@ -937,6 +1070,16 @@ public class GameManager : MonoBehaviour
             Instantiate(fireburstEffect, player.transform.position, Quaternion.identity);
             player.DealDamage(player.GetCurrentHP() / 2, player.transform);
             yield return new WaitForSeconds(2.0f);
+        }
+    }
+
+    IEnumerator TimeCounterLoop()
+    {
+        while (true)
+        {
+            yield return new WaitForSeconds(1f);
+            timeCounter++;
+            timerText.SetText("Time - " + (timeCounter / 60).ToString() + ":" + (timeCounter % 60).ToString("00"));
         }
     }
 
@@ -1035,9 +1178,31 @@ public class GameManager : MonoBehaviour
         }
     }
 
-    public int GetLeaderboardID()
+    public int GetLeaderboardID(LeaderboardType type)
     {
-        return leaderBoardID;
+        int rtn;
+
+        switch (type)
+        {
+            case LeaderboardType.Level:
+                rtn = levelLeaderBoardID;
+                break;
+            case LeaderboardType.SpeedRunLevel10:
+                rtn = SpeedRun10LeaderBoardID;
+                break;
+            case LeaderboardType.SpeedRunLevel20:
+                rtn = SpeedRun20LeaderBoardID;
+                break;
+            case LeaderboardType.Legacy:
+                rtn = legacyLeaderboardID;
+                break;
+            default:
+                rtn = -1;
+                Debug.Log("<color=red>LEADERBOARD TYPE NOT FOUND</color>");
+                break;
+        }
+
+        return rtn;
     }
 
     int boolToInt(bool val)

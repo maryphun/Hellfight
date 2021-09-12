@@ -141,6 +141,7 @@ public class JinAI : MonoBehaviour
             case Status.Attacking:
                 animator.Play(enemyName + "Attack");
                 AudioManager.Instance.PlaySFX("KobrodCharging", 1f);
+                AudioManager.Instance.PlaySFX("heartbeat");
                 SpawnSpecialEffect();
                 statusTimer = controller.FindAnimation(animator, enemyName + "Attack").length + Time.deltaTime;
                 dealDamageCnt = 0.0f;
