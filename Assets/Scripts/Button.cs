@@ -5,21 +5,49 @@ using UnityEngine.Events;
 
 public class Button : MonoBehaviour
 {
-    [SerializeField] KeyCode hotkey;
-    [SerializeField] string keypadhotkey;
+    
+    [System.Serializable]
+    enum InputType
+    {
+        Confirm,
+        Cancel,
+        OpenCloseMenu,
+    }
+
+    [SerializeField] InputType hotkey;
     [SerializeField] UnityEvent events;
 
-    // Update is called once per frame
-    void Update()
+    PlayerAction _input;
+
+    private void Awake()
     {
-        if (Input.GetKeyDown(hotkey) || Input.GetButtonDown(keypadhotkey))
+        _input = new PlayerAction();
+        if (hotkey == InputType.Confirm)
         {
-            ClickTrigger();
+            _input.MenuControls.Confirm.performed += ctx => ClickTrigger();
         }
+        if (hotkey == InputType.Cancel)
+        {
+            _input.MenuControls.Cancel.performed += ctx => ClickTrigger();
+        }
+        if (hotkey == InputType.OpenCloseMenu)
+        {
+            _input.MenuControls.OpenCloseMenu.performed += ctx => ClickTrigger();
+        }
+    }
+    private void OnEnable()
+    {
+        _input.Enable();
+    }
+
+    private void OnDisable()
+    {
+        _input.Disable();
     }
 
     public void ClickTrigger()
     {
+        if (!enabled) return;
         events.Invoke();
     }
 }

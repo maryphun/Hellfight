@@ -169,7 +169,6 @@ public class EnemyControl : MonoBehaviour
         {
             isAlive = false;
             animator.Play(enemyName + "Dead");
-            GetComponent<Rigidbody2D>().isKinematic = true;
 
             if (fadeOutAfterDead)
             {
@@ -303,7 +302,10 @@ public class EnemyControl : MonoBehaviour
     public void Knockback(float value, int direction, float time)
     {
         // face toward the source of knockback
-        graphic.flipX = direction == 1;
+        if (currentStatus != Status.Attacking)
+        {
+            graphic.flipX = direction == 1;
+        }
 
         float calculatedValue = value / mass;
 

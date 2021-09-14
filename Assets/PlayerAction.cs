@@ -57,6 +57,14 @@ public class @PlayerAction : IInputActionCollection, IDisposable
                     ""expectedControlType"": ""Button"",
                     ""processors"": """",
                     ""interactions"": """"
+                },
+                {
+                    ""name"": ""Dash"",
+                    ""type"": ""Button"",
+                    ""id"": ""d40a331e-aacc-404d-8a70-c1e9420daba3"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """"
                 }
             ],
             ""bindings"": [
@@ -315,12 +323,56 @@ public class @PlayerAction : IInputActionCollection, IDisposable
                 },
                 {
                     ""name"": """",
+                    ""id"": ""de8d3866-9aea-4c2e-a81f-fcaf53819b8d"",
+                    ""path"": ""<Gamepad>/leftStick/down"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Crouch"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
                     ""id"": ""5b2b57f9-729e-46ce-a44a-6c4f9b9b2057"",
                     ""path"": ""<Gamepad>/buttonEast"",
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": """",
                     ""action"": ""Jump"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""c90ade18-3ba1-424e-841f-96edac94b0c2"",
+                    ""path"": ""<Keyboard>/x"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Dash"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""a039b585-7d0b-4d61-b89d-9e93eb7d657a"",
+                    ""path"": ""<Keyboard>/k"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Dash"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""f631b351-95a5-4c4d-a896-1f7949899b8d"",
+                    ""path"": ""<Gamepad>/buttonSouth"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Dash"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 }
@@ -358,6 +410,14 @@ public class @PlayerAction : IInputActionCollection, IDisposable
                     ""name"": ""AnyKey"",
                     ""type"": ""Button"",
                     ""id"": ""0de418cf-9fc5-4378-bfb6-949014025dac"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """"
+                },
+                {
+                    ""name"": ""Cancel"",
+                    ""type"": ""Button"",
+                    ""id"": ""e408da00-495b-4c1c-86b0-21463d450d6e"",
                     ""expectedControlType"": ""Button"",
                     ""processors"": """",
                     ""interactions"": """"
@@ -605,6 +665,39 @@ public class @PlayerAction : IInputActionCollection, IDisposable
                     ""action"": ""AnyKey"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""c1ef4d84-a6e8-4108-9733-7b14ed86c4f2"",
+                    ""path"": ""<Mouse>/press"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""AnyKey"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""a1c2ff8a-4e55-4fcf-8edf-3cd3fb203366"",
+                    ""path"": ""<Keyboard>/escape"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Cancel"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""9075859f-67c6-45ca-b8f5-deb9c677b087"",
+                    ""path"": ""<Gamepad>/buttonEast"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Cancel"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
                 }
             ]
         }
@@ -624,12 +717,14 @@ public class @PlayerAction : IInputActionCollection, IDisposable
         m_PlayerControls_Crouch = m_PlayerControls.FindAction("Crouch", throwIfNotFound: true);
         m_PlayerControls_Attack = m_PlayerControls.FindAction("Attack", throwIfNotFound: true);
         m_PlayerControls_UseItem = m_PlayerControls.FindAction("UseItem", throwIfNotFound: true);
+        m_PlayerControls_Dash = m_PlayerControls.FindAction("Dash", throwIfNotFound: true);
         // MenuControls
         m_MenuControls = asset.FindActionMap("MenuControls", throwIfNotFound: true);
         m_MenuControls_Move = m_MenuControls.FindAction("Move", throwIfNotFound: true);
         m_MenuControls_Confirm = m_MenuControls.FindAction("Confirm", throwIfNotFound: true);
         m_MenuControls_OpenCloseMenu = m_MenuControls.FindAction("Open/Close Menu", throwIfNotFound: true);
         m_MenuControls_AnyKey = m_MenuControls.FindAction("AnyKey", throwIfNotFound: true);
+        m_MenuControls_Cancel = m_MenuControls.FindAction("Cancel", throwIfNotFound: true);
     }
 
     public void Dispose()
@@ -684,6 +779,7 @@ public class @PlayerAction : IInputActionCollection, IDisposable
     private readonly InputAction m_PlayerControls_Crouch;
     private readonly InputAction m_PlayerControls_Attack;
     private readonly InputAction m_PlayerControls_UseItem;
+    private readonly InputAction m_PlayerControls_Dash;
     public struct PlayerControlsActions
     {
         private @PlayerAction m_Wrapper;
@@ -693,6 +789,7 @@ public class @PlayerAction : IInputActionCollection, IDisposable
         public InputAction @Crouch => m_Wrapper.m_PlayerControls_Crouch;
         public InputAction @Attack => m_Wrapper.m_PlayerControls_Attack;
         public InputAction @UseItem => m_Wrapper.m_PlayerControls_UseItem;
+        public InputAction @Dash => m_Wrapper.m_PlayerControls_Dash;
         public InputActionMap Get() { return m_Wrapper.m_PlayerControls; }
         public void Enable() { Get().Enable(); }
         public void Disable() { Get().Disable(); }
@@ -717,6 +814,9 @@ public class @PlayerAction : IInputActionCollection, IDisposable
                 @UseItem.started -= m_Wrapper.m_PlayerControlsActionsCallbackInterface.OnUseItem;
                 @UseItem.performed -= m_Wrapper.m_PlayerControlsActionsCallbackInterface.OnUseItem;
                 @UseItem.canceled -= m_Wrapper.m_PlayerControlsActionsCallbackInterface.OnUseItem;
+                @Dash.started -= m_Wrapper.m_PlayerControlsActionsCallbackInterface.OnDash;
+                @Dash.performed -= m_Wrapper.m_PlayerControlsActionsCallbackInterface.OnDash;
+                @Dash.canceled -= m_Wrapper.m_PlayerControlsActionsCallbackInterface.OnDash;
             }
             m_Wrapper.m_PlayerControlsActionsCallbackInterface = instance;
             if (instance != null)
@@ -736,6 +836,9 @@ public class @PlayerAction : IInputActionCollection, IDisposable
                 @UseItem.started += instance.OnUseItem;
                 @UseItem.performed += instance.OnUseItem;
                 @UseItem.canceled += instance.OnUseItem;
+                @Dash.started += instance.OnDash;
+                @Dash.performed += instance.OnDash;
+                @Dash.canceled += instance.OnDash;
             }
         }
     }
@@ -748,6 +851,7 @@ public class @PlayerAction : IInputActionCollection, IDisposable
     private readonly InputAction m_MenuControls_Confirm;
     private readonly InputAction m_MenuControls_OpenCloseMenu;
     private readonly InputAction m_MenuControls_AnyKey;
+    private readonly InputAction m_MenuControls_Cancel;
     public struct MenuControlsActions
     {
         private @PlayerAction m_Wrapper;
@@ -756,6 +860,7 @@ public class @PlayerAction : IInputActionCollection, IDisposable
         public InputAction @Confirm => m_Wrapper.m_MenuControls_Confirm;
         public InputAction @OpenCloseMenu => m_Wrapper.m_MenuControls_OpenCloseMenu;
         public InputAction @AnyKey => m_Wrapper.m_MenuControls_AnyKey;
+        public InputAction @Cancel => m_Wrapper.m_MenuControls_Cancel;
         public InputActionMap Get() { return m_Wrapper.m_MenuControls; }
         public void Enable() { Get().Enable(); }
         public void Disable() { Get().Disable(); }
@@ -777,6 +882,9 @@ public class @PlayerAction : IInputActionCollection, IDisposable
                 @AnyKey.started -= m_Wrapper.m_MenuControlsActionsCallbackInterface.OnAnyKey;
                 @AnyKey.performed -= m_Wrapper.m_MenuControlsActionsCallbackInterface.OnAnyKey;
                 @AnyKey.canceled -= m_Wrapper.m_MenuControlsActionsCallbackInterface.OnAnyKey;
+                @Cancel.started -= m_Wrapper.m_MenuControlsActionsCallbackInterface.OnCancel;
+                @Cancel.performed -= m_Wrapper.m_MenuControlsActionsCallbackInterface.OnCancel;
+                @Cancel.canceled -= m_Wrapper.m_MenuControlsActionsCallbackInterface.OnCancel;
             }
             m_Wrapper.m_MenuControlsActionsCallbackInterface = instance;
             if (instance != null)
@@ -793,6 +901,9 @@ public class @PlayerAction : IInputActionCollection, IDisposable
                 @AnyKey.started += instance.OnAnyKey;
                 @AnyKey.performed += instance.OnAnyKey;
                 @AnyKey.canceled += instance.OnAnyKey;
+                @Cancel.started += instance.OnCancel;
+                @Cancel.performed += instance.OnCancel;
+                @Cancel.canceled += instance.OnCancel;
             }
         }
     }
@@ -813,6 +924,7 @@ public class @PlayerAction : IInputActionCollection, IDisposable
         void OnCrouch(InputAction.CallbackContext context);
         void OnAttack(InputAction.CallbackContext context);
         void OnUseItem(InputAction.CallbackContext context);
+        void OnDash(InputAction.CallbackContext context);
     }
     public interface IMenuControlsActions
     {
@@ -820,5 +932,6 @@ public class @PlayerAction : IInputActionCollection, IDisposable
         void OnConfirm(InputAction.CallbackContext context);
         void OnOpenCloseMenu(InputAction.CallbackContext context);
         void OnAnyKey(InputAction.CallbackContext context);
+        void OnCancel(InputAction.CallbackContext context);
     }
 }

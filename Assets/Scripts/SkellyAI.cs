@@ -61,6 +61,17 @@ public class SkellyAI : MonoBehaviour
         staminaRegenInterval = staminaRegenInterval / ((float)level/2);
 
         controller.AddMaxHp(level * 5);
+
+        if (level > 10)
+        {
+            controller.AddMaxHp(25);
+            attackDamageBase += Random.Range(1, 3);
+        }
+        if (level > 20)
+        {
+            controller.AddMaxHp(35);
+            attackDamageBase += Random.Range(1, 3);
+        }
     }
 
     private void FixedUpdate()

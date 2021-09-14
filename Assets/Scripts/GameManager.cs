@@ -72,7 +72,6 @@ public class GameManager : MonoBehaviour
     [SerializeField] string[] bossMusicList;
     [SerializeField] Transform[] parallaxList;
 
-
     [Header("Debug")]
     [SerializeField] int currentLevel;
     [SerializeField] int totalNumberOfMonster;
@@ -89,6 +88,8 @@ public class GameManager : MonoBehaviour
     Coroutine roundTimer;
     Coroutine timeCounterCoroutine;
     List<Skill> newUnlock = new List<Skill>();
+    public PlayerAction _input;
+    bool confrimKey = false;
 
 
     // Start is called before the first frame update
@@ -97,7 +98,22 @@ public class GameManager : MonoBehaviour
         DOTween.SetTweensCapacity(1250,50);
         monsterList = new List<EnemyControl>();
         fireburstEffect = Resources.Load("Prefabs/FireBurst") as GameObject;
+
+        // CHEAT DETECTION
         FieldCheatDetector.OnFieldCheatDetected += FieldCheatDetector_OnFieldCheatDetected;
+
+        // INPUT SYSTEM
+        _input = new PlayerAction();
+        _input.MenuControls.AnyKey.performed += ctx => confrimKey = true;
+        _input.MenuControls.AnyKey.canceled += ctx => confrimKey = false;
+    }
+    private void OnDisable()
+    {
+        _input.Disable();
+    }
+    private void OnEnable()
+    {
+        _input.Enable();
     }
 
     // Cheat detection
@@ -157,6 +173,7 @@ public class GameManager : MonoBehaviour
         player.gameObject.SetActive(false);
         newUnlock.Clear();
         currentLevel = 1;
+
         ProgressManager.Instance().LoadUnlockLevel();
         StartCoroutine(StartGameCinematic());
     }
@@ -396,40 +413,24 @@ public class GameManager : MonoBehaviour
         totalNumberOfMonster = enemySpawner.StartSpawning(level);
         groundCollider.enabled = true;
         monsterSpawnCount = 0;
-        if (level % 10 != 0 || level % 5 != 0)
+        if (level % 10 != 0 && level % 5 != 0)
         {
-            roundTimer = StartCoroutine(LevelTimer(level, 50.0f));
+           roundTimer = StartCoroutine(LevelTimer(level, 50.0f));
         }
         timeCounterCoroutine = StartCoroutine(TimeCounterLoop());
 
         int record = ProgressManager.Instance().GetUnlockLevel();
-        if (level == 1 && (record <= level || (record >= 10 && ProtectedPlayerPrefs.GetInt("TutorialPotion", 0) != 1)))
+        if (level == 1 && (record <= level))
         {
-            if (record > 10)
+            if (ControlPattern.Instance().IsJoystickConnected())
             {
-                ProtectedPlayerPrefs.SetInt("TutorialPotion", 1);
-                if (ControlPattern.Instance().IsJoystickConnected())
-                {
-                    tipsText.SetText("\n<font=pixelinput SDF>+</font> USE ITEM");
-                }
-                else
-                {
-                    tipsText.SetText("<font=pixelinput SDF>c</font> USE ITEM");
-                }
+                tipsText.SetText(Input.GetJoystickNames()[0] + "\n<font=pixelinput SDF>4</font> ATTACK <font=pixelinput SDF>6</font> JUMP <font=pixelinput SDF>7</font> DASH");
             }
             else
             {
-                if (ControlPattern.Instance().IsJoystickConnected())
-                {
-                    tipsText.SetText(Input.GetJoystickNames()[0] + "\n<font=pixelinput SDF>4</font> ATTACK <font=pixelinput SDF>7</font> JUMP <font=pixelinput SDF>5</font> DASH");
-                }
-                else
-                {
-                    tipsText.SetText("<font=pixelinput SDF>W</font>\n<font=pixelinput SDF>ASD</font>\nMOVE\n<font=pixelinput SDF>z</font> ATTACK <font=pixelinput SDF>x</font> DASH");
-                }
+                tipsText.SetText("<font=pixelinput SDF>W</font>\n<font=pixelinput SDF>ASD</font>\nMOVE\n<font=pixelinput SDF>z</font> ATTACK <font=pixelinput SDF>x</font> DASH");
             }
             tipsText.DOFade(1.0f, 0.5f);
-
         } 
         else if (level == 2 && record <= level)
         {
@@ -465,17 +466,12 @@ public class GameManager : MonoBehaviour
         }
         else if (level == 15 && record <= level)
         {
-            tipsText.SetText("Beware of big wave of enemies!!");
+            tipsText.SetText("They're adorable");
             tipsText.DOFade(1.0f, 0.5f);
         }
         else if (level == 11 && record <= level)
         {
             tipsText.SetText("Your stamina gain slower as you dash continuously");
-            tipsText.DOFade(1.0f, 0.5f);
-        }
-        else if (level == 19 && record <= level)
-        {
-            tipsText.SetText("You jump I jump");
             tipsText.DOFade(1.0f, 0.5f);
         }
         else if (level == 25 && record <= level)
@@ -485,8 +481,20 @@ public class GameManager : MonoBehaviour
         }
         else if (level == 26)
         {
-            tipsText.SetText("Thank you for playing! The rest are still developing.");
+            tipsText.SetText("Thank you for playing! The rest is still developing.");
             tipsText.DOFade(1.0f, 0.5f);
+        }
+        else  if (potionSelected && ProtectedPlayerPrefs.GetInt("TutorialPotion", 0) != 1)
+        {
+            ProtectedPlayerPrefs.SetInt("TutorialPotion", 1);
+            if (ControlPattern.Instance().IsJoystickConnected())
+            {
+                tipsText.SetText("\n<font=pixelinput SDF>+</font> USE ITEM");
+            }
+            else
+            {
+                tipsText.SetText("<font=pixelinput SDF>c</font> USE ITEM");
+            }
         }
         else
         {
@@ -502,7 +510,7 @@ public class GameManager : MonoBehaviour
         {
             if (ControlPattern.Instance().GetControlPattern() == ControlPattern.CtrlPattern.JOYSTICK)
             {
-                tipsText.SetText(Input.GetJoystickNames()[0] + "\n<font=pixelinput SDF>4</font> ATTACK <font=pixelinput SDF>5</font> JUMP <font=pixelinput SDF>7</font> DASH");
+                tipsText.SetText(Input.GetJoystickNames()[0] + "\n<font=pixelinput SDF>4</font> ATTACK <font=pixelinput SDF>6</font> JUMP <font=pixelinput SDF>7</font> DASH");
             }
             else
             {
@@ -833,6 +841,8 @@ public class GameManager : MonoBehaviour
         // determine need to enter new unlock phase or not
         if (newUnlock.Count > 0)
         {
+            // reset input
+            confrimKey = false;
             StartCoroutine(NewUnlockMenuPhase(RestartDelay(0.5f)));
         }
         else
@@ -859,10 +869,13 @@ public class GameManager : MonoBehaviour
             newUnlockIcon.sprite = Resources.Load<Sprite>("Icon/" + data.skill_Icon);
             newUnlockName.SetText(data.skill_name);
 
-            while (!(Input.anyKeyDown || Input.GetMouseButtonDown(0)))
+            while (!confrimKey)
             {
+                Debug.Log("waiting for input" + confrimKey);
                 yield return null;
             }
+            Debug.Log("YESS!" + confrimKey);
+            confrimKey = false; // reset input
 
             if (newUnlock.Count == 1)
             {

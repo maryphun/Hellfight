@@ -61,29 +61,34 @@ public class AbilityLearnPanel : MonoBehaviour
     [SerializeField] Selection[] selection = new Selection[3];
     [SerializeField] TMP_Text title;
     [SerializeField] TMP_Text description;
+    public PlayerAction _input;
 
-    private void Start()
+    // INPUT SYSTEM
+    private void Awake()
     {
-        //img1 = Resources.Load<Sprite>("Icon/");
+        _input = new PlayerAction();
+        _input.PlayerControls.Move.performed += ctx => SelectionChange(new Vector2(Mathf.RoundToInt(ctx.ReadValue<float>()), 0));
+        _input.MenuControls.Move.performed += ctx => SelectionChange(new Vector2(0, Mathf.RoundToInt(ctx.ReadValue<float>())));
+        _input.MenuControls.Confirm.performed += ctx => Select(selecting);
     }
 
-    private void Update()
+    private void OnEnable()
+    {
+        _input.Enable();
+    }
+
+    private void OnDisable()
+    {
+       _input.Disable();
+    }
+
+    private void SelectionChange(Vector2 direction)
     {
         if (choiceMade) return;
         int oldSelecting = selecting;
 
-        // JOYPAD
-        int keymap = 0;
-        bool joyStickControlDown;
-        if (ControlPattern.Instance().GetControlPattern() == ControlPattern.CtrlPattern.JOYSTICK && ControlPattern.Instance().GetJoystickAnyKey())
-        {            
-            keymap = Mathf.RoundToInt(Input.GetAxisRaw("JoyPadHorizontal"));
-        }
-        joyStickControlDown = lastKeyMap != keymap;
-        lastKeyMap = keymap;
-
         // KEYBOARD CONTROL
-        if (Input.GetKeyDown(KeyCode.A) || Input.GetKeyDown(KeyCode.LeftArrow) || (keymap == -1 && joyStickControlDown))
+        if (direction.x < 0)
         {
             if (selecting == -1)
             {
@@ -99,7 +104,7 @@ public class AbilityLearnPanel : MonoBehaviour
             }
         }
 
-        if (Input.GetKeyDown(KeyCode.D) || Input.GetKeyDown(KeyCode.RightArrow) || (keymap == 1 && joyStickControlDown))
+        if (direction.x > 0)
         {
             if (selecting == -1)
             {
@@ -115,7 +120,7 @@ public class AbilityLearnPanel : MonoBehaviour
             }
         }
 
-        if (Input.GetKeyDown(KeyCode.W) || Input.GetKeyDown(KeyCode.UpArrow) || Input.GetKeyDown(KeyCode.S) || Input.GetKeyDown(KeyCode.DownArrow))
+        if (direction.y != 0)
         {
             if (selecting == -1)
             {
@@ -126,16 +131,6 @@ public class AbilityLearnPanel : MonoBehaviour
         if (oldSelecting != selecting)
         {
             SelectChange();
-        }
-
-        if (Input.GetKeyDown(KeyCode.Return) || Input.GetKeyDown(KeyCode.KeypadEnter) || Input.GetKeyDown(KeyCode.Space) || Input.GetKeyDown(KeyCode.Z)
-             || Input.GetButtonDown("Dash"))
-        {
-            if (selecting != -1)
-            {
-                Select(selecting);
-                return;
-            }
         }
     }
 
@@ -292,8 +287,20 @@ public class AbilityLearnPanel : MonoBehaviour
         }
     }
 
+    public void MouseSelected()
+    {
+        Debug.Log("is mouse input");
+        for (int i = 0; i < 3; i++)
+        {
+            selection[i].skill_Icon.color = new Color(1f, 1f, 1f, 1.0f);
+            selection[i].skill_name.color = new Color(1f, 1f, 1f, 1.0f);
+            selection[i].skill_description.color = new Color(1f, 1f, 1f, 1.0f);
+        }
+    }
+
     public void Select(int index)
     {
+        if (index == -1) return;
         if (choiceMade) return;
 
         choiceMade = true;

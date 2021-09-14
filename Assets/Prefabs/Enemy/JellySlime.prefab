@@ -153,7 +153,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   enemyName: JellySlime
-  maxHp: 60
+  maxHp: 45
   maxStamina: 60
   maxArmor: 20
   fadeOutAfterDead: 1

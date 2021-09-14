@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using OPS.AntiCheat;
 using OPS.AntiCheat.Field;
+using UnityEngine.InputSystem;
 
 public class Controller : MonoBehaviour
 {
@@ -70,7 +71,6 @@ public class Controller : MonoBehaviour
     ProtectedFloat attackDealDamageTimer;
     ProtectedFloat attackEndAttackTimer;
     GameManager gameMng;
-    bool isKnockbacking;
     bool isUsingPotion;
     bool isPotionUsed;
     bool isAlive;
@@ -90,6 +90,7 @@ public class Controller : MonoBehaviour
     private GameObject chargeEffect;
     private GameObject chargeEffectInstantiated;
     private GameObject bloodEffect;
+    public PlayerAction _input;
 
     [Header("References")]
     [SerializeField] SpriteRenderer graphic;
@@ -113,6 +114,7 @@ public class Controller : MonoBehaviour
     [SerializeField] private bool isAttacking;
     [SerializeField] private bool isDashing;
     [SerializeField] private bool isJumping;
+    [SerializeField] private bool isKnockbacking;
     [SerializeField] private float comboTimer;
     [SerializeField] private bool attackDisabled;
     [SerializeField] private float dashTimeCount;
@@ -152,6 +154,30 @@ public class Controller : MonoBehaviour
         potionHealEffect = Resources.Load("Prefabs/PotionHeal") as GameObject;
         lightningLashEffect = Resources.Load("Prefabs/LightningSlashPlayer") as GameObject;
         bloodEffect = Resources.Load("Prefabs/BloodPlayer") as GameObject;
+
+        // INPUT SYSTEM
+        _input = new PlayerAction();
+        _input.PlayerControls.Move.performed += ctx => input.move = Mathf.RoundToInt(ctx.ReadValue<float>());
+        _input.PlayerControls.Move.canceled += ctx => input.move = 0;
+        _input.PlayerControls.Jump.performed += ctx => input.jump = true;
+        _input.PlayerControls.Jump.canceled += ctx => input.cancelJump = true;
+        _input.PlayerControls.Attack.performed += ctx => input.attack = true;
+        _input.PlayerControls.Dash.performed += ctx => input.dash = true;
+        _input.PlayerControls.Crouch.performed += ctx => input.crouch = true;
+        _input.PlayerControls.Crouch.canceled += ctx => input.crouch = false;
+        _input.PlayerControls.UseItem.performed += ctx => input.use = true;
+        _input.PlayerControls.UseItem.canceled += ctx => input.cancelUse = true;
+    }
+
+    private void OnEnable()
+    {
+        _input.Enable();
+        isKnockbacking = false;
+    }
+
+    private void OnDisable()
+    {
+        _input.Disable();
     }
 
     public void ResetPlayer()
@@ -169,12 +195,12 @@ public class Controller : MonoBehaviour
         recover = false;
         comboMaster = 0;
         staminaCostAttackBase = 2;
-        staminaCostDash = 40;
+        staminaCostDash = 25;
         maxHP = 50;
         maxStamina = 100;
         moveSpeed = 11.0f;
         dashRange = 4.5f;
-        dashCooldown = 0.7f;
+        dashCooldown = 1f;
         staminaRegen = 2;
         staminaRegenInterval = 0.05f;
         pushEnemySpeedMultiplier = 0.15f;
@@ -219,15 +245,6 @@ public class Controller : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        input.move =        Mathf.RoundToInt(Input.GetAxisRaw("Horizontal")) + Mathf.RoundToInt(Input.GetAxisRaw("JoyPadHorizontal"));
-        input.jump =        Input.GetKeyDown(KeyCode.Space) || Input.GetKeyDown(KeyCode.UpArrow) || Input.GetKeyDown(KeyCode.W) || Input.GetButtonDown("Jump");
-        input.cancelJump =  Input.GetKeyUp(KeyCode.Space) || Input.GetKeyUp(KeyCode.UpArrow) || Input.GetKeyUp(KeyCode.W) || Input.GetButtonUp("Jump");
-        input.attack =      Input.GetKeyDown(KeyCode.Z) || Input.GetKeyDown(KeyCode.J) || Input.GetButtonDown("Attack");
-        input.dash =        Input.GetKeyDown(KeyCode.X) || Input.GetKeyDown(KeyCode.K) || Input.GetButtonDown("Dash");
-        input.crouch =      Input.GetKey(KeyCode.DownArrow) || Input.GetKey(KeyCode.S) || (Mathf.RoundToInt(Input.GetAxisRaw("JoyPadVertical")) == -1);
-        input.use =         Input.GetKeyDown(KeyCode.C) || Input.GetKeyDown(KeyCode.L) || Input.GetAxisRaw("Item") == 1;
-        input.cancelUse =   Input.GetKeyUp(KeyCode.C) || Input.GetKeyUp(KeyCode.L) || Input.GetButtonUp("Item");
-
         if (!isAlive)
         {
             input.move = 0;
@@ -301,7 +318,7 @@ public class Controller : MonoBehaviour
                 {
                     StartJump();
                 }
-                else if (!jumpPressed)  // reset jump delay timer
+                else if (!jumpPressed && IsAlive())  // reset jump delay timer
                 {
                     jumpPressMemoryDelay = jumpPressMemoryTime;
                     jumpPressed = true;
@@ -340,7 +357,11 @@ public class Controller : MonoBehaviour
                     CreateAfterImage(initialTailAlpha / 4.0f);
                 }
             }
+
         }
+            // reset input
+            input.jump = false;
+            input.cancelJump = false;
 
         // ATTACK
         {
@@ -421,11 +442,14 @@ public class Controller : MonoBehaviour
                 {
                     StartAttack();
                 }
-                else
+                else if (IsAlive())
                 {
                     attackPressed = true;
                     attackPressMemoryDelay = attackPressMemoryTime;
                 }
+
+                // reset input
+                input.attack = false;
             }
         }
 
@@ -480,13 +504,16 @@ public class Controller : MonoBehaviour
                     dashFequency = 0;
                 }
             }
+
+            // reset input
+            input.dash = false;
         }
 
         // CROUCH
         {
             if (input.crouch && input.move == 0)
             {
-                if (!IsJumping() && !IsDashing() && !IsAttacking() && !IsUsingPotion())
+                if (!IsJumping() && !IsDashing() && !IsAttacking() && !IsUsingPotion() && IsAlive())
                 {
                     animator.SetBool("Crouch", true);
                     if (!animator.GetCurrentAnimatorStateInfo(0).IsName("Crouch"))
@@ -507,7 +534,7 @@ public class Controller : MonoBehaviour
         {
             if (input.use)
             {
-                if (!IsJumping() && !IsDashing() && !IsAttacking() && !input.crouch && input.move == 0 && !isPotionUsed)
+                if (!IsJumping() && !IsDashing() && !IsAttacking() && IsAlive() && !input.crouch && input.move == 0 && !isPotionUsed)
                 {
                     // START USING POTION
                     isUsingPotion = true;
@@ -552,6 +579,10 @@ public class Controller : MonoBehaviour
                     tmp.transform.SetParent(world);
                 }
             }
+
+            // reset input
+            input.use = false;
+            input.cancelUse = false;
         }
 
         // COMBO
@@ -598,6 +629,7 @@ public class Controller : MonoBehaviour
                     hitenemy.transform.DOMoveX(hitenemy.transform.position.x + (moveSpeed * input.move * Time.deltaTime * multiplier), 0.1f, false);
                 }
 
+                Debug.Log(input.move);
                 if (input.move != 0 && !isKnockbacking)
                 {
                     transform.DOMoveX(transform.position.x + (calculatedMoveSpeed * input.move * Time.deltaTime * multiplier), 0.1f, false);
@@ -849,7 +881,7 @@ public class Controller : MonoBehaviour
                 Debug.DrawLine(new Vector2(playerAttackOriginPoint.x, playerAttackOriginPoint.y), new Vector2(enemyHitLeft, target.position.y), Color.red, 0.5f);
                 Debug.DrawLine(new Vector2(playerAttackOriginPoint.x, playerAttackOriginPoint.y), new Vector2(enemyHitRight, target.position.y), Color.red, 0.5f);
                 if ((Mathf.Abs(enemyHitLeft - playerAttackOriginPoint.x) < calculatedAttackRange || Mathf.Abs(enemyHitRight - playerAttackOriginPoint.x) < calculatedAttackRange)
-                    && ((Mathf.Abs(target.position.y - playerAttackOriginPoint.y) < calculatedAttackRange * 0.75f )
+                    && ((Mathf.Abs(target.position.y - playerAttackOriginPoint.y) < calculatedAttackRange * 0.88f )
                     || (Mathf.Abs((target.position.y + enemy.GetHeight()/2f) - playerAttackOriginPoint.y) < calculatedAttackRange * 0.75f ))
                     && enemy.IsAlive()
                     && !enemy.IsInvulnerable()
@@ -896,7 +928,7 @@ public class Controller : MonoBehaviour
                     }
 
                     // calculate berserker lifesteal
-                    if (((float)currentHP / (float)maxHP) < 0.2f && berserker > 0)
+                    if (((float)currentHP / (float)maxHP) < 0.34f && berserker > 0)
                     {
                         regenerate += berserker;
 
@@ -1188,6 +1220,7 @@ public class Controller : MonoBehaviour
 
             AudioManager.Instance.PlaySFX("defend3");
             Instantiate(shieldEffect, Vector2.Lerp(source.position, transform.position, 0.5f), Quaternion.identity);
+            staminaRegenDelayCounter = staminaRegenDelay;
             return false;
         }
 
@@ -1251,6 +1284,7 @@ public class Controller : MonoBehaviour
             survivor = false;
             StartJump(true);
             currentHP = maxHP;
+            currentStamina = maxStamina;
             AfterEffectDuration(afterEffectInterval, 0.75f);
             gameMng.SpawnFloatingText(new Vector2(transform.position.x, transform.position.y + collider.bounds.size.y / 2f), 5f, 30f,
                                      "RESURRECTION", new Color(1f, 8.43f, 0.0f), new Vector2(0f, 1f), 100f);
@@ -1362,7 +1396,7 @@ public class Controller : MonoBehaviour
                 break;
             case Skill.DashDamage:
                 dashDamage += (ProtectedUInt16)value;
-                dashCooldown += 0.5f;
+                dashCooldown += 0.25f;
                 break;
             case Skill.Stamina:
                 maxStamina += (ProtectedUInt16)value;

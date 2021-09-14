@@ -2139,8 +2139,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 104704107c6debf4cb4c6ef21959a67a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  hotkey: 113
-  keypadhotkey: Start
+  hotkey: 2
   events:
     m_PersistentCalls:
       m_Calls:
@@ -3024,8 +3023,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 104704107c6debf4cb4c6ef21959a67a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  hotkey: 27
-  keypadhotkey: Spell
+  hotkey: 1
   events:
     m_PersistentCalls:
       m_Calls:
@@ -5061,7 +5059,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 0, y: -206.35}
+  m_AnchoredPosition: {x: 0, y: -206.34998}
   m_SizeDelta: {x: -200, y: -412.7}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &564596177
@@ -5796,11 +5794,9 @@ MonoBehaviour:
   - {fileID: 1007693890}
   leftTransition: {fileID: 117594487}
   rightTransition: {fileID: 479127318}
-  anyKey: 0
   selectIndex: 0
   menuState: 0
   leaderboardType: 0
-  _input: {fileID: 663774118}
 --- !u!114 &663774118
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -6800,63 +6796,6 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 837579104}
   m_CullTransparentMesh: 1
---- !u!1001 &842151178
-PrefabInstance:
-  m_ObjectHideFlags: 0
-  serializedVersion: 2
-  m_Modification:
-    m_TransformParent: {fileID: 0}
-    m_Modifications:
-    - target: {fileID: 8229708409873437362, guid: 4355b950b3225f444b6b448ff1a47b26, type: 3}
-      propertyPath: m_RootOrder
-      value: 19
-      objectReference: {fileID: 0}
-    - target: {fileID: 8229708409873437362, guid: 4355b950b3225f444b6b448ff1a47b26, type: 3}
-      propertyPath: m_LocalPosition.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 8229708409873437362, guid: 4355b950b3225f444b6b448ff1a47b26, type: 3}
-      propertyPath: m_LocalPosition.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 8229708409873437362, guid: 4355b950b3225f444b6b448ff1a47b26, type: 3}
-      propertyPath: m_LocalPosition.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 8229708409873437362, guid: 4355b950b3225f444b6b448ff1a47b26, type: 3}
-      propertyPath: m_LocalRotation.w
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 8229708409873437362, guid: 4355b950b3225f444b6b448ff1a47b26, type: 3}
-      propertyPath: m_LocalRotation.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 8229708409873437362, guid: 4355b950b3225f444b6b448ff1a47b26, type: 3}
-      propertyPath: m_LocalRotation.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 8229708409873437362, guid: 4355b950b3225f444b6b448ff1a47b26, type: 3}
-      propertyPath: m_LocalRotation.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 8229708409873437362, guid: 4355b950b3225f444b6b448ff1a47b26, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 8229708409873437362, guid: 4355b950b3225f444b6b448ff1a47b26, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 8229708409873437362, guid: 4355b950b3225f444b6b448ff1a47b26, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 8229708409873437364, guid: 4355b950b3225f444b6b448ff1a47b26, type: 3}
-      propertyPath: m_Name
-      value: CheatDetector
-      objectReference: {fileID: 0}
-    m_RemovedComponents: []
-  m_SourcePrefab: {fileID: 100100000, guid: 4355b950b3225f444b6b448ff1a47b26, type: 3}
 --- !u!1 &846749970
 GameObject:
   m_ObjectHideFlags: 0
@@ -10733,8 +10672,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 104704107c6debf4cb4c6ef21959a67a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  hotkey: 13
-  keypadhotkey: Start
+  hotkey: 0
   events:
     m_PersistentCalls:
       m_Calls:
@@ -14097,7 +14035,7 @@ MonoBehaviour:
   dashRange:
     fakeValue: 4.5
   dashCooldown:
-    fakeValue: 1.5
+    fakeValue: 1
   staminaRegen:
     fakeValue: 2
   staminaRegenInterval:
@@ -14133,7 +14071,7 @@ MonoBehaviour:
     fakeValue: 0.1
   comboResetTime:
     fakeValue: 1
-  combatModeRange: {x: 4.5, y: 2.5}
+  combatModeRange: {x: 3.5, y: 2.5}
   potionCooldown:
     fakeValue: 0.5
   windrunnerBuffTimer: 0
@@ -14393,7 +14331,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Actions: {fileID: -944628639613478452, guid: 08c3740a5f6ff4149ac4ea7b1521ad25, type: 3}
-  m_NotificationBehavior: 2
+  m_NotificationBehavior: 3
   m_UIInputModule: {fileID: 0}
   m_DeviceLostEvent:
     m_PersistentCalls:
@@ -14441,6 +14379,10 @@ MonoBehaviour:
       m_Calls: []
     m_ActionId: 0de418cf-9fc5-4378-bfb6-949014025dac
     m_ActionName: MenuControls/AnyKey[/Keyboard/anyKey,/XInputControllerWindows/start,/XInputControllerWindows/buttonSouth,/XInputControllerWindows/buttonEast,/XInputControllerWindows/buttonWest,/XInputControllerWindows/buttonNorth]
+  - m_PersistentCalls:
+      m_Calls: []
+    m_ActionId: e408da00-495b-4c1c-86b0-21463d450d6e
+    m_ActionName: MenuControls/Cancel[/Keyboard/escape,/XInputControllerWindows/buttonEast]
   m_NeverAutoSwitchControlSchemes: 0
   m_DefaultControlScheme: 
   m_DefaultActionMap: PlayerControls
@@ -15340,7 +15282,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 15.4, y: 129}
+  m_AnchoredPosition: {x: 15.400024, y: 129}
   m_SizeDelta: {x: 0, y: -341.49994}
   m_Pivot: {x: 0.5, y: 0.6}
 --- !u!114 &1785199045
@@ -15920,7 +15862,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   hotkey: 113
-  keypadhotkey: Start
   events:
     m_PersistentCalls:
       m_Calls:
@@ -16503,7 +16444,7 @@ RectTransform:
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
   m_AnchoredPosition: {x: 1, y: 150}
-  m_SizeDelta: {x: 200, y: 50}
+  m_SizeDelta: {x: 400, y: 50}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1907909821
 MonoBehaviour:
@@ -16748,8 +16689,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 104704107c6debf4cb4c6ef21959a67a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  hotkey: 113
-  keypadhotkey: Start
+  hotkey: 2
   events:
     m_PersistentCalls:
       m_Calls:
@@ -17885,67 +17825,31 @@ MonoBehaviour:
       timing: 9
       direction: 1
     - monster: {fileID: 1176884459242982445, guid: 5566c7c73111dd6449a300458ba14c59, type: 3}
-      timing: 8
-      direction: 3
-    - monster: {fileID: 1176884459242982445, guid: 5566c7c73111dd6449a300458ba14c59, type: 3}
-      timing: 10
+      timing: 12
       direction: 4
     - monster: {fileID: 1176884459242982445, guid: 5566c7c73111dd6449a300458ba14c59, type: 3}
       timing: 12
       direction: 4
-    - monster: {fileID: 1176884459242982445, guid: 5566c7c73111dd6449a300458ba14c59, type: 3}
-      timing: 14
-      direction: 3
-    - monster: {fileID: 1176884459242982445, guid: 5566c7c73111dd6449a300458ba14c59, type: 3}
-      timing: 18
-      direction: 1
-    - monster: {fileID: 1176884459242982445, guid: 5566c7c73111dd6449a300458ba14c59, type: 3}
-      timing: 18
-      direction: 2
-  - activate: 0
-    spawnInfo:
-    - monster: {fileID: 1176884459242982445, guid: 5566c7c73111dd6449a300458ba14c59, type: 3}
-      timing: 2
-      direction: 0
-    - monster: {fileID: 1176884459242982445, guid: 5566c7c73111dd6449a300458ba14c59, type: 3}
-      timing: 4
-      direction: 1
-    - monster: {fileID: 1176884459242982445, guid: 5566c7c73111dd6449a300458ba14c59, type: 3}
-      timing: 6
-      direction: 2
-    - monster: {fileID: 1176884459242982445, guid: 5566c7c73111dd6449a300458ba14c59, type: 3}
-      timing: 8
-      direction: 3
-    - monster: {fileID: 1176884459242982445, guid: 5566c7c73111dd6449a300458ba14c59, type: 3}
-      timing: 10
-      direction: 4
-    - monster: {fileID: 1176884459242982445, guid: 5566c7c73111dd6449a300458ba14c59, type: 3}
-      timing: 12
-      direction: 4
-    - monster: {fileID: 1176884459242982445, guid: 5566c7c73111dd6449a300458ba14c59, type: 3}
-      timing: 14
-      direction: 3
     - monster: {fileID: 1176884459242982445, guid: afd9ec1e2f71d1e48a9de60f4c9321e9, type: 3}
-      timing: 25
-      direction: 6
+      timing: 20
+      direction: 4
+  - activate: 0
+    spawnInfo: []
   - activate: 1
     spawnInfo:
     - monster: {fileID: 2563176564286290611, guid: 4c1123a84fcd9004c816fc30e488215c, type: 3}
       timing: 2
       direction: 3
   - activate: 0
-    spawnInfo:
-    - monster: {fileID: 1176884459242982445, guid: 5566c7c73111dd6449a300458ba14c59, type: 3}
-      timing: 2
-      direction: 0
-    - monster: {fileID: 1176884459242982445, guid: 5566c7c73111dd6449a300458ba14c59, type: 3}
-      timing: 4
-      direction: 1
+    spawnInfo: []
   - activate: 1
     spawnInfo:
     - monster: {fileID: 1176884459242982445, guid: afd9ec1e2f71d1e48a9de60f4c9321e9, type: 3}
       timing: 2
       direction: 1
+    - monster: {fileID: 2563176564286290611, guid: 4c1123a84fcd9004c816fc30e488215c, type: 3}
+      timing: 4
+      direction: 3
   - activate: 1
     spawnInfo:
     - monster: {fileID: 8186940805437768917, guid: 4669a42663b0f4746953bd2da80d08a8, type: 3}
@@ -17964,12 +17868,15 @@ MonoBehaviour:
       direction: 2
   - activate: 1
     spawnInfo:
-    - monster: {fileID: 557815924983375053, guid: 0b27cb4acea757145927376d81302d94, type: 3}
+    - monster: {fileID: 2563176564286290611, guid: 4c1123a84fcd9004c816fc30e488215c, type: 3}
       timing: 2
-      direction: 3
-    - monster: {fileID: 557815924983375053, guid: 0b27cb4acea757145927376d81302d94, type: 3}
-      timing: 5.5
       direction: 4
+    - monster: {fileID: 2563176564286290611, guid: 4c1123a84fcd9004c816fc30e488215c, type: 3}
+      timing: 4
+      direction: 3
+    - monster: {fileID: 2563176564286290611, guid: 91d21c433a21c5e4e83f421931e16e09, type: 3}
+      timing: 9
+      direction: 3
   - activate: 1
     spawnInfo:
     - monster: {fileID: 4133860276208987401, guid: 079ea7afb6444a34cab6e63ca3cf8d2d, type: 3}

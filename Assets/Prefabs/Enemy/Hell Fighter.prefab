@@ -256,7 +256,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   enemyName: HellFighter
-  maxHp: 600
+  maxHp: 540
   maxStamina: 20
   maxArmor: 20
   fadeOutAfterDead: 0

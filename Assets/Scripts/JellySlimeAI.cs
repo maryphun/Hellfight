@@ -69,12 +69,12 @@ public class JellySlimeAI : MonoBehaviour
 
         if (level > 10)
         {
-            controller.AddMaxHp(50);
+            controller.AddMaxHp(37);
             attackDamageBase += Random.Range(1,3);
         }
         if (level > 20)
         {
-            controller.AddMaxHp(60);
+            controller.AddMaxHp(50);
             attackDamageBase += Random.Range(2, 5);
         }
     }

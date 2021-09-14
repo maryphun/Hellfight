@@ -38,6 +38,7 @@ public class HellFighterAI : MonoBehaviour
     private GameObject hellBurstEffect;
     private GameManager gameMng;
     bool firstTimeShockwave = true;
+    bool shockwaveHitPlayer = false;
 
     [SerializeField] int patternCounter = 0;
 
@@ -289,6 +290,7 @@ public class HellFighterAI : MonoBehaviour
                 int bounceNum = firstTimeShockwave ? 0: 1;
                 firstTimeShockwave = false;
                 AudioManager.Instance.PlaySFX("wind", 0.8f);
+                shockwaveHitPlayer = false;
                 StartCoroutine(Shockwave(Mathf.Max(transform.position.y, -1.3f), transform.position.x + (direction * attackRange), 0.035f, direction * 1f, bounceNum));
 
                 // SHAKE SCREEN
@@ -371,15 +373,16 @@ public class HellFighterAI : MonoBehaviour
 
         // DEAL DAMAGE
         if (Mathf.Abs(player.transform.position.x - initialPosition) < 1.0f
-            && Mathf.Abs(player.transform.position.y - y) < 1.2f)
+            && Mathf.Abs(player.transform.position.y - y) < 1.2f && !shockwaveHitPlayer)
         {
+            shockwaveHitPlayer = true;
             player.DealDamage(attackDamageBase + Random.Range(0, attackDamageMax + 1), transf);
         }
 
         // LOOP
         if (initialPosition < -9f || initialPosition > 9f)
         {
-            if (Mathf.Abs(rangeinterval) == 1f && bounceNumber > 0)
+            if (Mathf.Abs(rangeinterval) == 1f && bounceNumber > 0 && !shockwaveHitPlayer)
             {
                 StartCoroutine(Shockwave(y, initialPosition - rangeinterval, timeinterval * 2f, -(rangeinterval * 0.5f), bounceNumber-1));
             }

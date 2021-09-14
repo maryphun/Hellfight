@@ -339,7 +339,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   enemyName: Skelly
-  maxHp: 100
+  maxHp: 77
   maxStamina: 20
   maxArmor: 20
   fadeOutAfterDead: 1

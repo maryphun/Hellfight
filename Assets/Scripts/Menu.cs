@@ -6,6 +6,7 @@ using UnityEngine.UI;
 using DG.Tweening;
 using TMPro;
 using LootLocker.Requests;
+using OPS.AntiCheat.Prefs;
 
 public enum LeaderboardType
 {
@@ -60,9 +61,6 @@ public class Menu : MonoBehaviour
     [SerializeField] RectTransform leftTransition;
     [SerializeField] RectTransform rightTransition;
 
-    [Header("Input")]
-    public bool anyKey;
-
     [Header("Debug")]
     [SerializeField] MenuSelection selectIndex;
     [SerializeField] MenuState menuState;
@@ -73,7 +71,7 @@ public class Menu : MonoBehaviour
 
     [SerializeField] Dictionary<string, string>[] leaderboardRankList;
     int leaderBoardTotalEntry;
-    public PlayerInput _input;
+    public PlayerAction _input;
 
     private void Start()
     {
@@ -83,7 +81,7 @@ public class Menu : MonoBehaviour
         leaderboardclickable = true;
 
         // LOCAL NAME SAVED
-        playerNameText.text = PlayerPrefs.GetString("PlayerName", string.Empty); ;
+        playerNameText.text = ProtectedPlayerPrefs.GetString("PlayerName", string.Empty); ;
 
         // UPDATE VERSION NAME
         versionText.SetText("version " + Application.version + " BETA");
@@ -114,14 +112,33 @@ public class Menu : MonoBehaviour
 
         // INIT
         menuState = MenuState.START;
+    }
 
+    private void Awake()
+    {
         // INPUT SYSTEM
-        _input = new PlayerInput();
-        _input.MenuControls.
+        _input = new PlayerAction();
+        _input.MenuControls.Move.performed += ctx => SelectUpDown(ctx.ReadValue<float>());
+        _input.MenuControls.AnyKey.performed += ctx =>   StartMenu();
+        _input.MenuControls.Confirm.performed += ctx =>  FinishNameInput();
+        _input.MenuControls.Confirm.performed += ctx =>  SelectSelection();
+        _input.MenuControls.Cancel.performed += ctx =>   HideLeaderBoard();
+    }
+
+    private void OnEnable()
+    {
+        _input.Enable();
+    }
+
+    private void OnDisable()
+    {
+        _input.Disable();
     }
 
     private void StartMenu()
     {
+        if (menuState != MenuState.START) return;
+
         menuState = MenuState.NONE;
         AudioManager.Instance.PlaySFX("startgame");
         StartCoroutine(StartMenuAnimation(startGameText.gameObject));
@@ -129,6 +146,7 @@ public class Menu : MonoBehaviour
 
     private void FinishNameInput()
     {
+        if (menuState != MenuState.NAME_INPUT) return;
         if (playerNameText.text.Length <= 0) return;
 
         // DISABLE MENU INPUT
@@ -152,7 +170,7 @@ public class Menu : MonoBehaviour
         }
 
         // STATE
-        playerNameText.text = PlayerPrefs.GetString("PlayerName", string.Empty);
+        playerNameText.text = ProtectedPlayerPrefs.GetString("PlayerName", string.Empty);
         if (playerNameText.text == string.Empty)
         {
             menuState = MenuState.NAME_INPUT;
@@ -187,50 +205,6 @@ public class Menu : MonoBehaviour
         
     }
 
-    private void Update()
-    {
-        // INPUT FOR DIFFERENT STATE
-        switch (menuState)
-        {
-            case MenuState.START:
-                if (Keyboard.current.anyKey.wasPressedThisFrame ||
-                    Gamepad.current.startButton.wasPressedThisFrame ||
-                    Mouse.current.leftButton.wasPressedThisFrame)
-                {
-                    StartMenu();
-                }
-                break;
-            case MenuState.NAME_INPUT:
-                if (Input.GetKeyDown(KeyCode.KeypadEnter) || Input.GetKeyDown(KeyCode.Return) || Input.GetButtonDown("Start"))
-                {
-                    FinishNameInput();
-                }
-                break;
-            case MenuState.MAIN_MENU:
-                if (Input.GetKeyDown(KeyCode.DownArrow) || Input.GetKeyDown(KeyCode.S) || ((Input.anyKeyDown) && Input.GetAxisRaw("JoyPadVertical") == -1))
-                {
-                    SelectionDown();
-                }
-                if (Input.GetKeyDown(KeyCode.UpArrow) || Input.GetKeyDown(KeyCode.W) || ((Input.anyKeyDown) && Input.GetAxisRaw("JoyPadVertical") == 1))
-                {
-                    SelectionUp();
-                }
-                if (Input.GetKeyDown(KeyCode.KeypadEnter) || Input.GetKeyDown(KeyCode.Return) || Input.GetKeyDown(KeyCode.Z) || Input.GetKeyDown(KeyCode.J)
-                     || Input.GetButtonDown("Dash"))
-                {
-                    SelectSelection();
-                }
-                break;
-            case MenuState.LEADERBOARD:
-                if (Input.GetKeyDown(KeyCode.Escape)
-                     || Input.GetButtonDown("Spell"))
-                {
-                    HideLeaderBoard();
-                }
-                break;
-        }
-    }
-
     private void ChangeSelection(MenuSelection index, float offset = -1)
     {
         selectIcon.anchoredPosition = new Vector2(0f, choiceText[(int)index].GetComponent<RectTransform>().anchoredPosition.y);
@@ -253,6 +227,20 @@ public class Menu : MonoBehaviour
             {
                 choiceText[i].color = Color.white;
             }
+        }
+    }
+
+    public void SelectUpDown(float value)
+    {
+        if (menuState != MenuState.MAIN_MENU) return;
+
+        if (value < 0)
+        {
+            SelectionUp();
+        }
+        else
+        {
+            SelectionDown();
         }
     }
 
@@ -294,6 +282,7 @@ public class Menu : MonoBehaviour
 
     public void SelectSelection()
     {
+        if (menuState != MenuState.MAIN_MENU) return;
         if (disableMenuControl) return;
         disableMenuControl = true;
         switch (selectIndex)
@@ -367,7 +356,8 @@ public class Menu : MonoBehaviour
 
     public void HideLeaderBoard()
     {
-        Debug.Log("!!!");
+        if (menuState != MenuState.LEADERBOARD) return;
+
         // avoid clicking too fast
         if (!leaderboardclickable) return;
         leaderboardObject.SetUnactiveLeaderboardButtonForSecond(0.5f);
@@ -570,9 +560,9 @@ public class Menu : MonoBehaviour
         AudioManager.Instance.PlaySFX("warning", 0.5f);
         resetDataPanel.gameObject.SetActive(true);
         resetDataPanel.GetComponent<CanvasGroup>().DOFade(1.0f, 0.5f);
-        resetDataText.SetText("Name: <color=white>" + PlayerPrefs.GetString("PlayerName") + "</color>\n" +
+        resetDataText.SetText("Name: <color=white>" + ProtectedPlayerPrefs.GetString("PlayerName") + "</color>\n" +
                               "Best Level: <color=white>" + ProgressManager.Instance().LoadUnlockLevel() + "</color>\n" +
-                              "Last Death: <color=white>" + PlayerPrefs.GetInt("LastDeath", 0) + "</color>\n");
+                              "Last Death: <color=white>" + ProtectedPlayerPrefs.GetInt("LastDeath", 0) + "</color>\n");
     }
 
     public void CloseResetDataMenu()

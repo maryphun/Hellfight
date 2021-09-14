@@ -567,11 +567,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   haveTurnAnimation: 0
-  attackDamageBase: 35
-  attackDamageMax: 6
+  attackDamageBase: 22
+  attackDamageMax: 5
   allowAttack: 1
-  moveSpeed: 5
-  attackRange: 2.5
+  moveSpeed: 2
+  attackRange: 2.7
   attackMoveDistance: 0.5
   staminaRegenInterval: 0.05
   dealDamageDelay: 0.15
@@ -600,9 +600,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   enemyName: CatKnight
-  maxHp: 400
+  maxHp: 270
   maxStamina: 20
-  maxArmor: 130
+  maxArmor: 235
   fadeOutAfterDead: 1
   attackedStopAttack: 0
   mass: 1.9

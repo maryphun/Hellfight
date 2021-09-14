@@ -97,19 +97,19 @@ public class ProgressManager : Singleton<ProgressManager>
                 rtn.skill_Icon = "basedamage";
                 break;
             case Skill.MaxDamage:
-                rtn.value = 4 + Random.Range(0, 3);
+                rtn.value = 5 + Random.Range(0, 4);
                 rtn.skill_name = "<color=#800000ff>Max Damage</color>";
                 rtn.skill_description = "Increase your extra random damage output on top of your normal damage by <color=#800000ff>" + ((int)rtn.value).ToString() + "</color>.\n<color=grey>Also Increase stamina cost by " + ((int)rtn.value).ToString() + ".</color>";
                 rtn.skill_Icon = "maxdamage";
                 break;
             case Skill.Vitality:
-                rtn.value = 13 + Random.Range(0, 10);
+                rtn.value = 13 + Random.Range(0, 11);
                 rtn.skill_name = "<color=#00ff00ff>Vitality</color>";
                 rtn.skill_description = "Increase your max health by <color=#00ff00ff>" + rtn.value.ToString() + "</color>.";
                 rtn.skill_Icon = "vitality";
                 break;
             case Skill.DashCooldown:
-                rtn.value = 12 + Random.Range(0, 8);
+                rtn.value = 20 + Random.Range(0, 14);
                 rtn.skill_name = "<color=#ffff00ff>Dash Cooldown</color>";
                 rtn.skill_description = "Decrease dash cooldown time by <color=#ffff00ff>" + rtn.value.ToString() + "%</color>.";
                 rtn.skill_Icon = "dashcooldown";
@@ -117,7 +117,7 @@ public class ProgressManager : Singleton<ProgressManager>
             case Skill.DashDamage:
                 rtn.value = 11 + Random.Range(0, 4);
                 rtn.skill_name = "<color=#008080ff>Dash Damage</color>";
-                rtn.skill_description = "Dashing deal <color=#008080ff>" + rtn.value.ToString() + " damage</color> but cooldown <color=red>0.5 sec</color> longer. The number can stack.";
+                rtn.skill_description = "Dashing deal <color=#008080ff>" + rtn.value.ToString() + " damage</color> but cooldown <color=red>0.25 sec</color> longer. The number can stack.";
                 rtn.skill_Icon = "dashdamage";
                 break;
             case Skill.Stamina:
@@ -133,13 +133,13 @@ public class ProgressManager : Singleton<ProgressManager>
                 rtn.skill_Icon = "staminarecover";
                 break;
             case Skill.HPRegen:
-                rtn.value = 7 + Random.Range(0, 4);
-                rtn.skill_name = "<color=#008000ff>HP Regen</color>";
-                rtn.skill_description = "Heal <color=#008000ff>"+ rtn.value + "</color> hp when proceeding to next level.";
+                rtn.value = 10 + Random.Range(0, 7);
+                rtn.skill_name = "<color=#ff2222ff>HP Regen</color>";
+                rtn.skill_description = "Heal <color=#ff2222ff>" + rtn.value + "</color> hp when proceeding to next level.";
                 rtn.skill_Icon = "hpregen";
                 break;
             case Skill.LightningLash:
-                rtn.value = 10 + Random.Range(0, 5);
+                rtn.value = 10 + Random.Range(0, 6);
                 rtn.skill_name = "<color=#800080ff>Lightning Lash</color>";
                 rtn.skill_description = "Performing a dash attack deal double damage and heals <color=#800080ff>" + rtn.value + "%</color> of your damage dealt into HP.";
                 rtn.skill_Icon = "lightninglash";
@@ -157,13 +157,13 @@ public class ProgressManager : Singleton<ProgressManager>
                 rtn.skill_Icon = "survive";
                 break;
             case Skill.ComboMaster:
-                rtn.value = 7 + Random.Range(0, 4);
+                rtn.value = 8 + Random.Range(0, 4);
                 rtn.skill_name = "<color=blue>Combo Master</color>";
                 rtn.skill_description = "Gain <color=blue>" + rtn.value.ToString() + "</color> stamina per combo when combo ended.";
                 rtn.skill_Icon = "combomaster";
                 break;
             case Skill.BreakFall:
-                rtn.value = 50 + Random.Range(0, 30);
+                rtn.value = 30 + Random.Range(0, 10);
                 rtn.skill_name = "<color=#008080ff>Break-Fall</color>";
                 rtn.skill_description = "Crouching block attack by the cost of <color=#008080ff>" + rtn.value + "</color> stamina.";
                 rtn.skill_Icon = "breakfall";
@@ -171,7 +171,7 @@ public class ProgressManager : Singleton<ProgressManager>
             case Skill.Windrunner:
                 rtn.value = 40 + Random.Range(0, 50);
                 rtn.skill_name = "<color=#00ffffff>Windrunner</color>";
-                rtn.skill_description = "Gain 60 movement speed and attack cost half stamina after dash for " + (float)rtn.value/100f + " second. The time can stack.";
+                rtn.skill_description = "Gain <color=#00ffffff>60</color> movement speed and attack cost half stamina after dash for <color=#00ffffff>" + (float)rtn.value/100f + "</color> second. The time can stack.";
                 rtn.skill_Icon = "windrunner";
                 break;
             case Skill.Potion:
@@ -183,19 +183,19 @@ public class ProgressManager : Singleton<ProgressManager>
             case Skill.Deflect:
                 rtn.value = 1;
                 rtn.skill_name = "<color=#800080ff>Deflect</color>";
-                rtn.skill_description = "Restore <color=#800080ff>all stamina</color> back if you dash through an enemy in attack animation.";
+                rtn.skill_description = "Restore <color=#800080ff>all stamina</color> back if you dash through an enemy in attack animation.\n<color=grey>Slime is excluded.</color>";
                 rtn.skill_Icon = "deflect";
                 break;
             case Skill.Berserker:
                 rtn.value = 8 + Random.Range(0, 3);
                 rtn.skill_name = "<color=#a52a2aff>Berserker</color>";
-                rtn.skill_description = "When you have less than 20% HP, your attack heals <color=#a52a2aff>" + rtn.value + " HP</color>. The number can stack.";
+                rtn.skill_description = "When you have less than 33% HP, your attack heals <color=#a52a2aff>" + rtn.value + " HP</color>. The number can stack.";
                 rtn.skill_Icon = "berserker";
                 break;
             case Skill.Recover:
                 rtn.value = 1;
                 rtn.skill_name = "<color=#00ffffff>Recover</color>";
-                rtn.skill_description = "Crouching make you gain stamina even there are enemy nearby.";
+                rtn.skill_description = "<color=#00ffffff>Crouching</color> make you gain stamina even there are enemy nearby.";
                 rtn.skill_Icon = "recover";
                 break;
             default:

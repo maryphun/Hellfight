@@ -242,7 +242,7 @@ public class CatKnightAI : MonoBehaviour
             }
             return;
         }
-        else if (((float)controller.GetCurrentArmor() / (float)controller.GetMaxArmor()) < 0.2f && Mathf.Abs(transform.position.x - player.transform.position.x) > 5f && abilityCooldownCnt <= 0.0f)
+        else if (((float)controller.GetCurrentArmor() / (float)controller.GetMaxArmor()) <= 0.0f && Mathf.Abs(transform.position.x - player.transform.position.x) > 5f && abilityCooldownCnt <= 0.0f)
         {
             InitStatus(Status.SpecialAbility);
         }
@@ -317,12 +317,12 @@ public class CatKnightAI : MonoBehaviour
         if (attackPattern == 2 && !dealsecondDamageAlerady && statusTimer < 1.25f)
         {
             // deal damage 
-            float direction = controller.GetDirectionInteger() * -1;
-            if (Mathf.Abs(player.transform.position.x - (transform.position.x + (direction * attackRange / 2f))) < attackRange
+            float back = controller.GetDirectionInteger() * -1;
+            if (Mathf.Abs(player.transform.position.x - (transform.position.x + controller.GetCollider().bounds.size.x)) < attackRange
                 && Mathf.Abs(player.transform.position.y - transform.position.y) < attackRange / 2f
                 && !controller.IsFacingPlayer())
             {
-                player.DealDamage(attackDamageBase + Random.Range(0, attackDamageMax + 1), transform);
+                player.DealDamage((attackDamageBase + Random.Range(0, attackDamageMax + 1)) / 4, transform);
             }
             // flag
             dealsecondDamageAlerady = true;
