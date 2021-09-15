@@ -162,8 +162,8 @@ public class EnemyControl : MonoBehaviour
         hpbar.DOFade(1.0f, 0.0f);
         hpbarFade.DOFade(1.0f, 0.0f);
 
-        hpbar.DOFade(0.0f, 0.85f);
-        hpbarFade.DOFade(0.0f, 0.85f);
+        hpbar.DOFade(0.0f, 2f);
+        hpbarFade.DOFade(0.0f, 2f);
 
         if (currentHp == 0)
         {
@@ -268,8 +268,8 @@ public class EnemyControl : MonoBehaviour
             armorbar.DOFade(1.0f, 0.0f);
             armorFade.DOFade(1.0f, 0.0f);
 
-            armorbar.DOFade(0.0f, 0.85f);
-            armorFade.DOFade(0.0f, 0.85f);
+            armorbar.DOFade(0.0f, 2f);
+            armorFade.DOFade(0.0f, 2f);
 
             return true;
         }

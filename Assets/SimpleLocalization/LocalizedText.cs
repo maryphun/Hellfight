@@ -24,6 +24,7 @@ namespace Assets.SimpleLocalization
 
         private void Localize()
         {
+            Debug.Log("Here " + LocalizationManagerHellFight.Instance().GetCurrentLanguage());
             GetComponent<Text>().text = LocalizationManager.Localize(LocalizationKey);
         }
     }

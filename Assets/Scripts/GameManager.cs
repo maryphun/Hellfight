@@ -9,6 +9,7 @@ using LootLocker.Requests;
 using UnityEngine.Events;
 using OPS.AntiCheat.Prefs;
 using OPS.AntiCheat.Detector;
+using Assets.SimpleLocalization;
 
 
 public class GameManager : MonoBehaviour
@@ -184,10 +185,10 @@ public class GameManager : MonoBehaviour
         NarrativeText.color = new Color(1.0f, 0.9f, 0.0f, 0.0f);
         NarrativeText.DOFade(1.0f, 2.0f);
 
-        string narrative = "Welcome our new challenger";
+        string narrative = LocalizationManager.Localize("Text.NewChallenger");
         if (ProgressManager.Instance().GetUnlockLevel() > 0)
         {
-            narrative = "Welcome back!";
+            narrative = LocalizationManager.Localize("Text.Retry");
         }
         NarrativeText.SetText(narrative);
 
@@ -419,16 +420,23 @@ public class GameManager : MonoBehaviour
         }
         timeCounterCoroutine = StartCoroutine(TimeCounterLoop());
 
+        // Reset Survivor
+        if (level % 10 == 1)
+        {
+            survivorSelected = false;
+        }
+
+        // Tips and narrative
         int record = ProgressManager.Instance().GetUnlockLevel();
         if (level == 1 && (record <= level))
         {
             if (ControlPattern.Instance().IsJoystickConnected())
             {
-                tipsText.SetText(Input.GetJoystickNames()[0] + "\n<font=pixelinput SDF>4</font> ATTACK <font=pixelinput SDF>6</font> JUMP <font=pixelinput SDF>7</font> DASH");
+                tipsText.SetText(Input.GetJoystickNames()[0] + "\n<font=pixelinput SDF>4</font> "+ LocalizationManager.Localize("Tutorial.Attack") + " <font=pixelinput SDF>6</font> " + LocalizationManager.Localize("Tutorial.Jump") + " <font=pixelinput SDF>7</font> " + LocalizationManager.Localize("Tutorial.Dash"));
             }
             else
             {
-                tipsText.SetText("<font=pixelinput SDF>W</font>\n<font=pixelinput SDF>ASD</font>\nMOVE\n<font=pixelinput SDF>z</font> ATTACK <font=pixelinput SDF>x</font> DASH");
+                tipsText.SetText("<font=pixelinput SDF>W</font>\n<font=pixelinput SDF>ASD</font>\n" + LocalizationManager.Localize("Tutorial.Move") + "\n<font=pixelinput SDF>z</font> " + LocalizationManager.Localize("Tutorial.Attack") + " <font=pixelinput SDF>x</font> " + LocalizationManager.Localize("Tutorial.Jump"));
             }
             tipsText.DOFade(1.0f, 0.5f);
         } 
@@ -436,52 +444,52 @@ public class GameManager : MonoBehaviour
         {
             if (ControlPattern.Instance().GetControlPattern() == ControlPattern.CtrlPattern.JOYSTICK)
             {
-                tipsText.SetText("<font=pixelinput SDF>0</font> STATUS");
+                tipsText.SetText("<font=pixelinput SDF>0</font> " + LocalizationManager.Localize("Tutorial.Status"));
             }
             else
             {
-                tipsText.SetText("<font=pixelinput SDF>q</font> STATUS");
+                tipsText.SetText("<font=pixelinput SDF>q</font> " + LocalizationManager.Localize("Tutorial.Status"));
             }
             tipsText.DOFade(1.0f, 0.5f);
         }
         else if (level == 3 && record <= level)
         {
-            tipsText.SetText("Stamina gain slower when enemy is nearby, plan your move!");
+            tipsText.SetText(LocalizationManager.Localize("Tutorial.TipsLevel3"));
             tipsText.DOFade(1.0f, 0.5f);
         }
         else if (level == 5 && record <= level)
         {
-            tipsText.SetText("First Trial");
+            tipsText.SetText(LocalizationManager.Localize("Tutorial.TipsLevel5"));
             tipsText.DOFade(1.0f, 0.5f);
         }
         else if (level == 8 && record <= level)
         {
-            tipsText.SetText("Your third combo attack deal more damage");
+            tipsText.SetText(LocalizationManager.Localize("Tutorial.TipsLevel8"));
             tipsText.DOFade(1.0f, 0.5f);
         }
         else if (level == 10 && record <= level)
         {
-            tipsText.SetText("Find his weakness, try to jump!");
-            tipsText.DOFade(1.0f, 0.5f);
-        }
-        else if (level == 15 && record <= level)
-        {
-            tipsText.SetText("They're adorable");
+            tipsText.SetText(LocalizationManager.Localize("Tutorial.TipsLevel10"));
             tipsText.DOFade(1.0f, 0.5f);
         }
         else if (level == 11 && record <= level)
         {
-            tipsText.SetText("Your stamina gain slower as you dash continuously");
+            tipsText.SetText(LocalizationManager.Localize("Tutorial.TipsLevel11"));
+            tipsText.DOFade(1.0f, 0.5f);
+        }
+        else if (level == 15 && record <= level)
+        {
+            tipsText.SetText(LocalizationManager.Localize("Tutorial.TipsLevel15"));
             tipsText.DOFade(1.0f, 0.5f);
         }
         else if (level == 25 && record <= level)
         {
-            tipsText.SetText("Break his defense!");
+            tipsText.SetText(LocalizationManager.Localize("Tutorial.TipsLevel25"));
             tipsText.DOFade(1.0f, 0.5f);
         }
         else if (level == 26)
         {
-            tipsText.SetText("Thank you for playing! The rest is still developing.");
+            tipsText.SetText(LocalizationManager.Localize("Tutorial.TipsLevel26"));
             tipsText.DOFade(1.0f, 0.5f);
         }
         else  if (potionSelected && ProtectedPlayerPrefs.GetInt("TutorialPotion", 0) != 1)
@@ -489,11 +497,11 @@ public class GameManager : MonoBehaviour
             ProtectedPlayerPrefs.SetInt("TutorialPotion", 1);
             if (ControlPattern.Instance().IsJoystickConnected())
             {
-                tipsText.SetText("\n<font=pixelinput SDF>+</font> USE ITEM");
+                tipsText.SetText("\n<font=pixelinput SDF>+</font> " + LocalizationManager.Localize("Tutorial.UseItem"));
             }
             else
             {
-                tipsText.SetText("<font=pixelinput SDF>c</font> USE ITEM");
+                tipsText.SetText("<font=pixelinput SDF>c</font> " + LocalizationManager.Localize("Tutorial.UseItem"));
             }
         }
         else
@@ -510,11 +518,11 @@ public class GameManager : MonoBehaviour
         {
             if (ControlPattern.Instance().GetControlPattern() == ControlPattern.CtrlPattern.JOYSTICK)
             {
-                tipsText.SetText(Input.GetJoystickNames()[0] + "\n<font=pixelinput SDF>4</font> ATTACK <font=pixelinput SDF>6</font> JUMP <font=pixelinput SDF>7</font> DASH");
+                tipsText.SetText(Input.GetJoystickNames()[0] + "\n<font=pixelinput SDF>4</font> " + LocalizationManager.Localize("Tutorial.Attack") + " <font=pixelinput SDF>6</font> " + LocalizationManager.Localize("Tutorial.Jump") + " <font=pixelinput SDF>7</font> " + LocalizationManager.Localize("Tutorial.Dash"));
             }
             else
             {
-                tipsText.SetText("<font=pixelinput SDF>W</font>\n<font=pixelinput SDF>ASD</font>\nMOVE\n<font=pixelinput SDF>z</font> ATTACK <font=pixelinput SDF>x</font> DASH");
+                tipsText.SetText("<font=pixelinput SDF>W</font>\n<font=pixelinput SDF>ASD</font>\n" + LocalizationManager.Localize("Tutorial.Move") + "\n<font=pixelinput SDF>z</font> " + LocalizationManager.Localize("Tutorial.Attack") + " <font=pixelinput SDF>x</font> " + LocalizationManager.Localize("Tutorial.Jump"));
             }
         }
     }
@@ -536,10 +544,10 @@ public class GameManager : MonoBehaviour
         // NARRATIVE TEXT
         NarrativeText.color = new Color(0.75f, 0.0f, 0.0f, 0.0f);
         NarrativeText.DOFade(1.0f, 0.5f);
-        NarrativeText.SetText("Jump and proceed to the next level");
-        if (currentLevel == 9) NarrativeText.SetText("Proceed to Boss Fight - <color=#ff00ffff>Broyon</color>!");
-        if (currentLevel == 19) NarrativeText.SetText("Proceed to Boss Fight - <color=#550000ff>Hell Fighter</color>!");
-
+        NarrativeText.SetText(LocalizationManager.Localize("Text.Proceed"));
+        if (currentLevel == 9) NarrativeText.SetText(LocalizationManager.Localize("Text.Proceedlvl9"));
+        if (currentLevel == 19) NarrativeText.SetText(LocalizationManager.Localize("Text.Proceedlvl19"));
+        if (LocalizationManagerHellFight.Instance().GetCurrentLanguage() == "Japanese") NarrativeText.SetText("<font=JPPixel SDF>" + NarrativeText.text + "</font>");
         // TIPS TEXT
         if (currentLevel == 1)
         {

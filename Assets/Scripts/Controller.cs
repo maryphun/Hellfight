@@ -629,7 +629,6 @@ public class Controller : MonoBehaviour
                     hitenemy.transform.DOMoveX(hitenemy.transform.position.x + (moveSpeed * input.move * Time.deltaTime * multiplier), 0.1f, false);
                 }
 
-                Debug.Log(input.move);
                 if (input.move != 0 && !isKnockbacking)
                 {
                     transform.DOMoveX(transform.position.x + (calculatedMoveSpeed * input.move * Time.deltaTime * multiplier), 0.1f, false);

@@ -25,6 +25,7 @@ public class Menu : MonoBehaviour
     {
         NONE,
         START,
+        LANGUAGE_SELECT,
         NAME_INPUT,
         MAIN_MENU,
         LEADERBOARD,
@@ -38,6 +39,16 @@ public class Menu : MonoBehaviour
         Option,
         ResetLocalData,
         Exit,
+
+        MaxIndex
+    }
+
+    enum LanguageSelection
+    {
+        English,
+        SimplifiedChinese,
+        TraditionalChinese,
+        Japanese,
 
         MaxIndex
     }
@@ -56,13 +67,17 @@ public class Menu : MonoBehaviour
     [SerializeField] TMP_Text resetDataText;
     [SerializeField] TMP_Text startGameText;
     [SerializeField] RectTransform selectionParent;
+    [SerializeField] RectTransform languageSelectionParent;
     [SerializeField] RectTransform selectIcon;
+    [SerializeField] RectTransform languageSelectIcon;
     [SerializeField] TMP_Text[] choiceText;
+    [SerializeField] TMP_Text[] languageChoiceText;
     [SerializeField] RectTransform leftTransition;
     [SerializeField] RectTransform rightTransition;
 
     [Header("Debug")]
     [SerializeField] MenuSelection selectIndex;
+    [SerializeField] LanguageSelection languageSelectIndex;
     [SerializeField] MenuState menuState;
     [SerializeField] LeaderboardType leaderboardType;
 
@@ -79,6 +94,11 @@ public class Menu : MonoBehaviour
         selectIndex = MenuSelection.MainGame;
         disableMenuControl = true;
         leaderboardclickable = true;
+
+        // INITIALIZE LOCALIZATION
+        string language = ProtectedPlayerPrefs.GetString("Language", string.Empty);
+        LocalizationManagerHellFight.Instance().Initialization(Application.systemLanguage);
+        LocalizationManagerHellFight.Instance().SetCurrentLanguage(language);
 
         // LOCAL NAME SAVED
         playerNameText.text = ProtectedPlayerPrefs.GetString("PlayerName", string.Empty); ;
@@ -169,9 +189,14 @@ public class Menu : MonoBehaviour
             yield return new WaitForSeconds(0.18f);
         }
 
-        // STATE
+        string language = ProtectedPlayerPrefs.GetString("Language", string.Empty);
         playerNameText.text = ProtectedPlayerPrefs.GetString("PlayerName", string.Empty);
-        if (playerNameText.text == string.Empty)
+
+        if (language == string.Empty)
+        {
+            menuState = MenuState.LANGUAGE_SELECT;
+        }
+        else if (playerNameText.text == string.Empty)
         {
             menuState = MenuState.NAME_INPUT;
         }
@@ -182,6 +207,14 @@ public class Menu : MonoBehaviour
 
         switch (menuState)
         {
+            case MenuState.LANGUAGE_SELECT:
+                languageSelectionParent.gameObject.SetActive(true);
+                languageSelectIndex = GetDefaultLanguageSelection();
+
+                // Default selection choice
+                ChangeLanguageSelection(languageSelectIndex, 160f);
+
+                break;
             case MenuState.MAIN_MENU:
                 // ACTIVE UI COMPONENT
                 logo.gameObject.SetActive(true);
@@ -203,6 +236,22 @@ public class Menu : MonoBehaviour
                 break;
         }
         
+    }
+
+    private LanguageSelection GetDefaultLanguageSelection()
+    {
+        switch (Application.systemLanguage)
+        {
+            case SystemLanguage.English:
+                return LanguageSelection.English;
+            case SystemLanguage.ChineseSimplified:
+                return LanguageSelection.SimplifiedChinese;
+            case SystemLanguage.ChineseTraditional:
+                return LanguageSelection.TraditionalChinese;
+            case SystemLanguage.Japanese:
+                return LanguageSelection.Japanese;
+        }
+        return LanguageSelection.English;
     }
 
     private void ChangeSelection(MenuSelection index, float offset = -1)
@@ -230,8 +279,34 @@ public class Menu : MonoBehaviour
         }
     }
 
+    private void ChangeLanguageSelection(LanguageSelection index, float offset = -1)
+    {
+        languageSelectIcon.anchoredPosition = new Vector2(0f, languageChoiceText[(int)index].GetComponent<RectTransform>().anchoredPosition.y);
+
+        RectTransform leftIcon = languageSelectIcon.GetChild(0).GetComponent<RectTransform>();
+        RectTransform rightIcon = languageSelectIcon.GetChild(1).GetComponent<RectTransform>();
+
+        float size = offset == -1 ? languageChoiceText[(int)index].textBounds.size.x : offset;
+
+        leftIcon.anchoredPosition = new Vector2(-size / 2f - 20f, leftIcon.anchoredPosition.y);
+        rightIcon.anchoredPosition = new Vector2(size / 2f + 20f, rightIcon.anchoredPosition.y);
+
+        for (int i = 0; i < (int)LanguageSelection.MaxIndex; i++)
+        {
+            if (i == (int)index)
+            {
+                languageChoiceText[i].color = Color.red;
+            }
+            else
+            {
+                languageChoiceText[i].color = Color.white;
+            }
+        }
+    }
+
     public void SelectUpDown(float value)
     {
+        if (menuState == MenuState.LANGUAGE_SELECT) LanguageSelectUpDown(value);
         if (menuState != MenuState.MAIN_MENU) return;
 
         if (value < 0)
@@ -242,6 +317,28 @@ public class Menu : MonoBehaviour
         {
             SelectionDown();
         }
+    }
+
+    public void LanguageSelectUpDown(float value)
+    {
+        AudioManager.Instance.PlaySFX("cursor");
+        if (value < 0)
+        {
+            languageSelectIndex--;
+            if (languageSelectIndex < 0)
+            {
+                languageSelectIndex = LanguageSelection.MaxIndex - 1;
+            }
+        }
+        else
+        {
+            languageSelectIndex++;
+            if (languageSelectIndex >= LanguageSelection.MaxIndex)
+            {
+                languageSelectIndex = 0;
+            }
+        }
+        ChangeLanguageSelection(languageSelectIndex);
     }
 
     public void SelectionUp()
@@ -282,6 +379,30 @@ public class Menu : MonoBehaviour
 
     public void SelectSelection()
     {
+        if (menuState == MenuState.LANGUAGE_SELECT)
+        {
+            switch(languageSelectIndex)
+            {
+                case LanguageSelection.SimplifiedChinese:
+                    LocalizationManagerHellFight.Instance().SetCurrentLanguage("ChineseSimplified");
+                    break;
+                case LanguageSelection.TraditionalChinese:
+                    LocalizationManagerHellFight.Instance().SetCurrentLanguage("ChineseTraditional");
+                    break;
+                case LanguageSelection.Japanese:
+                    LocalizationManagerHellFight.Instance().SetCurrentLanguage("Japanese");
+                    break;
+                case LanguageSelection.English:
+                default:
+                    LocalizationManagerHellFight.Instance().SetCurrentLanguage("English");
+                    break;
+            }
+            ProtectedPlayerPrefs.SetString("Language", LocalizationManagerHellFight.Instance().GetCurrentLanguage());
+
+            // transition to next state
+            AudioManager.Instance.PlaySFX("startgame");
+            StartCoroutine(StartMenuAnimation(languageSelectionParent.gameObject));
+        }
         if (menuState != MenuState.MAIN_MENU) return;
         if (disableMenuControl) return;
         disableMenuControl = true;
