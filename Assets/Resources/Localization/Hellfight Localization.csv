@@ -33,7 +33,7 @@ PowerupName.StaminaRecoverSpeed,Stamina Recover,體力恢復,体力恢复,体力
 PowerupDescription.StaminaRecoverSpeed,Increase stamina regenerate per tick by <color=#00ff00ff>{0:N0}</color>.,體力恢復速度增加,体力恢复速度增加,スタミナ回復速度増加
 PowerupName.HPRegen,HP Regen,生命力恢復,生命力恢复,回復力
 PowerupDescription.HPRegen,Heal <color=#ff2222ff>{0:N0}</color> hp when proceeding to next level.,前往下一層時恢復<color=#ff2222ff>{0:N0}</color>點生命值,前往下一楼时回复<color=#ff2222ff>{0:N0}</color>点生命值,次のステージに進む時ライフ<color=#ff2222ff>{0:N0}</color>点回復
-PowerupName.LightningLash,Lightning Lash,閃電鞭,闪电鞭,<font=JF-Dot-Paw16 SDF>霹靂斬</font>撃
+PowerupName.LightningLash,Lightning Lash,閃電鞭,闪电鞭,霹靂斬撃
 PowerupDescription.LightningLash,Performing a dash attack deal critical damage and heals <color=#800080ff>{0:N0}%</color> of your damage dealt into HP.,"衝刺時使用攻擊以發動特殊技能, 造成暴擊傷害, 同時造成的傷害的<color=#800080ff>{0:N0}%</color>變換為生命值","冲刺时攻击以发动特殊效果, 造成暴击伤害, 同时造成的伤害的<color=#800080ff>{0:N0}%</color>变换为生命值","ダッシュ攻撃に特殊効果を付ける, ダメージ倍増で与えたダメージの<color=#800080ff>{0:N0}%</color>がライフに変換する"
 PowerupName.LifeDrain,Life Drain,生命汲取,生命汲取,ライフドレイン
 PowerupDescription.LifeDrain,Heal <color=#800000ff>{0:N0}</color> hp when you kill an enemy. The number can stack.,打倒敵人時恢復<color=#800000ff>{0:N0}</color>點生命值,打到敌人时恢復<color=#800000ff>{0:N0}</color>点生命值,敵を倒す時ライフ<color=#800000ff>{0:N0}</color>点回復する
@@ -63,7 +63,7 @@ Tutorial.Dash,DASH,<font=LanaPixel SDF>衝刺</font>,<font=LanaPixel SDF>冲刺<
 Tutorial.Status,STATUS,<font=LanaPixel SDF>狀態欄</font>,<font=LanaPixel SDF>状态栏</font>,<font=JPPixel SDF>ステータス</font>
 Tutorial.UseItem,USE ITEM,<font=LanaPixel SDF>物品</font>,<font=LanaPixel SDF>物品</font>,<font=JPPixel SDF>アイテム</font>
 Tutorial.Move,MOVE,<font=LanaPixel SDF>移動</font>,<font=LanaPixel SDF>移动</font>,<font=JPPixel SDF>移動</font>
-Tutorial.TipsLevel3,"Stamina gain slower when enemy is nearby, plan your move!","<font=LanaPixel SDF>接近魔物時體力恢復速度會大量減少,小心!","<font=LanaPixel SDF>接近魔物时体力恢复速度会下降, 请小心!",<font=JPPixel SDF>魔物を接近中の時スタミナはほとんど回復しないので注意！
+Tutorial.TipsLevel3,"Stamina gain slower when enemy is nearby, plan your move!",<font=LanaPixel SDF>接近魔物時體力恢復速度會下降,<font=LanaPixel SDF>接近魔物时体力恢复速度会下降,<font=JPPixel SDF>魔物を接近中の時スタミナはほとんど回復しないので注意！
 Tutorial.TipsLevel5,First Trial,<font=LanaPixel SDF>最初的試煉,<font=LanaPixel SDF>最初的试炼,<font=JF-Dot-Paw16 SDF>最初の試練
 Tutorial.TipsLevel8,Your third combo attack deal more damage,<font=LanaPixel SDF>第三連擊造成的傷害會稍微高一點,<font=LanaPixel SDF>第三连击的伤害会稍微高一点,<font=JPPixel SDF>
 Tutorial.TipsLevel10,"Find his weakness, try to jump!",<font=LanaPixel SDF>請攻擊頭部!,<font=LanaPixel SDF>请攻击头部!,<font=JPPixel SDF>頭を狙え
@@ -72,12 +72,24 @@ Tutorial.TipsLevel15,They're adorable,<font=LanaPixel SDF>可愛的家伙们,<fo
 Tutorial.TipsLevel25,Break his defense!,<font=LanaPixel SDF>突破他的防守!,<font=LanaPixel SDF>突破他的防守!,<font=JPPixel SDF>ガードを突破せよ
 Tutorial.TipsLevel26,Thank you for playing! The rest is still developing.,<font=LanaPixel SDF>感謝試玩! 請等待完整版!,<font=LanaPixel SDF>感谢试玩，请期待完整版!,<font=JPPixel SDF>これ以上の内容はまだ製作中です。遊んで頂きありがとうございました。
 OTHER,,,,
-Text.Proceedlvl9,Proceed to Boss Fight - <color=#ff00ffff>Broyon</color>!,區域霸主  - <color=#ff00ffff>布灵幽</color>,区域霸主  - <color=#ff00ffff>布灵幽</color>,<font=JPPixel SDF>ボス</font><font=JF-Dot-Paw16 SDF>戦</font>へ進む - <color=#ff00ffff>ブロヨン</color>
-Text.Proceedlvl19,Proceed to Boss Fight - <color=#550000ff>Hell Fighter</color>!,區域霸主  - <color=#550000ff>地獄使者</color>,区域霸主  - <color=#550000ff>地獄使者</color>,ボス<font=JF-Dot-Paw16 SDF>戦</font>へ進む - <color=#550000ff>地獄<font=JF-Dot-Paw16 SDF>戦</font>士</color>
+Text.Proceedlvl9,Proceed to Boss Fight - <color=#ff00ffff>Broyon</color>!,區域霸主  - <color=#ff00ffff>布靈幽</color>,区域霸主  - <color=#ff00ffff>布灵幽</color>,<font=JPPixel SDF>ボス戦へ進む - <color=#ff00ffff>ブロヨン</color>
+Text.Proceedlvl19,Proceed to Boss Fight - <color=#550000ff>Hell Fighter</color>!,區域霸主  - <color=#550000ff>地獄使者</color>,区域霸主  - <color=#550000ff>地獄使者</color>,ボス戦へ進む - <color=#550000ff>地獄審判</color>
 Text.Proceed,Jump and proceed to the next level,<font=LanaPixel SDF>向下跳跃,<font=LanaPixel SDF>向下跳跃,<font=JPPixel SDF>次のステージへジャンプ</font>
 Text.NewChallenger,Welcome our new challenger,<font=LanaPixel SDF>新的挑戰者,<font=LanaPixel SDF>新的挑战者,New challenger!
 Text.Retry,Welcome back!,<font=LanaPixel SDF>重新挑戰,<font=LanaPixel SDF>重新挑战,<font=JF-Dot-Paw16 SDF>再戦
 Text.GrownStronger,You have grown stronger!,你通過戰鬥變強了!,你通过战斗变强了!,戦うことであなたは強くなった!
 Text.SelectBonus,select your bonus,選擇天賦,选择天赋,パワーアップを選べ
+Text.NewBonus,New Powerup Unlocked!,解鎖新力量!,解锁新力量!,新なパワーアップを開放!
+Text.NewBonusDescription,New upgrades will be available in next playthrough.,下次挑戰時將有更多選擇,下次挑战时将有更多选择,次の挑戦から選べるようになる
+Text.ResetConfirm,Sure?,確定嗎?,确定吗?,本当か?
 LEADERBOARD,,,,
-Leaderboard.,,,,
+Leaderboard.Level,LEVEL,LEVEL,LEVEL,LEVEL
+Leaderboard.Time,TIME,TIME,TIME,TIME
+Leaderboard.BestLevel,BEST LEVEL,BEST LEVEL,BEST LEVEL,BEST LEVEL
+Leaderboard.BestLevelDescription,Player that explored the deepest part of the dungeon,往最深處探索的探險者,往最深处探索的探险者,ダンジョンの一番深くまで探検した者
+Leaderboard.Speedrun10,SPEEDRUN LEVEL10,SPEEDRUN 10層,SPEEDRUN 10层,SPEEDRUN LEVEL10
+Leaderboard.Speedrun10Description,Player that slayed Broyon with the fastest way possible.,以最快的速度擊倒布靈幽的戰士,以最快的速度击倒布灵幽的战士,ブロヨンを最速の方法で倒した者
+Leaderboard.Speedrun20,SPEEDRUN LEVEL20,SPEEDRUN 20層,SPEEDRUN 20层,SPEEDRUN LEVEL20
+Leaderboard.Speedrun20Description,Player that slayed Hell Fighter with the fastest way possible.,以最快的速度擊倒地獄使者的戰士,以最快的速度击倒地狱使者的战士,地獄審判を最速の方法で倒した者
+Leaderboard.Legacy,LEGACY LEGENDS,遠古傳說,远古传说,伝説
+Leaderboard.LegacyDescription,The old time glory from the player in version 1.1.1beta (speedrun lvl20),1.1.1版前的傳說人物 (速通20層),1.1.1版以前的传说人物 (速通20层),1.1.1バージョンに名残した昔の伝説達 (ステージ20をスピードラン)

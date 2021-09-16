@@ -33,7 +33,8 @@ public class LocalizationManagerHellFight : Singleton<LocalizationManagerHellFig
 	}
 
 	public void SetCurrentLanguage(string language)
-    {
+	{
+		//GameObject.Find("LANGUAGEDEBUG").GetComponent<TMPro.TMP_Text>().SetText(language);
 		LocalizationManager.Language = language;
 	}
 }

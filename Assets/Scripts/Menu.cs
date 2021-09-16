@@ -527,6 +527,8 @@ public class Menu : MonoBehaviour
         // avoid clicking too fast
         if (!leaderboardclickable) return;
 
+        menuState = MenuState.LEADERBOARD;
+
         // ENABLE LEADERBOARD
         leaderboardObject.gameObject.SetActive(true);
         leaderboardObject.SetUnactiveLeaderboardButtonForSecond(0.5f);

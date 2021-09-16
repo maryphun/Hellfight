@@ -25,7 +25,7 @@ MonoBehaviour:
     m_FamilyName: Silver
     m_StyleName: Medium
     m_PointSize: 90
-    m_Scale: 1
+    m_Scale: 0.95
     m_LineHeight: 99.47369
     m_AscentLine: 56.842106
     m_CapLine: 43
@@ -6964,8 +6964,9 @@ MonoBehaviour:
       m_FeatureLookupFlags: 0
   fallbackFontAssets: []
   m_FallbackFontAssetTable:
-  - {fileID: 11400000, guid: 7bff39c000e0fe140bd89ea94397a6df, type: 2}
   - {fileID: 11400000, guid: 65b515cff300c0541985894da3b99320, type: 2}
+  - {fileID: 11400000, guid: 7bff39c000e0fe140bd89ea94397a6df, type: 2}
+  - {fileID: 11400000, guid: 8352cf3fa614a0d49b0f4e61ca478923, type: 2}
   - {fileID: 11400000, guid: 7a751c0518c8ee149a959073404c212d, type: 2}
   m_CreationSettings:
     sourceFontFileName: 

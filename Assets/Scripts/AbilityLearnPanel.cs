@@ -233,7 +233,7 @@ public class AbilityLearnPanel : MonoBehaviour
             {
                 CheckAndAdd(possibleSkill, Skill.LightningLash);
             }
-            if (!gameMng.IsSurvivorSelected())
+            if (!gameMng.IsSurvivorSelected() && !player.GetSurvivor())
             {
                 possibleSkill.Add(Skill.Survivor);
             }

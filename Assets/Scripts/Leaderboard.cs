@@ -4,6 +4,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
 using DG.Tweening;
+using Assets.SimpleLocalization;
 
 public class Leaderboard : MonoBehaviour
 {
@@ -59,24 +60,24 @@ public class Leaderboard : MonoBehaviour
         switch (type)
         {
             case LeaderboardType.Level:
-                rankType.SetText("LEVEL");
-                title.SetText("BEST LEVEL");
-                description.SetText("Player that explored the deepest of the dungeon");
+                rankType.SetText(LocalizationManager.Localize("Leaderboard.Level"));
+                title.SetText(LocalizationManager.Localize("Leaderboard.BestLevel"));
+                description.SetText(LocalizationManager.Localize("Leaderboard.BestLevelDescription"));
                 break;
             case LeaderboardType.SpeedRunLevel10:
-                rankType.SetText("TIME");
-                title.SetText("SPEEDRUN LEVEL10");
-                description.SetText("Player that slayed Broyon with the fastest way possible.");
+                rankType.SetText(LocalizationManager.Localize("Leaderboard.Time"));
+                title.SetText(LocalizationManager.Localize("Leaderboard.Speedrun10"));
+                description.SetText(LocalizationManager.Localize("Leaderboard.Speedrun10Description"));
                 break;
             case LeaderboardType.SpeedRunLevel20:
-                rankType.SetText("TIME");
-                title.SetText("SPEEDRUN LEVEL20");
-                description.SetText("Player that slayed Hell Fighter with the fastest way possible.");
+                rankType.SetText(LocalizationManager.Localize("Leaderboard.Time"));
+                title.SetText(LocalizationManager.Localize("Leaderboard.Speedrun20"));
+                description.SetText(LocalizationManager.Localize("Leaderboard.Speedrun20Description"));
                 break;
             case LeaderboardType.Legacy:
-                rankType.SetText("LEVEL");
-                title.SetText("LEGACY LEGENDS");
-                description.SetText("The old time glory from the player in version 1.1.0beta");
+                rankType.SetText(LocalizationManager.Localize("Leaderboard.Time"));
+                title.SetText(LocalizationManager.Localize("Leaderboard.Legacy"));
+                description.SetText(LocalizationManager.Localize("Leaderboard.LegacyDescription"));
                 break;
             default:
                 Debug.Log("<color=red>LEADERBOARD TYPE NOT FOUND</color>");
@@ -90,12 +91,10 @@ public class Leaderboard : MonoBehaviour
         switch (type)
         {
             case LeaderboardType.Level:
-            case LeaderboardType.Legacy:
                 // do nothing
                 break;
             case LeaderboardType.SpeedRunLevel10:
-                rtn = (data / 60).ToString() + "m" + (data % 60).ToString() + "s";
-                break;
+            case LeaderboardType.Legacy:
             case LeaderboardType.SpeedRunLevel20:
                 rtn = (data / 60).ToString() + "m" + (data % 60).ToString() + "s";
                 break;
