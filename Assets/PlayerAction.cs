@@ -580,6 +580,17 @@ public class @PlayerAction : IInputActionCollection, IDisposable
                 },
                 {
                     ""name"": """",
+                    ""id"": ""4806a9c3-6440-4575-aaab-3121cef1cc9c"",
+                    ""path"": ""<Touchscreen>/primaryTouch/tap"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Confirm"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
                     ""id"": ""6a0f370e-a435-4f24-afb1-14bbef533b0e"",
                     ""path"": ""<Gamepad>/start"",
                     ""interactions"": """",
@@ -698,6 +709,63 @@ public class @PlayerAction : IInputActionCollection, IDisposable
                     ""action"": ""Cancel"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""668f0710-02d9-49a6-ab76-4454d35655cf"",
+                    ""path"": ""<Touchscreen>/primaryTouch/tap"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""AnyKey"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                }
+            ]
+        },
+        {
+            ""name"": ""TouchScreen"",
+            ""id"": ""6762aad7-4c25-4ce4-8920-2576e14e5b7c"",
+            ""actions"": [
+                {
+                    ""name"": ""TouchInput"",
+                    ""type"": ""Button"",
+                    ""id"": ""94650e31-37bd-4d79-ba71-eea81ee37d10"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": ""Press(behavior=2)""
+                },
+                {
+                    ""name"": ""TouchPosition"",
+                    ""type"": ""PassThrough"",
+                    ""id"": ""4d349f40-5fbc-4fb8-830a-0f6be1ba03a0"",
+                    ""expectedControlType"": ""Vector2"",
+                    ""processors"": """",
+                    ""interactions"": ""Press(behavior=2)""
+                }
+            ],
+            ""bindings"": [
+                {
+                    ""name"": """",
+                    ""id"": ""9b52d5f2-ae5a-4493-bd00-c12ca6601b0a"",
+                    ""path"": ""<Touchscreen>/primaryTouch/press"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""TouchInput"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""aa230207-bf04-423c-9bba-4531aabd0e49"",
+                    ""path"": ""<Touchscreen>/primaryTouch/position"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""TouchPosition"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
                 }
             ]
         }
@@ -725,6 +793,10 @@ public class @PlayerAction : IInputActionCollection, IDisposable
         m_MenuControls_OpenCloseMenu = m_MenuControls.FindAction("Open/Close Menu", throwIfNotFound: true);
         m_MenuControls_AnyKey = m_MenuControls.FindAction("AnyKey", throwIfNotFound: true);
         m_MenuControls_Cancel = m_MenuControls.FindAction("Cancel", throwIfNotFound: true);
+        // TouchScreen
+        m_TouchScreen = asset.FindActionMap("TouchScreen", throwIfNotFound: true);
+        m_TouchScreen_TouchInput = m_TouchScreen.FindAction("TouchInput", throwIfNotFound: true);
+        m_TouchScreen_TouchPosition = m_TouchScreen.FindAction("TouchPosition", throwIfNotFound: true);
     }
 
     public void Dispose()
@@ -908,6 +980,47 @@ public class @PlayerAction : IInputActionCollection, IDisposable
         }
     }
     public MenuControlsActions @MenuControls => new MenuControlsActions(this);
+
+    // TouchScreen
+    private readonly InputActionMap m_TouchScreen;
+    private ITouchScreenActions m_TouchScreenActionsCallbackInterface;
+    private readonly InputAction m_TouchScreen_TouchInput;
+    private readonly InputAction m_TouchScreen_TouchPosition;
+    public struct TouchScreenActions
+    {
+        private @PlayerAction m_Wrapper;
+        public TouchScreenActions(@PlayerAction wrapper) { m_Wrapper = wrapper; }
+        public InputAction @TouchInput => m_Wrapper.m_TouchScreen_TouchInput;
+        public InputAction @TouchPosition => m_Wrapper.m_TouchScreen_TouchPosition;
+        public InputActionMap Get() { return m_Wrapper.m_TouchScreen; }
+        public void Enable() { Get().Enable(); }
+        public void Disable() { Get().Disable(); }
+        public bool enabled => Get().enabled;
+        public static implicit operator InputActionMap(TouchScreenActions set) { return set.Get(); }
+        public void SetCallbacks(ITouchScreenActions instance)
+        {
+            if (m_Wrapper.m_TouchScreenActionsCallbackInterface != null)
+            {
+                @TouchInput.started -= m_Wrapper.m_TouchScreenActionsCallbackInterface.OnTouchInput;
+                @TouchInput.performed -= m_Wrapper.m_TouchScreenActionsCallbackInterface.OnTouchInput;
+                @TouchInput.canceled -= m_Wrapper.m_TouchScreenActionsCallbackInterface.OnTouchInput;
+                @TouchPosition.started -= m_Wrapper.m_TouchScreenActionsCallbackInterface.OnTouchPosition;
+                @TouchPosition.performed -= m_Wrapper.m_TouchScreenActionsCallbackInterface.OnTouchPosition;
+                @TouchPosition.canceled -= m_Wrapper.m_TouchScreenActionsCallbackInterface.OnTouchPosition;
+            }
+            m_Wrapper.m_TouchScreenActionsCallbackInterface = instance;
+            if (instance != null)
+            {
+                @TouchInput.started += instance.OnTouchInput;
+                @TouchInput.performed += instance.OnTouchInput;
+                @TouchInput.canceled += instance.OnTouchInput;
+                @TouchPosition.started += instance.OnTouchPosition;
+                @TouchPosition.performed += instance.OnTouchPosition;
+                @TouchPosition.canceled += instance.OnTouchPosition;
+            }
+        }
+    }
+    public TouchScreenActions @TouchScreen => new TouchScreenActions(this);
     private int m_PlayerSchemeIndex = -1;
     public InputControlScheme PlayerScheme
     {
@@ -933,5 +1046,10 @@ public class @PlayerAction : IInputActionCollection, IDisposable
         void OnOpenCloseMenu(InputAction.CallbackContext context);
         void OnAnyKey(InputAction.CallbackContext context);
         void OnCancel(InputAction.CallbackContext context);
+    }
+    public interface ITouchScreenActions
+    {
+        void OnTouchInput(InputAction.CallbackContext context);
+        void OnTouchPosition(InputAction.CallbackContext context);
     }
 }

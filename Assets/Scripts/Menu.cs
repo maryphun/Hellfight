@@ -136,6 +136,14 @@ public class Menu : MonoBehaviour
 
     private void Awake()
     {
+        // SCREEN
+#if UNITY_ANDROID
+        if (Screen.height / Screen.width < 1.5)
+        {
+            Screen.SetResolution(1440, 810, true);
+        }
+#endif
+
         // INPUT SYSTEM
         _input = new PlayerAction();
         _input.MenuControls.Move.performed += ctx => SelectUpDown(ctx.ReadValue<float>());
@@ -232,6 +240,7 @@ public class Menu : MonoBehaviour
                 ChangeSelection(MenuSelection.MainGame, 107.375f);
                 break;
             case MenuState.NAME_INPUT:
+                playerNameText.characterValidation = TMP_InputField.CharacterValidation.Alphanumeric;
                 playerNameText.gameObject.SetActive(true);
                 break;
         }

@@ -100,6 +100,11 @@ public class Controller : MonoBehaviour
     [SerializeField] Transform world;
     [SerializeField] Transform potionProgressBar;
     [SerializeField] SpriteRenderer potionProgressBarFill;
+    [SerializeField] TouchController touchMovement;
+    [SerializeField] TouchScreenClick attackTouch;
+    [SerializeField] TouchScreenClick jumpTouch;
+    [SerializeField] TouchScreenClick dashTouch;
+    [SerializeField] TouchScreenClick itemTouch;
 
     [Header("States")]
     [SerializeField] private int attackCombo;
@@ -253,6 +258,18 @@ public class Controller : MonoBehaviour
             input.attack = false;
             input.dash = false;
         }
+
+        // TOUCH SCREEN CONTROLS
+#if UNITY_ANDROID
+        input.move = Mathf.RoundToInt(touchMovement.GetTouchPosition.x);
+        input.crouch = touchMovement.GetTouchPosition.y < -0.75f;
+        input.attack = attackTouch.clicked;
+        input.jump = jumpTouch.clicked;
+        input.cancelJump = jumpTouch.released;
+        input.use = itemTouch.clicked;
+        input.cancelUse = itemTouch.released;
+        input.dash = dashTouch.clicked;
+#endif
 
         // GRAPHIC
         {
@@ -702,6 +719,11 @@ public class Controller : MonoBehaviour
         {
             windrunnerBuffTimer = Mathf.Clamp(windrunnerBuffTimer - Time.deltaTime, 0.0f, windrunner);
         }
+    }
+
+    public void TouchInput(Vector3 _input)
+    {
+        input.move = Mathf.RoundToInt(Mathf.Clamp(_input.x + 5.7f, -1,1));
     }
 
     public void StartJump(bool reviveJump = false)
