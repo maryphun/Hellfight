@@ -73,6 +73,10 @@ public class GameManager : MonoBehaviour
     [SerializeField] string[] bossMusicList;
     [SerializeField] Transform[] parallaxList;
 
+    [Header("Game Configuaration")]
+    [SerializeField] int initialTime = 50;
+    [SerializeField] int extraTimePerLevel = 15;
+
     [Header("Debug")]
     [SerializeField] int currentLevel;
     [SerializeField] int totalNumberOfMonster;
@@ -91,7 +95,10 @@ public class GameManager : MonoBehaviour
     List<Skill> newUnlock = new List<Skill>();
     public PlayerAction _input;
     bool confrimKey = false;
+    bool isRoundTimerRunning = false;
+    bool isAddTimerEffectRunning = false;
 
+    int timer;
 
     // Start is called before the first frame update
     void Awake()
@@ -174,6 +181,7 @@ public class GameManager : MonoBehaviour
         player.gameObject.SetActive(false);
         newUnlock.Clear();
         currentLevel = 1;
+        timer = initialTime;
 
         ProgressManager.Instance().LoadUnlockLevel();
         StartCoroutine(StartGameCinematic());
@@ -225,6 +233,23 @@ public class GameManager : MonoBehaviour
         }
     }
 
+    public void TimerAddTime(int time)
+    {
+        // Extra time
+        if (isRoundTimerRunning)
+        {
+            StartCoroutine(AddTimerEffect(time));
+        }
+        else
+        {
+            timer += time;
+        }
+    }
+    public void TimerAddTimeNewLevel()
+    {
+        TimerAddTime(extraTimePerLevel);
+    }
+
     public void ScreenImpactGround(float time, float magnitude)
     {
         Camera.main.transform.position = new Vector3(Camera.main.transform.position.x, Camera.main.transform.position.y - magnitude, Camera.main.transform.position.z);
@@ -260,6 +285,7 @@ public class GameManager : MonoBehaviour
         musicText.color = newColor;
         levelText.color = newColor;
         timerText.color = newColor;
+        countdownText.color = new Color(newColor.r, newColor.g, newColor.b, 0.5f); ;
 
         // level specific theme
         if (currentLevel == 5)
@@ -414,9 +440,11 @@ public class GameManager : MonoBehaviour
         totalNumberOfMonster = enemySpawner.StartSpawning(level);
         groundCollider.enabled = true;
         monsterSpawnCount = 0;
-        if (level % 10 != 0 && level % 5 != 0)
+
+        if (level % 10 != 0 && level > 1)
         {
-           roundTimer = StartCoroutine(LevelTimer(level, 50.0f));
+            roundTimer = StartCoroutine(LevelTimer(level));
+            isRoundTimerRunning = true;
         }
         timeCounterCoroutine = StartCoroutine(TimeCounterLoop());
 
@@ -533,7 +561,11 @@ public class GameManager : MonoBehaviour
         monsterList.Clear();
         spawnEnded = false;
         levelEnded = true;
-        StopCoroutine(roundTimer);
+        if (isRoundTimerRunning)
+        {
+            isRoundTimerRunning = false;
+            StopCoroutine(roundTimer);
+        }
         StopCoroutine(timeCounterCoroutine);
 
         if (player.IsJumping())
@@ -693,7 +725,11 @@ public class GameManager : MonoBehaviour
     public void GameOver()
     {
         // STOP COUNTING TIME
-        StopCoroutine(roundTimer);
+        if (isRoundTimerRunning)
+        {
+            isRoundTimerRunning = false;
+            StopCoroutine(roundTimer);
+        }
         StopCoroutine(timeCounterCoroutine);
 
         // STOP BGM
@@ -950,6 +986,7 @@ public class GameManager : MonoBehaviour
 
         // Reset timer
         timeCounter = 0;
+        timer = 0;
 
         // parameters
         lastSpawnedSkill = new Skill[3];
@@ -967,6 +1004,7 @@ public class GameManager : MonoBehaviour
         timerText.SetText(string.Empty);
         tipsText.SetText(string.Empty);
         comboText.SetText(string.Empty);
+        countdownText.SetText(string.Empty);
         StartGame();
     }
 
@@ -1062,27 +1100,82 @@ public class GameManager : MonoBehaviour
         PlayerPrefs.Save();
     }
 
-    IEnumerator LevelTimer(int level, float time)
+    // add extra time to timer
+    IEnumerator AddTimerEffect(int addTime)
     {
-        yield return new WaitForSeconds(time);
-
-        int countdown;
-        for (countdown = 5; countdown > 0; countdown--)
+        int newTimeLeft = addTime;
+        isAddTimerEffectRunning = true;
+        while (newTimeLeft > 0)
         {
-            if (currentLevel <= level && !levelEnded)
+            newTimeLeft--;
+
+            timer++;
+            UpdateCountdownTimerTextUI(timer);
+
+            countdownText.color = new Color(countdownText.color.r, countdownText.color.g, countdownText.color.b, 1.0f);
+            yield return new WaitForSeconds(0.1f);
+        }
+        countdownText.color = new Color(countdownText.color.r, countdownText.color.g, countdownText.color.b, 0.5f);
+        isAddTimerEffectRunning = false;
+    }
+
+    IEnumerator LevelTimer(int level)
+    {
+        while (timer > 0)
+        {
+            if (isAddTimerEffectRunning) yield return new WaitForSeconds(1.0f);
+
+            timer--;
+            UpdateCountdownTimerTextUI(timer);
+
+            if (timer < 20)
             {
-                countdownText.SetText(countdown.ToString());
-                //countdownText.fontSize = 100;
-                countdownText.DOFade(1.0f, 0.0f);
-                countdownText.DOFade(0.0f, 0.8f);
-                countdownText.GetComponent<RectTransform>().DOScale(1.0f, 0.0f);
-                countdownText.GetComponent<RectTransform>().DOScale(0.0f, 0.8f);
-                AudioManager.Instance.PlaySFX("heartbeat");
+                if (timer <= 5)
+                {
+                    AudioManager.Instance.PlaySFX("heartbeat");
+                    countdownText.DOColor(Color.red, 0.1f);
+                }
+
+                countdownText.DOFade(0.8f, 0.1f);
+                countdownText.GetComponent<RectTransform>().DOScale(0.21f, 0.1f);
+                yield return new WaitForSeconds(0.1f);
+
+                if (timer <= 5)
+                {
+                    countdownText.DOColor(new Color(1.0f, 0.8f, 0.8f), 0.5f);
+                }
+
+                countdownText.DOFade(0.5f, 0.1f);
+                countdownText.GetComponent<RectTransform>().DOScale(0.2f, 0.1f);
+                yield return new WaitForSeconds(0.9f);
+            }
+            else
+            {
+                countdownText.DOComplete();
+                Color newColor = GetThemeColor();
+                countdownText.color = new Color(newColor.r, newColor.g, newColor.b, 0.5f);
                 yield return new WaitForSeconds(1.0f);
             }
+
         }
 
-        NarrativeText.SetText("<color=red>You've over stayed</color>");
+        //int countdown;
+        //for (countdown = 5; countdown > 0; countdown--)
+        //{
+        //    if (currentLevel <= level && !levelEnded)
+        //    {
+        //        countdownText.SetText(countdown.ToString());
+        //        //countdownText.fontSize = 100;
+        //        countdownText.DOFade(1.0f, 0.0f);
+        //        countdownText.DOFade(0.0f, 0.8f);
+        //        countdownText.GetComponent<RectTransform>().DOScale(1.0f, 0.0f);
+        //        countdownText.GetComponent<RectTransform>().DOScale(0.0f, 0.8f);
+        //        AudioManager.Instance.PlaySFX("heartbeat");
+        //        yield return new WaitForSeconds(1.0f);
+        //    }
+        //}
+
+        NarrativeText.SetText("<color=red>Time out!</color>");
         newGroundsAPI.NGUnlockMedal(65099);
 
         while (currentLevel <= level && !levelEnded)
@@ -1092,6 +1185,15 @@ public class GameManager : MonoBehaviour
             player.DealDamage(player.GetCurrentHP() / 2, player.transform);
             yield return new WaitForSeconds(2.0f);
         }
+    }
+
+    private void UpdateCountdownTimerTextUI(int time)
+    {
+        // convert second to time format
+        int min = time / 60;
+        int sec = time % 60;
+
+        countdownText.SetText(min.ToString() + ":" + sec.ToString("00"));
     }
 
     IEnumerator TimeCounterLoop()

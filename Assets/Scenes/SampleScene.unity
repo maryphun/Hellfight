@@ -5721,7 +5721,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 0, y: -206.35}
+  m_AnchoredPosition: {x: 0, y: -206.34998}
   m_SizeDelta: {x: -200, y: -412.7}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &564596177
@@ -15210,10 +15210,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9fced1ac29d4ca84cbc9a0070511776d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  levelLeaderBoardID: 446
-  SpeedRun10LeaderBoardID: 445
-  SpeedRun20LeaderBoardID: 444
-  legacyLeaderboardID: 427
+  levelLeaderBoardID: 546
+  SpeedRun10LeaderBoardID: 545
+  SpeedRun20LeaderBoardID: 544
+  legacyLeaderboardID: 444
   cheaterLeaderboardID: 434
   musicVolume: 0.7
   timeCounter: 0
@@ -15287,6 +15287,8 @@ MonoBehaviour:
   - {fileID: 1649029029}
   - {fileID: 286544257}
   - {fileID: 1361264648}
+  initialTime: 50
+  extraTimePerLevel: 15
   currentLevel: 1
   totalNumberOfMonster: 0
   monsterList: []
@@ -15615,7 +15617,7 @@ MonoBehaviour:
     fakeValue: 0.5
   windrunnerBuffTimer: 0
   staminaRegenDelay:
-    fakeValue: 1
+    fakeValue: 1.5
   staminaRegenDelayCounter: 1
   attackRange:
     fakeValue: 1.3
@@ -15647,6 +15649,8 @@ MonoBehaviour:
   jumpPressed: 0
   attackPressed: 0
   jumpCancelled: 0
+  staminaRecoverDisabledTime:
+    fakeValue: 0
   jumpPressMemoryDelay: 0
   attackPressMemoryDelay: 0
   dashPressMemoryDelay: 0
@@ -20557,15 +20561,15 @@ RectTransform:
   m_GameObject: {fileID: 2040628957}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 0.2, y: 0.2, z: 0.2}
   m_Children: []
   m_Father: {fileID: 45646917}
   m_RootOrder: 6
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 0, y: 80}
-  m_SizeDelta: {x: 0, y: -200}
+  m_AnchorMin: {x: 0.5, y: 0.5}
+  m_AnchorMax: {x: 0.5, y: 0.5}
+  m_AnchoredPosition: {x: 350, y: -169.33}
+  m_SizeDelta: {x: 684.35, y: 281.52}
   m_Pivot: {x: 0.5, y: 0.6}
 --- !u!114 &2040628959
 MonoBehaviour:

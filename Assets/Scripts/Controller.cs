@@ -52,7 +52,7 @@ public class Controller : MonoBehaviour
     [SerializeField] private Vector2 combatModeRange = new Vector2(3f, 1.5f);
     [SerializeField] private ProtectedFloat potionCooldown = 0.5f;
     [SerializeField, Range(0.0f, 1.5f)] float windrunnerBuffTimer;
-    [SerializeField] private ProtectedFloat staminaRegenDelay = 1.0f;
+    [SerializeField] private ProtectedFloat staminaRegenDelay = 1.5f;
     [SerializeField, Range(0.0f, 1.0f)] private float staminaRegenDelayCounter = 1.0f;
 
     [SerializeField] private ProtectedFloat attackRange = 1.3f;
@@ -111,6 +111,7 @@ public class Controller : MonoBehaviour
     [SerializeField] private bool jumpPressed;
     [SerializeField] private bool attackPressed;
     [SerializeField] private bool jumpCancelled;
+    [SerializeField] private ProtectedFloat staminaRecoverDisabledTime;
     [SerializeField, Range(0.0f, 0.2f)] private float jumpPressMemoryDelay;
     [SerializeField, Range(0.0f, 0.5f)] private float attackPressMemoryDelay;
     [SerializeField, Range(0.0f, 0.5f)] private float dashPressMemoryDelay;
@@ -297,6 +298,10 @@ public class Controller : MonoBehaviour
             else if (invulnerable)
             {
                 playerColor = Color.yellow;
+            }
+            else if (currentHP == 1)
+            {
+                playerColor = new Color(1.0f, 0.5f, 0.5f);
             }
             else
             {
@@ -687,7 +692,7 @@ public class Controller : MonoBehaviour
             if (IsDashing())       multiplier *= 0.5f;
             if (input.move != 0)   multiplier *= 0.8f;
             if (IsJumping())       multiplier *= 0.5f;
-            if (monsterNearby)     multiplier = 0.2f;
+            //if (monsterNearby)     multiplier = 0.2f;
             if (staminaRegenDelayCounter > 0.0f) multiplier = 0.0f;
 
             staminaRegenDelayCounter = Mathf.Max(staminaRegenDelayCounter - Time.deltaTime, 0.0f);
@@ -794,18 +799,28 @@ public class Controller : MonoBehaviour
         }
 
         // STAMINA RELATED
+        if (currentStamina == 0)
+        {
+            // Need atleast 1 stamina point to attack
+            return;
+        }
+
         int calculatedStaminaCost = GetAttackDamage() + GetMaxDamage() + staminaCostAttackBase;
         if (windrunnerBuffTimer > 0.0f) calculatedStaminaCost /= 2;
         if (currentStamina < calculatedStaminaCost && costStamina)
         {
-            // reset combo if stamina is all gone
-            attackCombo = 0;
-            return;
+            staminaRegenDelayCounter = staminaRegenDelay * 2.5f;
         }
 
         if (costStamina)
         {
             Regenerate(0, -calculatedStaminaCost);
+
+            if (currentStamina == 0)
+            {
+                // reset combo if stamina is all gone
+                attackCombo = 0;
+            }
         }
 
         staminaRegenDelayCounter = staminaRegenDelay;
@@ -963,6 +978,12 @@ public class Controller : MonoBehaviour
                         regenerate += lifedrain;
                     }
 
+                    // add extra timer
+                    if (kill)
+                    {
+                        gameMng.TimerAddTime(5);
+                    }
+
                     // apply lifesteals
                     Regenerate(regenerate);
 
@@ -1084,7 +1105,18 @@ public class Controller : MonoBehaviour
         dashStaminaCooldown = Mathf.Min(dashStaminaCooldown + dashCooldown * 2f , 3f);
         dashFequency++;
         animator.Play("Dash");
-        dashDirection = graphic.flipX ? -1 : 1;
+
+        // if no key is pressed dash into facing direction
+        if (input.move != 0)
+        {
+            dashDirection = input.move;
+            // force character facing direction into dash direction
+            graphic.flipX = dashDirection != 1;
+        }
+        else
+        {
+            dashDirection = graphic.flipX ? -1 : 1;
+        }
 
         dashTimeCount = dashTime;
 
@@ -1248,16 +1280,36 @@ public class Controller : MonoBehaviour
         gameMng.ResetCombo(currentCombo);
         currentCombo = -1;
 
-        currentHP = Mathf.Clamp(currentHP - value, 0, maxHP);
+        int originalHp = currentHP;
 
-        const float floatSize = 100;
+        // deathblow system. Always give 1 more chance (1 hp left)
+        if (currentHP > 1)
+        {
+            currentHP = Mathf.Clamp(currentHP - value, 1, maxHP);
+        }
+        else
+        {
+            // last hit
+            currentHP = Mathf.Clamp(currentHP - value, 0, maxHP);
+        }
+
+        // calculate damage dealt
+        int damageDealt = originalHp - currentHP;
+
+        // check direction from source of damage
         int direction = source.position.x > transform.position.x ? -1 : 1;
-        Vector2 randomize = new Vector2(Random.Range(-collider.bounds.size.x / 2f, collider.bounds.size.x / 2f), Random.Range(-0.5f, 0.5f));
-        gameMng.SpawnFloatingText(new Vector2(transform.position.x, transform.position.y) + randomize
-                                     , 4f + Random.Range(1.0f, 3.0f), 25f + Random.Range(0.0f, 25.0f),
-                                     value.ToString(), new Color(0.75f, 0.0f, 0.0f), new Vector2(direction * 1f, 1f), floatSize);
 
+        // generate floating text if more than 1 damage is dealt
+        if (damageDealt > 0)
+        {
+            const float floatSize = 100;
+            Vector2 randomizeOffset = new Vector2(Random.Range(-collider.bounds.size.x / 2f, collider.bounds.size.x / 2f), Random.Range(-0.5f, 0.5f));
+            gameMng.SpawnFloatingText(new Vector2(transform.position.x, transform.position.y) + randomizeOffset
+                                         , 4f + Random.Range(1.0f, 3.0f), 25f + Random.Range(0.0f, 25.0f),
+                                         damageDealt.ToString(), new Color(0.75f, 0.0f, 0.0f), new Vector2(direction * 1f, 1f), floatSize);
+        }
 
+        // color taint effect
         hitTaintTimer = hitTaintTime;
 
         if (IsUsingPotion())
@@ -1272,7 +1324,7 @@ public class Controller : MonoBehaviour
 
         Knockback(((float)value / (float)Mathf.Max(maxHP, 1)) * 10f, direction, 0.1f);
 
-        // check is dead
+        // check if player is dead after this attack.
         if (currentHP == 0)
         {
             // dead
@@ -1285,6 +1337,7 @@ public class Controller : MonoBehaviour
             return true;
         }
 
+        // play audio
         AudioManager.Instance.PlaySFX("playerHit", 0.8f);
         return true;
     }
@@ -1388,6 +1441,7 @@ public class Controller : MonoBehaviour
         gameMng.ScreenImpactGround(0.04f, 0.4f);
         gameMng.ScreenChangeTheme();
         gameMng.SetItemCooldownAmount(0.0f);
+        gameMng.TimerAddTimeNewLevel();
         ResetPotionUse();
         GameObject tmp = Instantiate(impactParticleEffect, Vector2.Lerp(transform.position, new Vector2(transform.position.x, transform.position.y - collider.bounds.size.y /2f),0.5f)
             , Quaternion.identity);
