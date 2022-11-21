@@ -18,7 +18,7 @@ public class Controller : MonoBehaviour
     [SerializeField] private ProtectedUInt16 lifedrain = 0;
     [SerializeField] private bool survivor = false;
     [SerializeField] private bool deflect = false;
-    [SerializeField] private bool recover = false;
+    [SerializeField] private bool battlecry = false;
     [SerializeField] private ProtectedUInt16 comboMaster = 0;
     [SerializeField] private ProtectedFloat windrunner = 0;
     [SerializeField] private ProtectedUInt16 breakfallCost = 0;
@@ -198,7 +198,7 @@ public class Controller : MonoBehaviour
         lifedrain = 0;
         survivor = false;
         deflect = false;
-        recover = false;
+        battlecry = false;
         comboMaster = 0;
         staminaCostAttackBase = 2;
         staminaCostDash = 25;
@@ -684,15 +684,13 @@ public class Controller : MonoBehaviour
                 }
             }
 
-            if (recover && input.crouch) monsterNearby = false;
-
             float multiplier = 1.0f;
             if (dashFequency > 2)  multiplier /= dashFequency+1;
             if (IsAttacking())     multiplier = 0.0f;
             if (IsDashing())       multiplier *= 0.5f;
             if (input.move != 0)   multiplier *= 0.8f;
             if (IsJumping())       multiplier *= 0.5f;
-            //if (monsterNearby)     multiplier = 0.2f;
+            if (battlecry && monsterNearby) multiplier = 1.5f;
             if (staminaRegenDelayCounter > 0.0f) multiplier = 0.0f;
 
             staminaRegenDelayCounter = Mathf.Max(staminaRegenDelayCounter - Time.deltaTime, 0.0f);
@@ -1071,7 +1069,7 @@ public class Controller : MonoBehaviour
             gameMng.SpawnFloatingText(new Vector2(transform.position.x, transform.position.y + collider.bounds.size.y / 2f), 2f, 25f,
                                         (GetStaminaMax() - currentStamina).ToString(), Color.blue, new Vector2(0, 1), 80f);
 
-            RegeneratePercentage(0, 1.0f);
+            Regenerate(0, (maxStamina - currentStamina) / 2);
 
             AudioManager.Instance.PlaySFX("deflect");
             AudioManager.Instance.PlaySFX("comboMaster");
@@ -1364,7 +1362,7 @@ public class Controller : MonoBehaviour
                                      "RESURRECTION", new Color(1f, 8.43f, 0.0f), new Vector2(0f, 1f), 100f);
 
             graphic.color = Color.yellow;
-            StartCoroutine(InvulnerableForSeconds(1.0f));
+            StartCoroutine(InvulnerableForSeconds(3.0f));
         }
         else
         {
@@ -1496,7 +1494,7 @@ public class Controller : MonoBehaviour
                 comboMaster += (ProtectedUInt16)value;
                 break;
             case Skill.Windrunner:
-                windrunner += value/100f;
+                windrunner += value;
                 break;
             case Skill.BreakFall:
                 breakfallCost += (ProtectedUInt16)value;
@@ -1510,8 +1508,8 @@ public class Controller : MonoBehaviour
             case Skill.Berserker:
                 berserker += (ProtectedUInt16)value;
                 break;
-            case Skill.Recover:
-                recover = true;
+            case Skill.Battlecry:
+                battlecry = true;
                 break;
                 Debug.Log("<color=red>skill data not found!</color>");
             default:
@@ -1619,7 +1617,7 @@ public class Controller : MonoBehaviour
     }
     public bool GetIsRecover()
     {
-        return recover;
+        return battlecry;
     }
     public float GetWindrunner()
     {

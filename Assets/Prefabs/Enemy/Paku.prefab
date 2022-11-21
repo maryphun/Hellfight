@@ -259,7 +259,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   enemyName: Paku
-  maxHp: 130
+  maxHp: 80
   maxStamina: 60
   maxArmor: 20
   fadeOutAfterDead: 1

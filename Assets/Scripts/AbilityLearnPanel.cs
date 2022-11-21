@@ -27,7 +27,7 @@ public enum Skill
     LightningLash,
     Deflect,
     Berserker,
-    Recover,
+    Battlecry,
 
     List_Number
 }
@@ -51,7 +51,7 @@ public class AbilityLearnPanel : MonoBehaviour
         public SelectionData data;
         public Skill skillEnum;
     }
-
+    
     int selecting = -1;
     RectTransform rect;
     GameManager gameMng;
@@ -242,7 +242,7 @@ public class AbilityLearnPanel : MonoBehaviour
         {
             if (!player.GetIsRecover())
             {
-                CheckAndAdd(possibleSkill, Skill.Recover);
+                CheckAndAdd(possibleSkill, Skill.Battlecry);
             }
         }
         if (unlockLevel >= 9 && level >= 8)

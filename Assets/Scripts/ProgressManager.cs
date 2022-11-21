@@ -43,7 +43,7 @@ public class ProgressManager : Singleton<ProgressManager>
 
         if (_old < 7 && _new >= 7)  // Recover
         {
-            rtn.Add(Skill.Recover);
+            rtn.Add(Skill.Battlecry);
         }
 
         if (_old < 9 && _new >= 9)  // Combo Master
@@ -140,7 +140,7 @@ public class ProgressManager : Singleton<ProgressManager>
                 rtn.skill_Icon = "hpregen";
                 break;
             case Skill.LightningLash:
-                rtn.value = 10 + Random.Range(0, 6);
+                rtn.value = 5 + Random.Range(0, 6);
                 rtn.skill_name = "<color=#800080ff>" + LocalizationManager.Localize("PowerupName.LightningLash") + "</color>";
                 rtn.skill_description = LocalizationManager.Localize("PowerupDescription.LightningLash", ((int)rtn.value).ToString());
                 rtn.skill_Icon = "lightninglash";
@@ -170,7 +170,7 @@ public class ProgressManager : Singleton<ProgressManager>
                 rtn.skill_Icon = "breakfall";
                 break;
             case Skill.Windrunner:
-                rtn.value = 40 + Random.Range(0, 50);
+                rtn.value = 1 + Random.Range(0, 3);
                 rtn.skill_name = "<color=#00ffffff>" + LocalizationManager.Localize("PowerupName.Windrunner") + "</color>";
                 rtn.skill_description = LocalizationManager.Localize("PowerupDescription.Windrunner", ((int)rtn.value).ToString()); rtn.skill_Icon = "windrunner";
                 break;
@@ -192,10 +192,10 @@ public class ProgressManager : Singleton<ProgressManager>
                 rtn.skill_description = LocalizationManager.Localize("PowerupDescription.Berserker", ((int)rtn.value).ToString());
                 rtn.skill_Icon = "berserker";
                 break;
-            case Skill.Recover:
-                rtn.value = 1;
-                rtn.skill_name = "<color=#00ffffff>" + LocalizationManager.Localize("PowerupName.Recover") + "</color>";
-                rtn.skill_description = LocalizationManager.Localize("PowerupDescription.Recover", ((int)rtn.value).ToString());
+            case Skill.Battlecry:
+                rtn.value = 50;
+                rtn.skill_name = "<color=#00ffffff>" + LocalizationManager.Localize("PowerupName.Battlecry") + "</color>";
+                rtn.skill_description = LocalizationManager.Localize("PowerupDescription.Battlecry", ((int)rtn.value).ToString());
                 rtn.skill_Icon = "recover";
                 break;
             default:

@@ -480,11 +480,6 @@ public class GameManager : MonoBehaviour
             }
             tipsText.DOFade(1.0f, 0.5f);
         }
-        else if (level == 3 && record <= level)
-        {
-            tipsText.SetText(LocalizationManager.Localize("Tutorial.TipsLevel3"));
-            tipsText.DOFade(1.0f, 0.5f);
-        }
         else if (level == 5 && record <= level)
         {
             tipsText.SetText(LocalizationManager.Localize("Tutorial.TipsLevel5"));
@@ -1178,13 +1173,18 @@ public class GameManager : MonoBehaviour
         NarrativeText.SetText("<color=red>Time out!</color>");
         newGroundsAPI.NGUnlockMedal(65099);
 
-        while (currentLevel <= level && !levelEnded)
+        while (timer == 0)
         {
-            AudioManager.Instance.PlaySFX("burst");
-            Instantiate(fireburstEffect, player.transform.position, Quaternion.identity);
-            player.DealDamage(player.GetCurrentHP() / 2, player.transform);
-            yield return new WaitForSeconds(2.0f);
+            if (currentLevel <= level && !levelEnded)
+            {
+                AudioManager.Instance.PlaySFX("burst");
+                Instantiate(fireburstEffect, player.transform.position, Quaternion.identity);
+                player.DealDamage(player.GetCurrentHP() / 2, player.transform);
+                yield return new WaitForSeconds(2.0f);
+            }
         }
+
+        roundTimer = StartCoroutine(LevelTimer(level));
     }
 
     private void UpdateCountdownTimerTextUI(int time)

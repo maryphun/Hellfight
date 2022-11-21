@@ -46,14 +46,15 @@ PowerupDescription.Break-Fall,Crouching block attack by the cost of <color=#0080
 PowerupName.Windrunner,Windrunner,風行者,风行者,風行者
 PowerupDescription.Windrunner,Gain <color=#00ffffff>60</color> movement speed and attack cost half stamina after dash for <color=#00ffffff>{0:N0}</color> second. The time can stack.,"衝刺後<color=#00ffffff>{0:N2}</color>秒內增加<color=#00ffffff>60</color>點移動速度和攻擊體力消耗減半, 持續時間可以疊加","冲刺后<color=#00ffffff>{0:N2}</color>秒內增加<color=#00ffffff>60</color>点移动速度和攻击消耗减半, 持续时间可以叠加","ダッシュ後<color=#00ffffff>{0:N2}</color>秒內<color=#00ffffff>60</color>点移動速度増加して攻撃のスタミナコスト半減する, 複数回選ぶと時間が増える"
 PowerupName.Deflect,Deflect,彈反,弹反,ディフレクション
-PowerupDescription.Deflect,Restore <color=#800080ff>all stamina</color> back if you dash through an enemy in attack animation.\n<color=grey>Slime is excluded.</color>,"在敵人攻擊動作間衝刺穿透對手時瞬間恢復<color=#800080ff>所有體力值</color>
-<color=grey>對史萊姆無效</color>","在敌人攻击动作间冲刺穿透对手时回复<color=#800080ff>所有体力值</color>
-<color=grey>对史莱姆无效</color>","敵の攻撃アニメーション中に相手に向けてダッシュするとスタミナ<color=#800080ff>ゼン回復</color>する
+PowerupDescription.Deflect,"Restore <color=#800080ff>50% used stamina</color> back if you dash through an enemy in attack animation.
+<color=grey>Slime is excluded.</color>","在敵人攻擊動作間衝刺穿透對手時瞬間恢復<color=#800080ff>50% 被消耗掉的體力值</color>
+<color=grey>對史萊姆無效</color>","在敌人攻击动作间冲刺穿透对手时回复<color=#800080ff>50%被消耗掉的体力值</color>
+<color=grey>对史莱姆无效</color>","敵の攻撃アニメーション中に相手に向けてダッシュするとスタミナ<color=#800080ff>50%回復</color>する
 <color=grey>スライムに無効</color>"
 PowerupName.Berserker,Berserk,狂暴,狂暴,バーサーカー
 PowerupDescription.Berserker,"When you have less than 33% HP, your attack heals <color=#a52a2aff>{0:N0} HP</color>. The number can stack.","生命值低於33%時每次攻擊恢復<color=#a52a2aff>{0:N0}點</color>生命值, 數字可以疊加","生命值低於33%時每次攻击回复<color=#a52a2aff>{0:N0}點</color>生命值, 数字可以叠加",ライフが33%より低い場合攻撃ごとに<color=#a52a2aff>{0:N0}点</color>ライフ回復する
-PowerupName.Recover,Recover,恢復,恢復,回復
-PowerupDescription.Recover,<color=#00ffffff>Crouching</color> make you gain stamina even there are enemy nearby.,"無論敵人在附近與否, <color=#00ffffff>蹲下</color>時可以恢復體力","无论敌人在附近与否, <color=#00ffffff>蹲下</color>時可以回复体力","敵が近くにいることを問わず, <color=#00ffffff>しゃがむ</color>とスタミナの回復速度がへらない"
+PowerupName.Battlecry,Battlecry,戰吼,战吼,雄叫び
+PowerupDescription.Battlecry,Gain stamina <color=#00ffffff>{0:N0}% faster </color> when there are enemy nearby.,當敵人在附近時體力增速提升<color=#00ffffff>{0:N0}%,当敌人在附近时体力增速提升<color=#00ffffff>{0:N0}%</color>,敵が近くにいる時スタミナ回復速度が<color=#00ffffff>{0:N0}%</color>増加
 PowerupName.HealingSalve,Healing Salve,治療藥膏,治愈药膏,治療薬
 PowerupDescription.HealingSalve,Gain a consumables potion that recharge every level. Grants <color=#00ffffff>{0:N0}%</color> health back.,"獲得一個消耗式的治療藥, 每層可以使用一次, 恢復<color=#00ffffff>{0:N0}%</color>生命值","获得一个消耗式的治愈药, 每楼可以使用一次, 恢复<color=#00ffffff>{0:N0}%</color>生命值","<color=#00ffffff>{0:N0}%</color>のHPを回復するアイテムを獲得する, ステージごとに一回使える"
 TUTORIALS,,,,
