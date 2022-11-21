@@ -20,6 +20,7 @@ public class Controller : MonoBehaviour
     [SerializeField] private bool deflect = false;
     [SerializeField] private bool battlecry = false;
     [SerializeField] private ProtectedUInt16 comboMaster = 0;
+    [SerializeField] private ProtectedFloat echo = 0;
     [SerializeField] private ProtectedFloat windrunner = 0;
     [SerializeField] private ProtectedUInt16 breakfallCost = 0;
     [SerializeField] private ProtectedUInt16 potionHeal = 0;
@@ -200,6 +201,7 @@ public class Controller : MonoBehaviour
         deflect = false;
         battlecry = false;
         comboMaster = 0;
+        echo = 0;
         staminaCostAttackBase = 2;
         staminaCostDash = 25;
         maxHP = 50;
@@ -420,11 +422,13 @@ public class Controller : MonoBehaviour
                     && !animator.GetCurrentAnimatorStateInfo(0).IsName("Attack2")
                     && IsAlive())
                 {
+                    // start next attack immediately if attack button was pressed
                     isAttacking = false;
                     if (attackPressed && !attackDisabled)
                     {
                         StartAttack();
                     }
+
                 }
 
                 if (attackPressed)
@@ -848,7 +852,6 @@ public class Controller : MonoBehaviour
             }
         }
 
-
         // KNOCKBACK RELATED
         dashDirection = graphic.flipX ? -1 : 1;
         float multiplier = rigidbody.velocity.y == 0.0f ? 1f : 0.5f;
@@ -874,6 +877,19 @@ public class Controller : MonoBehaviour
 
         // audio
         AudioManager.Instance.PlaySFX("sword" + (attackCombo % 3).ToString());
+
+        // chance to trigger echo ability
+        const float chanceForEcho = 0.34f;
+        if (isAttacking
+            && echo > 0.0f 
+            && Random.Range(0.0f, 1.0f) < chanceForEcho
+            )
+        {
+            float illusionDelayTime = animator.GetCurrentAnimatorStateInfo(0).length / 2.0f;
+            string animationName = "Attack" + (attackCombo % 3).ToString();
+            StartCoroutine(EchoAttack(illusionDelayTime, animationName, IsFlip(), attackCombo));
+        }
+
 
         // code that must be on the last
         attackCombo++;
@@ -1372,6 +1388,131 @@ public class Controller : MonoBehaviour
         }
     }
 
+    IEnumerator EchoAttack(float delayTime, string animationName, bool isflip, int combo)
+    {
+        yield return new WaitForSeconds(delayTime);
+
+        // create illusion
+        //--- spawning new empty object, copying tranform ---
+        GameObject afterImg = new GameObject("echo illusion");
+        afterImg.transform.position = graphic.transform.position;
+        afterImg.transform.rotation = graphic.transform.rotation;
+        afterImg.transform.localScale = graphic.transform.localScale;
+        afterImg.gameObject.layer = 0;
+        //--- copying spriterenderer ---
+        SpriteRenderer echoRenderer = afterImg.AddComponent<SpriteRenderer>();
+        SpriteRenderer originalRenderer = graphic.GetComponent<SpriteRenderer>();
+        echoRenderer.sortingOrder = originalRenderer.sortingOrder - 1;
+        echoRenderer.sortingLayerID = originalRenderer.sortingLayerID;
+        echoRenderer.sprite = originalRenderer.sprite;
+        echoRenderer.color = new Color(1.0f, 1.0f, 1.0f, 0.1f);
+        echoRenderer.flipX = isflip;
+        echoRenderer.material = originalRenderer.material;
+        //--- copying animator ---
+        Animator copiedAnimator = afterImg.AddComponent<Animator>();
+        copiedAnimator.runtimeAnimatorController = animator.runtimeAnimatorController;
+        copiedAnimator.Play(animationName);
+        //--- move forward ---
+        int direction = isflip ? -1 : 1;
+        float illusionTime = copiedAnimator.GetCurrentAnimatorClipInfo(0).Length * 0.3f;
+        afterImg.transform.DOMoveX((direction * 1.5f) + afterImg.transform.position.x, illusionTime);
+        //--- done ---
+        Destroy(afterImg, illusionTime);
+
+        yield return new WaitForSeconds(attackDealTiming[(Mathf.Max((combo), 0) % 3)]);
+
+        List<EnemyControl> enemyList = gameMng.GetMonsterList();
+
+        Vector2 playerAttackOriginPoint = new Vector2(afterImg.transform.position.x + (attackRange * direction), afterImg.transform.position.y);
+
+        bool isHitEnemy = false;
+        bool isDefended = false;
+        if (enemyList.Count > 0)
+        {
+            foreach (EnemyControl enemy in enemyList)
+            {
+                Transform target = enemy.transform;
+                float calculatedAttackRange = attackRange;
+
+                float enemyHitLeft = target.position.x + (enemy.GetCollider().bounds.size.x / 2f * -direction);
+                float enemyHitRight = target.position.x + (enemy.GetCollider().bounds.size.x / 2f * direction);
+                Debug.DrawLine(new Vector2(playerAttackOriginPoint.x, playerAttackOriginPoint.y), new Vector2(enemyHitLeft, target.position.y), Color.red, 0.5f);
+                Debug.DrawLine(new Vector2(playerAttackOriginPoint.x, playerAttackOriginPoint.y), new Vector2(enemyHitRight, target.position.y), Color.red, 0.5f);
+                if ((Mathf.Abs(enemyHitLeft - playerAttackOriginPoint.x) < calculatedAttackRange || Mathf.Abs(enemyHitRight - playerAttackOriginPoint.x) < calculatedAttackRange)
+                    && ((Mathf.Abs(target.position.y - playerAttackOriginPoint.y) < calculatedAttackRange * 0.88f)
+                    || (Mathf.Abs((target.position.y + enemy.GetHeight() / 2f) - playerAttackOriginPoint.y) < calculatedAttackRange * 0.75f))
+                    && enemy.IsAlive()
+                    && !enemy.IsInvulnerable())
+                {
+                    // calculate damage
+                    int calculatedDamage = (int)((float)(baseDamage+maxDamage) * echo);
+
+                    // check is third attack
+                    calculatedDamage = attackCombo % 3 == 0 ? (int)((float)calculatedDamage * 1.5f) : calculatedDamage;
+
+                    // check defend and armor
+                    isDefended = enemy.CheckIfDefended(playerAttackOriginPoint) || enemy.CheckIfHaveArmor(calculatedDamage, playerAttackOriginPoint);
+                    if (isDefended)
+                    {
+                        AudioManager.Instance.PlaySFX("defend" + Random.Range(0, 4).ToString(), 0.8f);
+                        enemy.DefendDamage();
+                        continue;
+                    }
+
+                    // apply damage
+                    bool kill = enemy.DealDamage(calculatedDamage);
+
+                    // calculate lifedrain
+                    if (lifedrain > 0 && kill)
+                    {
+                        Regenerate(lifedrain);
+                    }
+
+                    // add extra timer
+                    if (kill)
+                    {
+                        gameMng.TimerAddTime(5);
+                    }
+
+                    // calculate knockback distance
+                    float baseDistance = attackMoveRange[(Mathf.Max((attackCombo - 1), 0) % 3)];
+                    float multiplier = 1.0f * ((Mathf.Abs(target.position.x - transform.position.x) / 4f) / (baseDistance));
+                    enemy.Knockback(baseDistance * multiplier, direction, 0.15f);
+
+                    isHitEnemy = true;
+
+                    // create particle effect
+                    GameObject particle = Instantiate(hitParticleEffect, Vector2.Lerp(transform.position, enemy.transform.position, 0.5f), Quaternion.identity);
+                    particle.GetComponent<ParticleScript>().SetParticleColor(gameMng.GetThemeColor());
+                    particle.transform.SetParent(world, true);
+                    particle = Instantiate(hitFXEffect, Vector2.Lerp(transform.position, enemy.transform.position, Random.RandomRange(0.6f, 0.9f)), Quaternion.identity);
+                    particle.transform.eulerAngles = new Vector3(Random.Range(-50f, 50f), Random.Range(-50f, 50f), Random.Range(-180f, 180f));
+                    particle.transform.SetParent(world, true);
+
+                    // create floating text
+                    Color fontColor = Color.white;
+                    float floatSize = Mathf.Clamp(50 * (calculatedDamage / baseDamage), 0, 80);
+                    string extraText = string.Empty;
+
+                    Vector2 randomize = new Vector2(Random.Range(-enemy.GetComponent<Collider2D>().bounds.size.x / 2f, enemy.GetComponent<Collider2D>().bounds.size.x / 2f), Random.Range(-0.5f, 0.5f));
+                    Vector2 floatDirection = new Vector2(enemy.transform.position.x - transform.position.x, transform.position.y - enemy.transform.position.y);
+                    gameMng.SpawnFloatingText(new Vector2(enemy.transform.position.x, enemy.transform.position.y + enemy.GetComponent<Collider2D>().bounds.size.y * 0.75f) + randomize
+                                                 , 2f + Random.Range(0.0f, 1.0f), 25f + Random.Range(0.0f, 25.0f),
+                                                 calculatedDamage.ToString() + extraText, fontColor, floatDirection.normalized, floatSize);
+                }
+            }
+        }
+
+        if (isHitEnemy)
+        {
+            AudioManager.Instance.PlaySFX("hit");
+            
+            currentCombo++;
+            comboResetTimer = comboResetTime;
+            gameMng.SetCombo(currentCombo);
+        }
+    }
+
     IEnumerator InvulnerableForSeconds(float time)
     {
         invulnerable = true;
@@ -1511,8 +1652,11 @@ public class Controller : MonoBehaviour
             case Skill.Battlecry:
                 battlecry = true;
                 break;
-                Debug.Log("<color=red>skill data not found!</color>");
+            case Skill.Echo:
+                echo += value/100.0f;
+                break;
             default:
+                Debug.Log("<color=red>skill data not found!</color>");
                 break;
         }
     }
@@ -1615,7 +1759,7 @@ public class Controller : MonoBehaviour
     {
         return comboMaster;
     }
-    public bool GetIsRecover()
+    public bool GetIsBattlecry()
     {
         return battlecry;
     }
@@ -1642,6 +1786,10 @@ public class Controller : MonoBehaviour
     public bool GetSurvivor()
     {
         return survivor;
+    }
+    public float GetEcho()
+    {
+        return echo;
     }
     public bool IsFlip()
     {

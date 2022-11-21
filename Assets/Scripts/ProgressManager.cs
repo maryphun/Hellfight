@@ -72,6 +72,11 @@ public class ProgressManager : Singleton<ProgressManager>
             rtn.Add(Skill.Berserker);
         }
 
+        if (_old < 20 && _new >= 20)  // Echo
+        {
+            rtn.Add(Skill.Echo);
+        }
+
         return rtn;
     }
 
@@ -197,6 +202,12 @@ public class ProgressManager : Singleton<ProgressManager>
                 rtn.skill_name = "<color=#00ffffff>" + LocalizationManager.Localize("PowerupName.Battlecry") + "</color>";
                 rtn.skill_description = LocalizationManager.Localize("PowerupDescription.Battlecry", ((int)rtn.value).ToString());
                 rtn.skill_Icon = "recover";
+                break;
+            case Skill.Echo:
+                rtn.value = 5 + Random.Range(0, 18);
+                rtn.skill_name = "<color=#4c00b0ff>" + LocalizationManager.Localize("PowerupName.Echo") + "</color>";
+                rtn.skill_description = LocalizationManager.Localize("PowerupDescription.Echo", ((int)rtn.value).ToString());
+                rtn.skill_Icon = "echo";
                 break;
             default:
                 Debug.Log("<color=red>skill data not found!</color>");

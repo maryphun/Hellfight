@@ -1,10 +1,10 @@
 Key,English,ChineseTraditional,ChineseSimplified,Japanese
-Menu.Start,Press <color=red>Any</color> Key/Start,按<color=red>任意鍵</color>開始遊戲,按<color=red>任意键</color>开始游戏,<font=JPPixel SDF>ボタン<color=red>押し</color>てスタート</font>
-Menu.MainGame,<color=white>M</color>ain <color=white>Game</color>,<color=white>開</color>始<color=white>遊戲</color>,<color=white>开</color>始<color=white>游戏</color>,<color=white>M</color>ain <color=white>Game</color>
+Menu.Start,Press any Key/Start,按任意鍵開始遊戲,按任意键开始游戏,<font=JPPixel SDF>ボタン押してスタート
+Menu.MainGame,Main Game,開始遊戲,开始游戏,Main Game
 Menu.BossRushMode,<color=grey>Boss Rush Mode</color>,<color=grey>魔王模式</color>,<color=grey>魔王模式</color>,<color=grey>Boss Rush Mode</color>
-Menu.Leaderboard,<color=white>L</color>eade<color=white>rboard</color>,<color=white>線</color>上排<color=white>行榜</color>,<color=white>线</color>上排<color=white>行榜</color>,<color=white>L</color>eade<color=white>rboard</color>
+Menu.Leaderboard,Leaderboard,線上排行榜,线上排行榜,Leaderboard
 Menu.Credits,<color=grey>Credits</color>,<color=grey>感謝名單</color>,<color=grey>感谢名单</color>,<color=grey>Credits</color>
-Menu.ResetLocalData,<color=white>Re</color>set Loc<color=white>al Data</color>,<color=white>清</color>除本<color=white>地數據</color>,<color=white>清</color>除本<color=white>地数据</color>,<color=white>Re</color>set Loc<color=white>al Data</color>
+Menu.ResetLocalData,Reset Local Data,清除本地數據,清除本地数据,Reset Local Data
 Menu.Exit,<color=grey>Exit</color>,<color=grey>退出</color>,<color=grey>退出</color>,<color=grey>Exit</color>
 POWERUPS,,,,
 PowerupName.MoveSpeed,Move Speed,移動速度,移动速度,移動速度
@@ -57,6 +57,8 @@ PowerupName.Battlecry,Battlecry,戰吼,战吼,雄叫び
 PowerupDescription.Battlecry,Gain stamina <color=#00ffffff>{0:N0}% faster </color> when there are enemy nearby.,當敵人在附近時體力增速提升<color=#00ffffff>{0:N0}%,当敌人在附近时体力增速提升<color=#00ffffff>{0:N0}%</color>,敵が近くにいる時スタミナ回復速度が<color=#00ffffff>{0:N0}%</color>増加
 PowerupName.HealingSalve,Healing Salve,治療藥膏,治愈药膏,治療薬
 PowerupDescription.HealingSalve,Gain a consumables potion that recharge every level. Grants <color=#00ffffff>{0:N0}%</color> health back.,"獲得一個消耗式的治療藥, 每層可以使用一次, 恢復<color=#00ffffff>{0:N0}%</color>生命值","获得一个消耗式的治愈药, 每楼可以使用一次, 恢复<color=#00ffffff>{0:N0}%</color>生命值","<color=#00ffffff>{0:N0}%</color>のHPを回復するアイテムを獲得する, ステージごとに一回使える"
+PowerupName.Echo,Echo,回音,回音,エコー
+PowerupDescription.Echo,"Gain a chance to summon an illusion that duplicate your attack, deal <color=#4c00b0ff>{0:N0}%</color> of your damage. The number can stack.",有几率複製你的攻擊，對敵人造成本體<color=#4c00b0ff>{0:N0}%</color>的攻擊力,有几率复制你的攻击，对敌人造成本体<color=#4c00b0ff>{0:N0}%</color>的攻击力,たまにキャラクターの攻撃を複製する。分身体は本体の<color=#4c00b0ff>{0:N0}%</color>の攻撃力を持っている。
 TUTORIALS,,,,
 Tutorial.Attack,ATTACK,<font=LanaPixel SDF>攻擊</font>,<font=LanaPixel SDF>攻击</font>,<font=JPPixel SDF>攻撃</font>
 Tutorial.Jump,JUMP,<font=LanaPixel SDF>跳躍</font>,<font=LanaPixel SDF>跳跃</font>,<font=JPPixel SDF>ジャンプ</font>
@@ -64,7 +66,6 @@ Tutorial.Dash,DASH,<font=LanaPixel SDF>衝刺</font>,<font=LanaPixel SDF>冲刺<
 Tutorial.Status,STATUS,<font=LanaPixel SDF>狀態欄</font>,<font=LanaPixel SDF>状态栏</font>,<font=JPPixel SDF>ステータス</font>
 Tutorial.UseItem,USE ITEM,<font=LanaPixel SDF>物品</font>,<font=LanaPixel SDF>物品</font>,<font=JPPixel SDF>アイテム</font>
 Tutorial.Move,MOVE,<font=LanaPixel SDF>移動</font>,<font=LanaPixel SDF>移动</font>,<font=JPPixel SDF>移動</font>
-Tutorial.TipsLevel3,"Stamina gain slower when enemy is nearby, plan your move!",<font=LanaPixel SDF>接近魔物時體力恢復速度會下降,<font=LanaPixel SDF>接近魔物时体力恢复速度会下降,<font=JPPixel SDF>魔物を接近中の時スタミナはほとんど回復しないので注意！
 Tutorial.TipsLevel5,First Trial,<font=LanaPixel SDF>最初的試煉,<font=LanaPixel SDF>最初的试炼,<font=JF-Dot-Paw16 SDF>最初の試練
 Tutorial.TipsLevel8,Your third combo attack deal more damage,<font=LanaPixel SDF>第三連擊造成的傷害會稍微高一點,<font=LanaPixel SDF>第三连击的伤害会稍微高一点,<font=JPPixel SDF>
 Tutorial.TipsLevel10,"Find his weakness, try to jump!",<font=LanaPixel SDF>請攻擊頭部!,<font=LanaPixel SDF>请攻击头部!,<font=JPPixel SDF>頭を狙え

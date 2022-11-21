@@ -28,6 +28,7 @@ public enum Skill
     Deflect,
     Berserker,
     Battlecry,
+    Echo,
 
     List_Number
 }
@@ -237,10 +238,14 @@ public class AbilityLearnPanel : MonoBehaviour
             {
                 possibleSkill.Add(Skill.Survivor);
             }
+            if (unlockLevel >= 20)
+            {
+                CheckAndAdd(possibleSkill, Skill.Echo);
+            }
         }
         if (unlockLevel >= 7 && level >= 7)
         {
-            if (!player.GetIsRecover())
+            if (!player.GetIsBattlecry())
             {
                 CheckAndAdd(possibleSkill, Skill.Battlecry);
             }
