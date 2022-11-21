@@ -39,6 +39,7 @@ public class JinAI : MonoBehaviour
     float dealDamageCnt;
     bool dealDamageAlready;
     bool startedCharge;
+    GameObject chargeEffectReference;
 
     float targetMoveX;
 
@@ -173,6 +174,15 @@ public class JinAI : MonoBehaviour
             default:
                 InitStatus(Status.Idle);
                 break;
+        }
+
+        // charge got distrupted. Remove the charge effect so it's not confusing to the player.
+        if (newStatus != Status.Attacking)
+        {
+            if (!ReferenceEquals(chargeEffectReference, null))
+            {
+                Destroy(chargeEffectReference);
+            }
         }
     }
 
@@ -378,8 +388,8 @@ public class JinAI : MonoBehaviour
 
     void SpawnSpecialEffect()
     {
-        GameObject tmp = Instantiate(chargeEffect, transform.position, Quaternion.identity);
-        tmp.transform.DOScale(1.5f, 0.0f);
-        tmp.transform.SetParent(transform);
+        chargeEffectReference = Instantiate(chargeEffect, transform.position, Quaternion.identity);
+        chargeEffectReference.transform.DOScale(1.5f, 0.0f);
+        chargeEffectReference.transform.SetParent(transform);
     }
 }

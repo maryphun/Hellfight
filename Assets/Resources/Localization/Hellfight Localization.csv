@@ -26,9 +26,9 @@ PowerupDescription.Vitality,Increase your max health by <color=#00ff00ff>{0:N0}<
 PowerupName.DashCooldown,Dash Cooldown,衝刺冷卻,冲刺冷却,ダッシュ
 PowerupDescription.DashCooldown,Decrease dash cooldown time by <color=#ffff00ff>{0:N0}%</color>.,衝刺冷卻時間減少<color=#ffff00ff>{0:N0}%</color>,冲刺冷却时间减少<color=#ffff00ff>{0:N0}%</color>,ダッシュのクールタイム<color=#ffff00ff>{0:N0}%</color>短縮
 PowerupName.DashDamage,Dash Damage,衝刺傷害,冲刺伤害,<font=JF-Dot-Paw16 SDF>衝</font>撃
-PowerupDescription.DashDamage,Dashing deal <color=#008080ff>{0:N0} damage</color> but cooldown <color=red>0.25 sec</color> longer. The number can stack.,衝刺對敵人造成<color=#008080ff>{0:N0}點傷害</color>但是冷卻時間增加<color=red>0.25秒</color>,冲刺对敌人造成<color=#008080ff>{0:N0}点伤害</color>但是冷却时间增加<color=red>0.25秒</color>,ダッシュが<color=#008080ff>{0:N0}ダメージ</color>を与えるがクールタイム<color=red>0.25秒</color>増える
+PowerupDescription.DashDamage,Dashing deal <color=#008080ff>{0:N0} damage</color> but cooldown <color=red>0.25 sec</color> longer. The effect can stack.,衝刺對敵人造成<color=#008080ff>{0:N0}點傷害</color>但是冷卻時間增加<color=red>0.25秒</color>,冲刺对敌人造成<color=#008080ff>{0:N0}点伤害</color>但是冷却时间增加<color=red>0.25秒</color>,ダッシュが<color=#008080ff>{0:N0}ダメージ</color>を与えるがクールタイム<color=red>0.25秒</color>増える
 PowerupName.MaxStamina,Max Stamina,體力,体力,スタミナ
-PowerupDescription.MaxStamina,Give you <color=blue>{0:N0}</color> more stamina point to spent.,增加<color=blue>{0:N0}</color>點體力值,增加<color=blue>{0:N0}</color>點体力值,スタミナ<color=blue>{0:N0}</color>点増加
+PowerupDescription.MaxStamina,Gives <color=blue>{0:N0}</color> more stamina point to spend.,增加<color=blue>{0:N0}</color>點體力值,增加<color=blue>{0:N0}</color>點体力值,スタミナ<color=blue>{0:N0}</color>点増加
 PowerupName.StaminaRecoverSpeed,Stamina Recover,體力恢復,体力恢复,体力回復
 PowerupDescription.StaminaRecoverSpeed,Increase stamina regenerate per tick by <color=#00ff00ff>{0:N0}</color>.,體力恢復速度增加,体力恢复速度增加,スタミナ回復速度増加
 PowerupName.HPRegen,HP Regen,生命力恢復,生命力恢复,回復力
@@ -36,9 +36,9 @@ PowerupDescription.HPRegen,Heal <color=#ff2222ff>{0:N0}</color> hp when proceedi
 PowerupName.LightningLash,Lightning Lash,閃電鞭,闪电鞭,霹靂斬撃
 PowerupDescription.LightningLash,Performing a dash attack deal critical damage and heals <color=#800080ff>{0:N0}%</color> of your damage dealt into HP.,"衝刺時使用攻擊以發動特殊技能, 造成暴擊傷害, 同時造成的傷害的<color=#800080ff>{0:N0}%</color>變換為生命值","冲刺时攻击以发动特殊效果, 造成暴击伤害, 同时造成的伤害的<color=#800080ff>{0:N0}%</color>变换为生命值","ダッシュ攻撃に特殊効果を付ける, ダメージ倍増で与えたダメージの<color=#800080ff>{0:N0}%</color>がライフに変換する"
 PowerupName.LifeDrain,Life Drain,生命汲取,生命汲取,ライフドレイン
-PowerupDescription.LifeDrain,Heal <color=#800000ff>{0:N0}</color> hp when you kill an enemy. The number can stack.,打倒敵人時恢復<color=#800000ff>{0:N0}</color>點生命值,打到敌人时恢復<color=#800000ff>{0:N0}</color>点生命值,敵を倒す時ライフ<color=#800000ff>{0:N0}</color>点回復する
+PowerupDescription.LifeDrain,Heal <color=#800000ff>{0:N0}</color> hp when you kill an enemy. The effect can stack.,打倒敵人時恢復<color=#800000ff>{0:N0}</color>點生命值,打到敌人时恢復<color=#800000ff>{0:N0}</color>点生命值,敵を倒す時ライフ<color=#800000ff>{0:N0}</color>点回復する
 PowerupName.Survivor,Survivor,生存者,生存者,サバイバー
-PowerupDescription.Survivor,Give you a second chance when you're dead.,獲得一次復活機會,获得一次复活机会,復活チャンス一回貰える
+PowerupDescription.Survivor,Gives you a second chance when you're dead.,獲得一次復活機會,获得一次复活机会,復活チャンス一回貰える
 PowerupName.ComboMaster,Combo Master,連擊大師,连击大师,連撃達人
 PowerupDescription.ComboMaster,Gain <color=blue>{0:N0}</color> stamina per combo when combo ended.,"連擊結束後瞬間恢復體力值, 每一連擊增加<color=blue>{0:N0}</color>點體力","连击结束后瞬间回复体力值, 每一连击增加<color=blue>{0:N0}</color>点体力","コンボが終わった瞬間, コンボ数ごとに<color=blue>{0:N0}</color>点スタミナを回復する"
 PowerupName.Break-Fall,Break-Fall,蓄勢待發,蓄势待发,力返し
@@ -52,7 +52,7 @@ PowerupDescription.Deflect,"Restore <color=#800080ff>50% used stamina</color> ba
 <color=grey>对史莱姆无效</color>","敵の攻撃アニメーション中に相手に向けてダッシュするとスタミナ<color=#800080ff>50%回復</color>する
 <color=grey>スライムに無効</color>"
 PowerupName.Berserker,Berserk,狂暴,狂暴,バーサーカー
-PowerupDescription.Berserker,"When you have less than 33% HP, your attack heals <color=#a52a2aff>{0:N0} HP</color>. The number can stack.","生命值低於33%時每次攻擊恢復<color=#a52a2aff>{0:N0}點</color>生命值, 數字可以疊加","生命值低於33%時每次攻击回复<color=#a52a2aff>{0:N0}點</color>生命值, 数字可以叠加",ライフが33%より低い場合攻撃ごとに<color=#a52a2aff>{0:N0}点</color>ライフ回復する
+PowerupDescription.Berserker,"When you have less than 33% HP, your attack heals <color=#a52a2aff>{0:N0} HP</color>. The effect can stack.","生命值低於33%時每次攻擊恢復<color=#a52a2aff>{0:N0}點</color>生命值, 數字可以疊加","生命值低於33%時每次攻击回复<color=#a52a2aff>{0:N0}點</color>生命值, 数字可以叠加",ライフが33%より低い場合攻撃ごとに<color=#a52a2aff>{0:N0}点</color>ライフ回復する
 PowerupName.Battlecry,Battlecry,戰吼,战吼,雄叫び
 PowerupDescription.Battlecry,Gain stamina <color=#00ffffff>{0:N0}% faster </color> when there are enemy nearby.,當敵人在附近時體力增速提升<color=#00ffffff>{0:N0}%,当敌人在附近时体力增速提升<color=#00ffffff>{0:N0}%</color>,敵が近くにいる時スタミナ回復速度が<color=#00ffffff>{0:N0}%</color>増加
 PowerupName.HealingSalve,Healing Salve,治療藥膏,治愈药膏,治療薬
