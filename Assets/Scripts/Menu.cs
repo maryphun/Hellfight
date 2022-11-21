@@ -58,22 +58,21 @@ public class Menu : MonoBehaviour
     [SerializeField] TMP_Text logo;
     [SerializeField] Image leaderboardBack;
     [SerializeField] TMP_Text versionText;
-    [SerializeField] TMP_Text copyrightText;
+    [SerializeField] GameObject copyrightUI;
     [SerializeField] Image menuAlpha;
     [SerializeField] GameManager gameMng;
     [SerializeField] TMP_InputField playerNameText;
+    [SerializeField] RectTransform playerNameText_UI;
     [SerializeField] Leaderboard leaderboardObject;
     [SerializeField] RectTransform resetDataPanel;
     [SerializeField] TMP_Text resetDataText;
-    [SerializeField] TMP_Text startGameText;
+    [SerializeField] GameObject startGameText;
     [SerializeField] RectTransform selectionParent;
     [SerializeField] RectTransform languageSelectionParent;
     [SerializeField] RectTransform selectIcon;
     [SerializeField] RectTransform languageSelectIcon;
     [SerializeField] TMP_Text[] choiceText;
     [SerializeField] TMP_Text[] languageChoiceText;
-    [SerializeField] RectTransform leftTransition;
-    [SerializeField] RectTransform rightTransition;
 
     [Header("Debug")]
     [SerializeField] MenuSelection selectIndex;
@@ -104,7 +103,7 @@ public class Menu : MonoBehaviour
         playerNameText.text = ProtectedPlayerPrefs.GetString("PlayerName", string.Empty); ;
 
         // UPDATE VERSION NAME
-        versionText.SetText("version " + Application.version + " BETA");
+        versionText.SetText("ver. " + Application.version + "(beta)");
 
         // CONNECT TO LEADERBOARD
         LootLockerSDKManager.StartSession("Player", (response) =>
@@ -169,7 +168,14 @@ public class Menu : MonoBehaviour
 
         menuState = MenuState.NONE;
         AudioManager.Instance.PlaySFX("startgame");
-        StartCoroutine(StartMenuAnimation(startGameText.gameObject));
+
+        const float animTime = 0.5f;
+        RectTransform component = startGameText.GetComponent<RectTransform>();
+
+        component.DORotate(new Vector3(0.0f, 0.0f, -360.0f), animTime, RotateMode.FastBeyond360);
+
+        StartCoroutine(StartMenuAnimation(component, new Vector2(-391.0f, -265.0f), animTime));
+        copyrightUI.GetComponent<RectTransform>().DOLocalMoveX(465.0f, animTime);
     }
 
     private void FinishNameInput()
@@ -181,21 +187,26 @@ public class Menu : MonoBehaviour
         menuState = MenuState.NONE;
         // DISABLE NAME INPUT
         playerNameText.DeactivateInputField();
+        playerNameText.interactable = false;
+        playerNameText.ReleaseSelection();
         // SET TO GAME MANAGER
         gameMng.SetPlayerName(playerNameText.text);
         // SE
         AudioManager.Instance.PlaySFX("startgame");
         // ANIMATION
-        StartCoroutine(StartMenuAnimation(playerNameText.gameObject));
+        StartCoroutine(StartMenuAnimation(playerNameText_UI, new Vector2(-391.0f, -265.0f), 1.5f));
     }
 
-    IEnumerator StartMenuAnimation(GameObject gameobj)
+    IEnumerator StartMenuAnimation(RectTransform obj, Vector2 endPos, float animTime)
     {
-        for (int i = 0; i < 7; i++)
-        {
-            gameobj.SetActive(!gameobj.activeSelf);
-            yield return new WaitForSeconds(0.18f);
-        }
+        // play animation as requested
+        Vector3 originalPos = obj.position;
+        obj.DOLocalMove(endPos, animTime);
+        yield return new WaitForSeconds(animTime);
+
+        // return to original position and hide it.
+        obj.gameObject.SetActive(false);
+        obj.position = originalPos;
 
         string language = ProtectedPlayerPrefs.GetString("Language", string.Empty);
         playerNameText.text = ProtectedPlayerPrefs.GetString("PlayerName", string.Empty);
@@ -221,7 +232,6 @@ public class Menu : MonoBehaviour
 
                 // Default selection choice
                 ChangeLanguageSelection(languageSelectIndex, 160f);
-
                 break;
             case MenuState.MAIN_MENU:
                 // ACTIVE UI COMPONENT
@@ -241,7 +251,9 @@ public class Menu : MonoBehaviour
                 break;
             case MenuState.NAME_INPUT:
                 playerNameText.characterValidation = TMP_InputField.CharacterValidation.Alphanumeric;
-                playerNameText.gameObject.SetActive(true);
+                playerNameText_UI.gameObject.SetActive(true);
+                playerNameText.interactable = true;
+                playerNameText.Select();
                 break;
         }
         
@@ -271,19 +283,20 @@ public class Menu : MonoBehaviour
         RectTransform rightIcon = selectIcon.GetChild(1).GetComponent<RectTransform>();
 
         float size = offset == -1 ? choiceText[(int)index].textBounds.size.x : offset;
+        float position = choiceText[(int)index].GetComponent<RectTransform>().anchoredPosition.x;
 
-        leftIcon.anchoredPosition = new Vector2(-size / 2f - 20f, leftIcon.anchoredPosition.y);
-        rightIcon.anchoredPosition = new Vector2(size / 2f + 20f, rightIcon.anchoredPosition.y);
+        leftIcon.anchoredPosition = new Vector2(-size / 2f - 20f + position, leftIcon.anchoredPosition.y);
+        rightIcon.anchoredPosition = new Vector2(size / 2f + 20f + position, rightIcon.anchoredPosition.y);
 
         for (int i = 0; i < (int)MenuSelection.MaxIndex ;i++)
         {
             if (i == (int)index)
             {
-                choiceText[i].color = Color.red;
+                choiceText[i].color = new Color(0.4f, 0.0f, 0.0f);
             }
             else
             {
-                choiceText[i].color = Color.white;
+                choiceText[i].color = Color.black;
             }
         }
     }
@@ -304,11 +317,11 @@ public class Menu : MonoBehaviour
         {
             if (i == (int)index)
             {
-                languageChoiceText[i].color = Color.red;
+                languageChoiceText[i].color = new Color(0.4f, 0.0f, 0.0f);
             }
             else
             {
-                languageChoiceText[i].color = Color.white;
+                languageChoiceText[i].color = Color.black;
             }
         }
     }
@@ -410,7 +423,7 @@ public class Menu : MonoBehaviour
 
             // transition to next state
             AudioManager.Instance.PlaySFX("startgame");
-            StartCoroutine(StartMenuAnimation(languageSelectionParent.gameObject));
+            StartCoroutine(StartMenuAnimation(languageSelectionParent.GetComponent<RectTransform>(), new Vector2(-553.0f, -0.0f), 0.9f));
         }
         if (menuState != MenuState.MAIN_MENU) return;
         if (disableMenuControl) return;
@@ -429,7 +442,7 @@ public class Menu : MonoBehaviour
                 SelectionUp();
                 break;
             case MenuSelection.Leaderboard:
-                StartCoroutine(MenuTransition(3f));
+                StartCoroutine(MenuTransition(0.2f));
                 AudioManager.Instance.PlaySFX("decide");
                 break;
             case MenuSelection.Option:
@@ -449,17 +462,12 @@ public class Menu : MonoBehaviour
         }
     }
 
+    // show leaderboard
     IEnumerator MenuTransition(float time)
     {
-        leftTransition.DOAnchorPosX(-30f, time / 2f);
-        rightTransition.DOAnchorPosX(30f, time / 2f);
-
-        yield return new WaitForSecondsRealtime(time / 2f);
+        yield return new WaitForSecondsRealtime(time);
         ShowLeaderBoard(false);
         menuState = MenuState.LEADERBOARD;
-
-        leftTransition.DOAnchorPosX(-800f, time / 2f);
-        rightTransition.DOAnchorPosX(800f, time / 2f);
     }
 
     private void RecordPlayerName()
