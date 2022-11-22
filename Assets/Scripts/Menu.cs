@@ -13,10 +13,9 @@ public enum LeaderboardType
     Level,
     SpeedRunLevel10,
     SpeedRunLevel20,
-    Legacy,
 
     Min = Level,
-    Max = Legacy,
+    Max = SpeedRunLevel20,
 }
 
 public class Menu : MonoBehaviour
@@ -53,6 +52,7 @@ public class Menu : MonoBehaviour
         MaxIndex
     }
 
+    [SerializeField] Animator pageAnimator;
     [SerializeField] Image frame;
     [SerializeField] Image background;
     [SerializeField] TMP_Text logo;
@@ -68,6 +68,8 @@ public class Menu : MonoBehaviour
     [SerializeField] TMP_Text resetDataText;
     [SerializeField] GameObject startGameText;
     [SerializeField] RectTransform mainMenuUI;
+    [SerializeField] RectTransform mainPageUI;
+    [SerializeField] RectTransform leaderboardPageUI;
     [SerializeField] RectTransform languageSelectionParent;
     [SerializeField] RectTransform selectIcon;
     [SerializeField] RectTransform languageSelectIcon;
@@ -445,7 +447,7 @@ public class Menu : MonoBehaviour
                 SelectionUp();
                 break;
             case MenuSelection.Leaderboard:
-                StartCoroutine(MenuTransition(0.2f));
+                StartCoroutine(OpenLeaderboardUI(0.4f));
                 AudioManager.Instance.PlaySFX("decide");
                 break;
             case MenuSelection.Option:
@@ -466,9 +468,16 @@ public class Menu : MonoBehaviour
     }
 
     // show leaderboard
-    IEnumerator MenuTransition(float time)
+    IEnumerator OpenLeaderboardUI(float time)
     {
+        // next page
+        mainPageUI.gameObject.SetActive(false);
+        pageAnimator.Play("BookFlipLeft");
+
         yield return new WaitForSecondsRealtime(time);
+
+        leaderboardPageUI.gameObject.SetActive(true);
+
         ShowLeaderBoard(false);
         menuState = MenuState.LEADERBOARD;
     }
@@ -531,7 +540,7 @@ public class Menu : MonoBehaviour
         leaderboardType = (LeaderboardType)previousboard;
 
         // Refresh
-        GetLeaderboardData(leaderboardType, true);
+        GetLeaderboardData(leaderboardType);
 
         // SE
         AudioManager.Instance.PlaySFX("page");
@@ -544,15 +553,8 @@ public class Menu : MonoBehaviour
 
     public void ShowLeaderBoard(bool refreshData)
     {
-        // avoid clicking too fast
-        if (!leaderboardclickable) return;
-
         menuState = MenuState.LEADERBOARD;
-
-        // ENABLE LEADERBOARD
-        leaderboardObject.gameObject.SetActive(true);
-        leaderboardObject.SetUnactiveLeaderboardButtonForSecond(0.5f);
-
+        
         // PLAY SFX
         AudioManager.Instance.PlaySFX("closeLeaderboard");
 
@@ -563,23 +565,15 @@ public class Menu : MonoBehaviour
             {
                 leaderboardRankList[i] = new Dictionary<string, string>();
             }
-            GetLeaderboardData(leaderboardType, true);
+            GetLeaderboardData(leaderboardType);
         }
         else
         {
-            // INITIATE
-            leaderboardObject.SetLeaderboardType(leaderboardType);
-            leaderboardObject.Initialize(leaderboardRankList, leaderBoardTotalEntry);
-        }
 
-        // LEADERBOARD UI
-        leaderboardObject.GetComponent<CanvasGroup>().DOFade(0.0f, 0.0f).SetUpdate(true);
-        leaderboardObject.GetComponent<CanvasGroup>().DOFade(1.0f, 0.5f).SetUpdate(true);
-        leaderboardObject.GetComponent<CanvasGroup>().blocksRaycasts = true;
-        leaderboardObject.SetValueScrollBar(0.1f, 1.0f);
+        }
     }
 
-    private void GetLeaderboardData(LeaderboardType type, bool refreshData = false)
+    private void GetLeaderboardData(LeaderboardType type)
     {
         for (int i = 0; i < 30; i++)
         {
@@ -632,13 +626,6 @@ public class Menu : MonoBehaviour
                         leaderboardRankList[i]["name"] = "???";
                         leaderBoardTotalEntry--;
                     }
-                }
-
-                if (refreshData)
-                {
-                    // UPDATE
-                    leaderboardObject.SetLeaderboardType(leaderboardType);
-                    leaderboardObject.Refresh(leaderboardRankList, leaderBoardTotalEntry);
                 }
             }
             else

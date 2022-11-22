@@ -17,7 +17,6 @@ public class GameManager : MonoBehaviour
     [SerializeField] int levelLeaderBoardID = 402;
     [SerializeField] int SpeedRun10LeaderBoardID = 402;
     [SerializeField] int SpeedRun20LeaderBoardID = 402;
-    [SerializeField] int legacyLeaderboardID = 402;
     [SerializeField] int cheaterLeaderboardID = 434;
     [SerializeField] float musicVolume = 0.7f;
     [SerializeField] int timeCounter;
@@ -131,7 +130,6 @@ public class GameManager : MonoBehaviour
         levelLeaderBoardID = cheaterLeaderboardID;
         SpeedRun10LeaderBoardID = cheaterLeaderboardID;
         SpeedRun20LeaderBoardID = cheaterLeaderboardID;
-        legacyLeaderboardID = cheaterLeaderboardID;
     }
 
     public void Initialize()
@@ -802,7 +800,6 @@ public class GameManager : MonoBehaviour
         int data;
         switch (type)
         {
-            case LeaderboardType.Legacy:
             case LeaderboardType.Level:
                 leaderboardID = GetLeaderboardID(type);
                 data = currentLevel;
@@ -1315,9 +1312,6 @@ public class GameManager : MonoBehaviour
                 break;
             case LeaderboardType.SpeedRunLevel20:
                 rtn = SpeedRun20LeaderBoardID;
-                break;
-            case LeaderboardType.Legacy:
-                rtn = legacyLeaderboardID;
                 break;
             default:
                 rtn = -1;

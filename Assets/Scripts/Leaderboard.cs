@@ -74,11 +74,6 @@ public class Leaderboard : MonoBehaviour
                 title.SetText(LocalizationManager.Localize("Leaderboard.Speedrun20"));
                 description.SetText(LocalizationManager.Localize("Leaderboard.Speedrun20Description"));
                 break;
-            case LeaderboardType.Legacy:
-                rankType.SetText(LocalizationManager.Localize("Leaderboard.Time"));
-                title.SetText(LocalizationManager.Localize("Leaderboard.Legacy"));
-                description.SetText(LocalizationManager.Localize("Leaderboard.LegacyDescription"));
-                break;
             default:
                 Debug.Log("<color=red>LEADERBOARD TYPE NOT FOUND</color>");
                 break;
@@ -94,7 +89,6 @@ public class Leaderboard : MonoBehaviour
                 // do nothing
                 break;
             case LeaderboardType.SpeedRunLevel10:
-            case LeaderboardType.Legacy:
             case LeaderboardType.SpeedRunLevel20:
                 rtn = (data / 60).ToString() + "m" + (data % 60).ToString() + "s";
                 break;
