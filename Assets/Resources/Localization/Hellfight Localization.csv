@@ -6,6 +6,8 @@ Menu.Leaderboard,Leaderboard,線上排行榜,线上排行榜,Leaderboard
 Menu.Credits,<color=grey>Credits</color>,<color=grey>感謝名單</color>,<color=grey>感谢名单</color>,<color=grey>Credits</color>
 Menu.ResetLocalData,Reset Local Data,清除本地數據,清除本地数据,Reset Local Data
 Menu.Exit,<color=grey>Exit</color>,<color=grey>退出</color>,<color=grey>退出</color>,<color=grey>Exit</color>
+Menu.HighestRecord,highest record,highest record,highest record,highest record
+Menu.HighestRecordValue,Level {0:N0},Level {0:N0},Level {0:N0},Level {0:N0}
 POWERUPS,,,,
 PowerupName.MoveSpeed,Move Speed,移動速度,移动速度,移動速度
 PowerupDescription.MoveSpeed,Increase your movement speed by <color=#ff00ffff>{0:N0}</color>.,增加<color=#ff00ffff>{0:N0}</color>點移動速度,增加<color=#ff00ffff>{0:N0}</color>点移动速度,移動速度増加<color=#ff00ffff>{0:N0}</color>点

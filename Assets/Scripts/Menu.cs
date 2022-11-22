@@ -67,12 +67,13 @@ public class Menu : MonoBehaviour
     [SerializeField] RectTransform resetDataPanel;
     [SerializeField] TMP_Text resetDataText;
     [SerializeField] GameObject startGameText;
-    [SerializeField] RectTransform selectionParent;
+    [SerializeField] RectTransform mainMenuUI;
     [SerializeField] RectTransform languageSelectionParent;
     [SerializeField] RectTransform selectIcon;
     [SerializeField] RectTransform languageSelectIcon;
     [SerializeField] TMP_Text[] choiceText;
     [SerializeField] TMP_Text[] languageChoiceText;
+    [SerializeField] TMP_Text highestRecordLevelText;
 
     [Header("Debug")]
     [SerializeField] MenuSelection selectIndex;
@@ -236,9 +237,8 @@ public class Menu : MonoBehaviour
             case MenuState.MAIN_MENU:
                 // ACTIVE UI COMPONENT
                 logo.gameObject.SetActive(true);
-                selectionParent.gameObject.SetActive(true);
+                mainMenuUI.gameObject.SetActive(true);
                 selectIndex = MenuSelection.MainGame;
-
                 // SE
                 AudioManager.Instance.PlaySFX("decide");
                 AudioManager.Instance.PlayMusic("Battle-Sanctuary");
@@ -248,6 +248,9 @@ public class Menu : MonoBehaviour
 
                 // Default selection choice
                 ChangeSelection(MenuSelection.MainGame, 107.375f);
+
+                // Setup Text
+                SetupMainMenuUI();
                 break;
             case MenuState.NAME_INPUT:
                 playerNameText.characterValidation = TMP_InputField.CharacterValidation.Alphanumeric;
@@ -683,7 +686,7 @@ public class Menu : MonoBehaviour
         menuState = MenuState.START;
         StartCoroutine(SetActiveDelay(startGameText.gameObject, true, 1.1f));
         StartCoroutine(SetActiveDelay(logo.gameObject, false, 1.1f));
-        StartCoroutine(SetActiveDelay(selectionParent.gameObject, false, 1.1f));
+        StartCoroutine(SetActiveDelay(mainMenuUI.gameObject, false, 1.1f));
 
         StartCoroutine(RestartFromStartMenu(1.15f));
     }
@@ -718,5 +721,10 @@ public class Menu : MonoBehaviour
     {
         yield return new WaitForSecondsRealtime(time);
         obj.SetActive(boolean);
+    }
+
+    private void SetupMainMenuUI()
+    {
+        highestRecordLevelText.text = Assets.SimpleLocalization.LocalizationManager.Localize("Menu.HighestRecordValue", ProgressManager.Instance().LoadUnlockLevel());
     }
 }
