@@ -683,18 +683,21 @@ public class GameManager : MonoBehaviour
     public void CloseMenu()
     {
         AudioManager.Instance.PlaySFX("menuClose");
-        Time.timeScale = 1.0f;
 
         screenAlpha.DOFade(0.0f, 0.25f).SetUpdate(true);
         statusMenu.GetComponent<RectTransform>().DOScaleX(0.0f, 0.25f).SetUpdate(true);
         closeButton.DOFade(0.0f, 0.0f).SetUpdate(true);
         timerButton.DOFade(0.0f, 0.0f).SetUpdate(true);
 
-        // pause game
-        player.Pause(false);
-        foreach (EnemyControl enemy in monsterList)
+        // unpause game
+        if (!gameOver)
         {
-            enemy.Pause(false);
+            Time.timeScale = 1.0f;
+            player.Pause(false);
+            foreach (EnemyControl enemy in monsterList)
+            {
+                enemy.Pause(false);
+            }
         }
 
         if (!levelEnded)
@@ -732,24 +735,16 @@ public class GameManager : MonoBehaviour
         openButton.SetActive(false);
 
         // UI
-        GameOverPanel.GetComponent<RectTransform>().DOScaleX(1.0f, 0.5f).SetUpdate(true);
+        GameOverPanel.gameObject.SetActive(true);
 
         gameOverAlpha.DOFade(0.8f, 0.5f).SetUpdate(true);
 
-        leaderBoardButton.gameObject.SetActive(true);
-        leaderBoardButton.GetComponent<RectTransform>().anchoredPosition = new Vector2(0.0f, leaderBoardButton.GetComponent<RectTransform>().anchoredPosition.y);
-        leaderBoardButton.GetComponent<RectTransform>().DOAnchorPosX(110f, 0.5f, false).SetUpdate(true);
-        leaderBoardButton.DOFade(1.0f, 1.0f).SetUpdate(true);
-
-        StatusButton.gameObject.SetActive(true);
-        StatusButton.GetComponent<RectTransform>().anchoredPosition = new Vector2(0.0f, StatusButton.GetComponent<RectTransform>().anchoredPosition.y);
-        StatusButton.GetComponent<RectTransform>().DOAnchorPosX(-110f, 0.5f, false).SetUpdate(true);
-        StatusButton.DOFade(1.0f, 1.0f).SetUpdate(true);
-
-        restartButton.gameObject.SetActive(true);
-
         menuCharacter.GetComponent<Animator>().Play("playerUIDead");
         menuCharacter.GetComponent<RectTransform>().DOAnchorPosX(27f, 0.0f, false).SetUpdate(true);
+
+        // Reset Text UI
+        NarrativeText.text = string.Empty;
+        comboText.text = string.Empty;
 
         // PAUSE GAME
         Time.timeScale = 0.0f; 
@@ -849,17 +844,17 @@ public class GameManager : MonoBehaviour
         switch (type)
         {
             case LeaderboardType.Level:
-                gameoverText.SetText("You've ranked <color=#ffff00ff>#" + rank.ToString() + "</color> in the global leaderboard. (level " + data.ToString() + ")");
+                gameoverText.SetText("You've ranked <color=#ff0000ff>#" + rank.ToString() + "</color> in the global leaderboard. (level " + data.ToString() + ")");
                 break;
             case LeaderboardType.SpeedRunLevel10:
                 min = data / 60;
                 sec = data % 60;
-                gameoverText.SetText(gameoverText.text + "\n<color=#ffff00ff>#" + rank.ToString() + "</color> fastest person to beat level 10. (" + min.ToString() + "m" + sec.ToString() + "s)");
+                gameoverText.SetText(gameoverText.text + "\n<color=#ff0000ff>#" + rank.ToString() + "</color> fastest person to beat level 10. (" + min.ToString() + "m" + sec.ToString() + "s)");
                 break;
             case LeaderboardType.SpeedRunLevel20:
                 min = data / 60;
                 sec = data % 60;
-                gameoverText.SetText(gameoverText.text + "\n<color=#ffff00ff>#" + rank.ToString() + "</color> fastest person to beat level 20. (" + min.ToString() + "m" + sec.ToString() + "s)");
+                gameoverText.SetText(gameoverText.text + "\n<color=#ff0000ff>#" + rank.ToString() + "</color> fastest person to beat level 20. (" + min.ToString() + "m" + sec.ToString() + "s)");
                 break;
             default:
                 Debug.Log("<color=red>LEADERBOARD TYPE NOT FOUND</color>");
@@ -959,15 +954,13 @@ public class GameManager : MonoBehaviour
         player.gameObject.SetActive(false);
         player.ResetPlayer();
         playerCorpse.gameObject.SetActive(false);
+        player.Pause(false);
 
         //reset UI
         openButton.SetActive(true);
 
         gameOverAlpha.color = new Color(0, 0, 0, 0);
-        GameOverPanel.GetComponent<RectTransform>().DOScaleX(0.0f, 0.0f);
-        restartButton.gameObject.SetActive(false);
-        StatusButton.gameObject.SetActive(false);
-        leaderBoardButton.gameObject.SetActive(false);
+        GameOverPanel.gameObject.SetActive(false);
 
         menuCharacter.GetComponent<Animator>().Play("playerUI");
         menuCharacter.GetComponent<RectTransform>().DOAnchorPosX(0f, 0.0f, false).SetUpdate(true);
@@ -1237,6 +1230,15 @@ public class GameManager : MonoBehaviour
 
         Transform close = parallaxParent.GetChild(2);
         if (close != null) close.GetComponent<SpriteRenderer>().color = new Color(theme.r, theme.g, theme.b, 1f);
+
+        if (parallaxParent.childCount > 3)
+        {
+            for (int i = 3; i < parallaxParent.childCount; i++)
+            {
+                Transform child = parallaxParent.GetChild(i);
+                if (child != null) child.GetComponent<SpriteRenderer>().color = new Color(theme.r, theme.g, theme.b, 1f);
+            }
+        }
     }
 
     private void ResetParallax()

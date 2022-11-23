@@ -169,16 +169,4 @@ public class Leaderboard : MonoBehaviour
             yield return new WaitForSecondsRealtime(Time.unscaledDeltaTime);
         }
     }
-
-    public void SetUnactiveLeaderboardButtonForSecond(float _time)
-    {
-        StartCoroutine(UnactiveLeaderboardButtonForSecondLoop(_time));
-    }
-
-    IEnumerator UnactiveLeaderboardButtonForSecondLoop(float _time)
-    {
-        menu.SetLeaderboardButtonClickable(false);
-        yield return new WaitForSecondsRealtime(_time);
-        menu.SetLeaderboardButtonClickable(true);
-    }
 }

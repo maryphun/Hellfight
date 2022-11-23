@@ -64,8 +64,7 @@ public class Menu : MonoBehaviour
     [SerializeField] TMP_InputField playerNameText;
     [SerializeField] RectTransform playerNameText_UI;
     [SerializeField] Leaderboard leaderboardObject;
-    [SerializeField] RectTransform resetDataPanel;
-    [SerializeField] TMP_Text resetDataText;
+    [SerializeField] RectTransform resetDataComfirmation;
     [SerializeField] GameObject startGameText;
     [SerializeField] RectTransform mainMenuUI;
     [SerializeField] RectTransform mainPageUI;
@@ -84,7 +83,8 @@ public class Menu : MonoBehaviour
     [SerializeField] LeaderboardType leaderboardType;
 
     bool disableMenuControl = false;
-    bool leaderboardclickable = false;
+    bool leaderboardDataLoading = false;
+    
 
     [SerializeField] Dictionary<string, string>[] leaderboardRankList;
     int leaderBoardTotalEntry;
@@ -95,7 +95,7 @@ public class Menu : MonoBehaviour
         // UI
         selectIndex = MenuSelection.MainGame;
         disableMenuControl = true;
-        leaderboardclickable = true;
+        leaderboardDataLoading = true;
 
         // INITIALIZE LOCALIZATION
         string language = ProtectedPlayerPrefs.GetString("Language", string.Empty);
@@ -113,15 +113,15 @@ public class Menu : MonoBehaviour
         {
             if (response.success)
             {
-                leaderboardRankList = new Dictionary<string, string>[30];
-                for (int i = 0; i < 30; i++)
+                leaderboardRankList = new Dictionary<string, string>[20];
+                for (int i = 0; i < 20; i++)
                 {
                     leaderboardRankList[i] = new Dictionary<string, string>();
                 }
                 leaderboardType = LeaderboardType.Level;
-                if (ProgressManager.Instance().LoadUnlockLevel() > 10 ) leaderboardType = LeaderboardType.SpeedRunLevel10;
-                if (ProgressManager.Instance().LoadUnlockLevel() > 20 ) leaderboardType = LeaderboardType.SpeedRunLevel20;
-                GetLeaderboardData(leaderboardType);
+                //if (ProgressManager.Instance().LoadUnlockLevel() > 10 ) leaderboardType = LeaderboardType.SpeedRunLevel10;
+                //if (ProgressManager.Instance().LoadUnlockLevel() > 20 ) leaderboardType = LeaderboardType.SpeedRunLevel20;
+                GetLeaderboardData(leaderboardType, false);
             }
         });
 
@@ -447,7 +447,9 @@ public class Menu : MonoBehaviour
                 SelectionUp();
                 break;
             case MenuSelection.Leaderboard:
-                StartCoroutine(OpenLeaderboardUI(0.4f));
+                leaderboardType = LeaderboardType.Min; // always open the first page.
+                StartCoroutine(OpenLeaderboardUI(0.4f, false));
+                leaderboardPageUI.GetComponent<LeaderboardPage>().SetLeaderboardMode(LeaderboardPage.LeaderboardMode.MainMenuMode);
                 AudioManager.Instance.PlaySFX("decide");
                 break;
             case MenuSelection.Option:
@@ -467,19 +469,64 @@ public class Menu : MonoBehaviour
         }
     }
 
-    // show leaderboard
-    IEnumerator OpenLeaderboardUI(float time)
+    // show/hide leaderboard
+    IEnumerator OpenLeaderboardUI(float time, bool refreshData = false)
     {
         // next page
         mainPageUI.gameObject.SetActive(false);
         pageAnimator.Play("BookFlipLeft");
+        // SE
+        AudioManager.Instance.PlaySFX("page");
 
         yield return new WaitForSecondsRealtime(time);
 
         leaderboardPageUI.gameObject.SetActive(true);
 
-        ShowLeaderBoard(false);
+        ShowLeaderBoard(refreshData);
         menuState = MenuState.LEADERBOARD;
+    }
+    IEnumerator HideLeaderboardUI(float time)
+    {
+        // next page
+        leaderboardPageUI.gameObject.SetActive(false);
+        pageAnimator.Play("BookFlipRight");
+        // SE
+        AudioManager.Instance.PlaySFX("page");
+
+        yield return new WaitForSecondsRealtime(time);
+
+        mainPageUI.gameObject.SetActive(true);
+        disableMenuControl = false;
+
+        menuState = MenuState.MAIN_MENU;
+    }
+    public void OpenLeaderboardFromGameOverPanel()
+    {
+        transform.gameObject.SetActive(true);
+
+        leaderboardType = LeaderboardType.Min; // always open the first page.
+        StartCoroutine(OpenLeaderboardUI(0.4f, true));
+        leaderboardPageUI.GetComponent<LeaderboardPage>().SetLeaderboardMode(LeaderboardPage.LeaderboardMode.GameOverMode);
+    }
+
+    IEnumerator LeaderboardNextPage(float time, string animationName)
+    {
+        // next page
+        leaderboardPageUI.gameObject.SetActive(false);
+
+        while (leaderboardDataLoading)
+        {
+            // SE
+            AudioManager.Instance.PlaySFX("page");
+            // play animation until data loaded complete
+            pageAnimator.Play(animationName);
+            yield return new WaitForSecondsRealtime(time);
+        }
+
+        leaderboardPageUI.gameObject.SetActive(true);
+
+        ShowLeaderBoard(true);
+        disableMenuControl = true;
     }
 
     private void RecordPlayerName()
@@ -508,42 +555,21 @@ public class Menu : MonoBehaviour
     {
         if (menuState != MenuState.LEADERBOARD) return;
 
-        // avoid clicking too fast
-        if (!leaderboardclickable) return;
-        leaderboardObject.SetUnactiveLeaderboardButtonForSecond(0.5f);
-
-        // PLAY SFX
-        AudioManager.Instance.PlaySFX("closeLeaderboard");
-
-        // DISABLE LEADERBOARD
-        leaderboardObject.ResetList();
-        leaderboardObject.GetComponent<CanvasGroup>().DOFade(0.0f, 0.5f).SetUpdate(true);
-
-        // RESET FLAG
-        disableMenuControl = false;
-        leaderboardObject.GetComponent<CanvasGroup>().blocksRaycasts = false;
-        menuState = MenuState.MAIN_MENU;
+        StartCoroutine(HideLeaderboardUI(0.4f));
     }
 
-    public void ChangeLeaderboard(int value)
+    public void ChangeLeaderboard(LeaderboardType value)
     {
-        // avoid clicking too fast
-        if (!leaderboardclickable) return;
-        leaderboardObject.SetUnactiveLeaderboardButtonForSecond(0.25f);
-
-        int previousboard = (int)leaderboardType;
-        previousboard += value;
-        if (previousboard < 0) previousboard = (int)LeaderboardType.Max;
-        if (previousboard > (int)LeaderboardType.Max) previousboard = (int)LeaderboardType.Min;
-
+        LeaderboardType previouspage = leaderboardType;
         // apply
-        leaderboardType = (LeaderboardType)previousboard;
+        leaderboardType = value;
 
         // Refresh
-        GetLeaderboardData(leaderboardType);
+        GetLeaderboardData(leaderboardType, true);
 
-        // SE
-        AudioManager.Instance.PlaySFX("page");
+        // Animation
+        string animName = previouspage < leaderboardType ? "BookFlipLeft" : "BookFlipRight";
+        StartCoroutine(LeaderboardNextPage(0.4f, animName));
     }
 
     public LeaderboardType GetLeaderboardType()
@@ -554,38 +580,38 @@ public class Menu : MonoBehaviour
     public void ShowLeaderBoard(bool refreshData)
     {
         menuState = MenuState.LEADERBOARD;
-        
-        // PLAY SFX
-        AudioManager.Instance.PlaySFX("closeLeaderboard");
 
         // CHECK IF NEED TO REFRESH DATA
         if (refreshData)
         {
-            for (int i = 0; i < 30; i++)
+            for (int i = 0; i < 20; i++)
             {
                 leaderboardRankList[i] = new Dictionary<string, string>();
             }
-            GetLeaderboardData(leaderboardType);
+            GetLeaderboardData(leaderboardType, refreshData);
         }
-        else
-        {
 
-        }
+        // since the data doesn't need to be updated.
+        // instead of wait until the data transfered, we should setup the list ui immediately.
+        leaderboardPageUI.GetComponent<LeaderboardPage>().Setup(leaderboardRankList, leaderBoardTotalEntry, (int)leaderboardType);
+        leaderboardPageUI.GetComponent<LeaderboardPage>().SetLeaderboardType(leaderboardType);
     }
 
-    private void GetLeaderboardData(LeaderboardType type)
+    private void GetLeaderboardData(LeaderboardType type, bool setupUIAfterSuccess)
     {
-        for (int i = 0; i < 30; i++)
+        for (int i = 0; i < 20; i++)
         {
             leaderboardRankList[i].Clear();
         }
 
-        LootLockerSDKManager.GetScoreList(gameMng.GetLeaderboardID(leaderboardType), 30, (response) =>
+        leaderboardDataLoading = true;
+
+        LootLockerSDKManager.GetScoreList(gameMng.GetLeaderboardID(leaderboardType), 20, (response) =>
         {
             if (response.success)
             {
                 LootLocker.Requests.LootLockerLeaderboardMember[] scores = response.items;
-                leaderBoardTotalEntry = 30;
+                leaderBoardTotalEntry = 20;
                 for (int i = 0; i < scores.Length; i++)
                 {
                     // rank
@@ -618,18 +644,25 @@ public class Menu : MonoBehaviour
                     //Debug.Log("atkDmg - " + leaderboardRankList[i]["atkDmg"]);
                     //Debug.Log("dashDmg - " + leaderboardRankList[i]["dashDmg"]);
                 }
-                if (scores.Length < 30)
+                if (scores.Length < 20)
                 {
-                    for (int i = scores.Length; i < 30; i++)
+                    for (int i = scores.Length; i < 20; i++)
                     {
                         // rank
                         leaderboardRankList[i]["name"] = "???";
                         leaderBoardTotalEntry--;
                     }
                 }
+
+                if (setupUIAfterSuccess)
+                {
+                    leaderboardPageUI.GetComponent<LeaderboardPage>().Setup(leaderboardRankList, leaderBoardTotalEntry, (int)leaderboardType);
+                }
+                leaderboardDataLoading = false;
             }
             else
             {
+                leaderboardDataLoading = false;
                 Debug.Log("Unable to connect server.");
             }
         });
@@ -650,9 +683,9 @@ public class Menu : MonoBehaviour
         return value;
     }
 
-    public void SetLeaderboardButtonClickable(bool value)
+    public bool IsLeaderboardDataLoading()
     {
-        leaderboardclickable = value;
+        return leaderboardDataLoading;
     }
 
     public void ResetData()
@@ -678,7 +711,6 @@ public class Menu : MonoBehaviour
         StartCoroutine(RestartFromStartMenu(1.15f));
     }
 
-
     IEnumerator RestartFromStartMenu(float time)
     {
         yield return new WaitForSecondsRealtime(time);
@@ -688,20 +720,16 @@ public class Menu : MonoBehaviour
     public void OpenResetDataMenu()
     {
         AudioManager.Instance.PlaySFX("warning", 0.5f);
-        resetDataPanel.gameObject.SetActive(true);
-        resetDataPanel.GetComponent<CanvasGroup>().DOFade(1.0f, 0.5f);
-        resetDataText.SetText("Name: <color=white>" + ProtectedPlayerPrefs.GetString("PlayerName") + "</color>\n" +
-                              "Best Level: <color=white>" + ProgressManager.Instance().LoadUnlockLevel() + "</color>\n" +
-                              "Last Death: <color=white>" + ProtectedPlayerPrefs.GetInt("LastDeath", 0) + "</color>\n");
+        resetDataComfirmation.gameObject.SetActive(true);
+        resetDataComfirmation.GetComponent<CanvasGroup>().DOFade(1.0f, 0.1f);
     }
 
     public void CloseResetDataMenu()
     {
         AudioManager.Instance.PlaySFX("decide", 0.5f);
-        resetDataPanel.GetComponent<CanvasGroup>().DOFade(0.0f, 0.5f);
-        StartCoroutine(SetActiveDelay(resetDataPanel.gameObject, false, 0.5f));
+        resetDataComfirmation.GetComponent<CanvasGroup>().DOFade(0.0f, 0.1f);
+        StartCoroutine(SetActiveDelay(resetDataComfirmation.gameObject, false, 0.1f));
         disableMenuControl = false;
-
     }
 
     IEnumerator SetActiveDelay(GameObject obj, bool boolean, float time)

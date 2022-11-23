@@ -192,7 +192,7 @@ public class ProgressManager : Singleton<ProgressManager>
                 rtn.skill_Icon = "deflect";
                 break;
             case Skill.Berserker:
-                rtn.value = 8 + Random.Range(0, 3);
+                rtn.value = 1 + Random.Range(0, 5);
                 rtn.skill_name = "<color=#a52a2aff>" + LocalizationManager.Localize("PowerupName.Berserker") + "</color>";
                 rtn.skill_description = LocalizationManager.Localize("PowerupDescription.Berserker", ((int)rtn.value).ToString());
                 rtn.skill_Icon = "berserker";

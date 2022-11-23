@@ -6,8 +6,9 @@ Menu.Leaderboard,Leaderboard,線上排行榜,线上排行榜,Leaderboard
 Menu.Credits,<color=grey>Credits</color>,<color=grey>感謝名單</color>,<color=grey>感谢名单</color>,<color=grey>Credits</color>
 Menu.ResetLocalData,Reset Local Data,清除本地數據,清除本地数据,Reset Local Data
 Menu.Exit,<color=grey>Exit</color>,<color=grey>退出</color>,<color=grey>退出</color>,<color=grey>Exit</color>
-Menu.HighestRecord,highest record,highest record,highest record,highest record
+Menu.HighestRecord,highest record,最高紀錄,最高纪录,最高記録
 Menu.HighestRecordValue,Level {0:N0},Level {0:N0},Level {0:N0},Level {0:N0}
+Menu.Comfirmation,Are you sure?,確定嗎?,确定吗?,本当ですか?
 POWERUPS,,,,
 PowerupName.MoveSpeed,Move Speed,移動速度,移动速度,移動速度
 PowerupDescription.MoveSpeed,Increase your movement speed by <color=#ff00ffff>{0:N0}</color>.,增加<color=#ff00ffff>{0:N0}</color>點移動速度,增加<color=#ff00ffff>{0:N0}</color>点移动速度,移動速度増加<color=#ff00ffff>{0:N0}</color>点
@@ -89,11 +90,11 @@ Text.ResetConfirm,Sure?,確定嗎?,确定吗?,本当か?
 LEADERBOARD,,,,
 Leaderboard.Level,LEVEL,LEVEL,LEVEL,LEVEL
 Leaderboard.Time,TIME,TIME,TIME,TIME
-Leaderboard.BestLevel,BEST LEVEL,BEST LEVEL,BEST LEVEL,BEST LEVEL
-Leaderboard.BestLevelDescription,Player that explored the deepest part of the dungeon,往最深處探索的探險者,往最深处探索的探险者,ダンジョンの一番深くまで探検した者
-Leaderboard.Speedrun10,SPEEDRUN LEVEL10,SPEEDRUN 10層,SPEEDRUN 10层,SPEEDRUN LEVEL10
-Leaderboard.Speedrun10Description,Player that slayed Broyon with the fastest way possible.,以最快的速度擊倒布靈幽的戰士,以最快的速度击倒布灵幽的战士,ブロヨンを最速の方法で倒した者
-Leaderboard.Speedrun20,SPEEDRUN LEVEL20,SPEEDRUN 20層,SPEEDRUN 20层,SPEEDRUN LEVEL20
-Leaderboard.Speedrun20Description,Player that slayed Hell Fighter with the fastest way possible.,以最快的速度擊倒地獄使者的戰士,以最快的速度击倒地狱使者的战士,地獄審判を最速の方法で倒した者
+Leaderboard.BestLevel,Best Record,Best Record,Best Record,Best Record
+Leaderboard.BestLevelDescription,adventurer who explored the deepest,往最深處探索的探險者,往最深处探索的探险者,ダンジョンの一番深くまで探検した者
+Leaderboard.Speedrun10,Speedrun Level10,Speedrun Level10,Speedrun Level10,Speedrun Level10
+Leaderboard.Speedrun10Description,who slayed Broyon the fastest,以最快的速度擊倒布靈幽的戰士,以最快的速度击倒布灵幽的战士,ブロヨンを最速の方法で倒した者
+Leaderboard.Speedrun20,Speedrun Level20,Speedrun Level20,Speedrun Level20,Speedrun Level20
+Leaderboard.Speedrun20Description,who bested Hell Fighter the fastest,以最快的速度擊倒地獄使者的戰士,以最快的速度击倒地狱使者的战士,地獄審判を最速の方法で倒した者
 Leaderboard.Legacy,LEGACY LEGENDS,遠古傳說,远古传说,伝説
 Leaderboard.LegacyDescription,The old time glory from the player in version 1.1.1beta (speedrun lvl20),1.1.1版前的傳說人物 (速通20層),1.1.1版以前的传说人物 (速通20层),1.1.1バージョンに名残した昔の伝説達 (ステージ20をスピードラン)

@@ -391,6 +391,14 @@ public class @PlayerAction : IInputActionCollection, IDisposable
                     ""interactions"": """"
                 },
                 {
+                    ""name"": ""LeaderboardMove"",
+                    ""type"": ""Button"",
+                    ""id"": ""0896da79-f91e-4002-b05a-4daa3f89a54b"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """"
+                },
+                {
                     ""name"": ""Confirm"",
                     ""type"": ""Button"",
                     ""id"": ""688479e6-67d4-4dad-bb82-b908c62be2a4"",
@@ -580,17 +588,6 @@ public class @PlayerAction : IInputActionCollection, IDisposable
                 },
                 {
                     ""name"": """",
-                    ""id"": ""4806a9c3-6440-4575-aaab-3121cef1cc9c"",
-                    ""path"": ""<Touchscreen>/primaryTouch/tap"",
-                    ""interactions"": """",
-                    ""processors"": """",
-                    ""groups"": """",
-                    ""action"": ""Confirm"",
-                    ""isComposite"": false,
-                    ""isPartOfComposite"": false
-                },
-                {
-                    ""name"": """",
                     ""id"": ""6a0f370e-a435-4f24-afb1-14bbef533b0e"",
                     ""path"": ""<Gamepad>/start"",
                     ""interactions"": """",
@@ -711,15 +708,103 @@ public class @PlayerAction : IInputActionCollection, IDisposable
                     ""isPartOfComposite"": false
                 },
                 {
-                    ""name"": """",
-                    ""id"": ""668f0710-02d9-49a6-ab76-4454d35655cf"",
-                    ""path"": ""<Touchscreen>/primaryTouch/tap"",
+                    ""name"": ""1D Axis"",
+                    ""id"": ""c2227ee6-ec51-44bc-b8da-77578852ec7c"",
+                    ""path"": ""1DAxis"",
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": """",
-                    ""action"": ""AnyKey"",
-                    ""isComposite"": false,
+                    ""action"": ""LeaderboardMove"",
+                    ""isComposite"": true,
                     ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": ""negative"",
+                    ""id"": ""81666fbe-77c7-4182-aab0-ac9293e87757"",
+                    ""path"": ""<Keyboard>/leftArrow"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""LeaderboardMove"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": ""positive"",
+                    ""id"": ""99658a6e-8521-40db-8235-724eff410733"",
+                    ""path"": ""<Keyboard>/rightArrow"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""LeaderboardMove"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": ""1D Axis"",
+                    ""id"": ""fccc099f-ec36-4763-b046-0afbaa3a24af"",
+                    ""path"": ""1DAxis"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""LeaderboardMove"",
+                    ""isComposite"": true,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": ""negative"",
+                    ""id"": ""d7403364-0bf4-4a5a-a065-fc11ac7151b5"",
+                    ""path"": ""<Keyboard>/a"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""LeaderboardMove"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": ""positive"",
+                    ""id"": ""61d7f6b5-e707-4f14-bab5-c47f94479719"",
+                    ""path"": ""<Keyboard>/d"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""LeaderboardMove"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": ""1D Axis"",
+                    ""id"": ""70c914bb-687a-4181-8670-b3f96111a483"",
+                    ""path"": ""1DAxis"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""LeaderboardMove"",
+                    ""isComposite"": true,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": ""negative"",
+                    ""id"": ""64b1f6c3-7c5e-49f2-8904-69d37cb37553"",
+                    ""path"": ""<Gamepad>/dpad/left"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""LeaderboardMove"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": ""positive"",
+                    ""id"": ""5703a269-6719-4e9f-87e4-ede20197cac9"",
+                    ""path"": ""<Gamepad>/dpad/right"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""LeaderboardMove"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
                 }
             ]
         },
@@ -789,6 +874,7 @@ public class @PlayerAction : IInputActionCollection, IDisposable
         // MenuControls
         m_MenuControls = asset.FindActionMap("MenuControls", throwIfNotFound: true);
         m_MenuControls_Move = m_MenuControls.FindAction("Move", throwIfNotFound: true);
+        m_MenuControls_LeaderboardMove = m_MenuControls.FindAction("LeaderboardMove", throwIfNotFound: true);
         m_MenuControls_Confirm = m_MenuControls.FindAction("Confirm", throwIfNotFound: true);
         m_MenuControls_OpenCloseMenu = m_MenuControls.FindAction("Open/Close Menu", throwIfNotFound: true);
         m_MenuControls_AnyKey = m_MenuControls.FindAction("AnyKey", throwIfNotFound: true);
@@ -920,6 +1006,7 @@ public class @PlayerAction : IInputActionCollection, IDisposable
     private readonly InputActionMap m_MenuControls;
     private IMenuControlsActions m_MenuControlsActionsCallbackInterface;
     private readonly InputAction m_MenuControls_Move;
+    private readonly InputAction m_MenuControls_LeaderboardMove;
     private readonly InputAction m_MenuControls_Confirm;
     private readonly InputAction m_MenuControls_OpenCloseMenu;
     private readonly InputAction m_MenuControls_AnyKey;
@@ -929,6 +1016,7 @@ public class @PlayerAction : IInputActionCollection, IDisposable
         private @PlayerAction m_Wrapper;
         public MenuControlsActions(@PlayerAction wrapper) { m_Wrapper = wrapper; }
         public InputAction @Move => m_Wrapper.m_MenuControls_Move;
+        public InputAction @LeaderboardMove => m_Wrapper.m_MenuControls_LeaderboardMove;
         public InputAction @Confirm => m_Wrapper.m_MenuControls_Confirm;
         public InputAction @OpenCloseMenu => m_Wrapper.m_MenuControls_OpenCloseMenu;
         public InputAction @AnyKey => m_Wrapper.m_MenuControls_AnyKey;
@@ -945,6 +1033,9 @@ public class @PlayerAction : IInputActionCollection, IDisposable
                 @Move.started -= m_Wrapper.m_MenuControlsActionsCallbackInterface.OnMove;
                 @Move.performed -= m_Wrapper.m_MenuControlsActionsCallbackInterface.OnMove;
                 @Move.canceled -= m_Wrapper.m_MenuControlsActionsCallbackInterface.OnMove;
+                @LeaderboardMove.started -= m_Wrapper.m_MenuControlsActionsCallbackInterface.OnLeaderboardMove;
+                @LeaderboardMove.performed -= m_Wrapper.m_MenuControlsActionsCallbackInterface.OnLeaderboardMove;
+                @LeaderboardMove.canceled -= m_Wrapper.m_MenuControlsActionsCallbackInterface.OnLeaderboardMove;
                 @Confirm.started -= m_Wrapper.m_MenuControlsActionsCallbackInterface.OnConfirm;
                 @Confirm.performed -= m_Wrapper.m_MenuControlsActionsCallbackInterface.OnConfirm;
                 @Confirm.canceled -= m_Wrapper.m_MenuControlsActionsCallbackInterface.OnConfirm;
@@ -964,6 +1055,9 @@ public class @PlayerAction : IInputActionCollection, IDisposable
                 @Move.started += instance.OnMove;
                 @Move.performed += instance.OnMove;
                 @Move.canceled += instance.OnMove;
+                @LeaderboardMove.started += instance.OnLeaderboardMove;
+                @LeaderboardMove.performed += instance.OnLeaderboardMove;
+                @LeaderboardMove.canceled += instance.OnLeaderboardMove;
                 @Confirm.started += instance.OnConfirm;
                 @Confirm.performed += instance.OnConfirm;
                 @Confirm.canceled += instance.OnConfirm;
@@ -1042,6 +1136,7 @@ public class @PlayerAction : IInputActionCollection, IDisposable
     public interface IMenuControlsActions
     {
         void OnMove(InputAction.CallbackContext context);
+        void OnLeaderboardMove(InputAction.CallbackContext context);
         void OnConfirm(InputAction.CallbackContext context);
         void OnOpenCloseMenu(InputAction.CallbackContext context);
         void OnAnyKey(InputAction.CallbackContext context);

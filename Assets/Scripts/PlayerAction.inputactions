@@ -378,6 +378,14 @@
                     "interactions": ""
                 },
                 {
+                    "name": "LeaderboardMove",
+                    "type": "Button",
+                    "id": "0896da79-f91e-4002-b05a-4daa3f89a54b",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": ""
+                },
+                {
                     "name": "Confirm",
                     "type": "Button",
                     "id": "688479e6-67d4-4dad-bb82-b908c62be2a4",
@@ -567,17 +575,6 @@
                 },
                 {
                     "name": "",
-                    "id": "4806a9c3-6440-4575-aaab-3121cef1cc9c",
-                    "path": "<Touchscreen>/primaryTouch/tap",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": "",
-                    "action": "Confirm",
-                    "isComposite": false,
-                    "isPartOfComposite": false
-                },
-                {
-                    "name": "",
                     "id": "6a0f370e-a435-4f24-afb1-14bbef533b0e",
                     "path": "<Gamepad>/start",
                     "interactions": "",
@@ -698,15 +695,103 @@
                     "isPartOfComposite": false
                 },
                 {
-                    "name": "",
-                    "id": "668f0710-02d9-49a6-ab76-4454d35655cf",
-                    "path": "<Touchscreen>/primaryTouch/tap",
+                    "name": "1D Axis",
+                    "id": "c2227ee6-ec51-44bc-b8da-77578852ec7c",
+                    "path": "1DAxis",
                     "interactions": "",
                     "processors": "",
                     "groups": "",
-                    "action": "AnyKey",
-                    "isComposite": false,
+                    "action": "LeaderboardMove",
+                    "isComposite": true,
                     "isPartOfComposite": false
+                },
+                {
+                    "name": "negative",
+                    "id": "81666fbe-77c7-4182-aab0-ac9293e87757",
+                    "path": "<Keyboard>/leftArrow",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "LeaderboardMove",
+                    "isComposite": false,
+                    "isPartOfComposite": true
+                },
+                {
+                    "name": "positive",
+                    "id": "99658a6e-8521-40db-8235-724eff410733",
+                    "path": "<Keyboard>/rightArrow",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "LeaderboardMove",
+                    "isComposite": false,
+                    "isPartOfComposite": true
+                },
+                {
+                    "name": "1D Axis",
+                    "id": "fccc099f-ec36-4763-b046-0afbaa3a24af",
+                    "path": "1DAxis",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "LeaderboardMove",
+                    "isComposite": true,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "negative",
+                    "id": "d7403364-0bf4-4a5a-a065-fc11ac7151b5",
+                    "path": "<Keyboard>/a",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "LeaderboardMove",
+                    "isComposite": false,
+                    "isPartOfComposite": true
+                },
+                {
+                    "name": "positive",
+                    "id": "61d7f6b5-e707-4f14-bab5-c47f94479719",
+                    "path": "<Keyboard>/d",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "LeaderboardMove",
+                    "isComposite": false,
+                    "isPartOfComposite": true
+                },
+                {
+                    "name": "1D Axis",
+                    "id": "70c914bb-687a-4181-8670-b3f96111a483",
+                    "path": "1DAxis",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "LeaderboardMove",
+                    "isComposite": true,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "negative",
+                    "id": "64b1f6c3-7c5e-49f2-8904-69d37cb37553",
+                    "path": "<Gamepad>/dpad/left",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "LeaderboardMove",
+                    "isComposite": false,
+                    "isPartOfComposite": true
+                },
+                {
+                    "name": "positive",
+                    "id": "5703a269-6719-4e9f-87e4-ede20197cac9",
+                    "path": "<Gamepad>/dpad/right",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "LeaderboardMove",
+                    "isComposite": false,
+                    "isPartOfComposite": true
                 }
             ]
         },
