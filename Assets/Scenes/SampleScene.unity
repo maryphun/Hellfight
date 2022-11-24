@@ -3649,7 +3649,6 @@ GameObject:
   m_Component:
   - component: {fileID: 257848020}
   - component: {fileID: 257848019}
-  - component: {fileID: 257848018}
   m_Layer: 0
   m_Name: EventSystem
   m_TagString: Untagged
@@ -3657,25 +3656,6 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!114 &257848018
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 257848017}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4f231c4fb786f3946a6b90b886c48677, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_HorizontalAxis: Horizontal
-  m_VerticalAxis: Vertical
-  m_SubmitButton: Submit
-  m_CancelButton: Cancel
-  m_InputActionsPerSecond: 10
-  m_RepeatDelay: 0.5
-  m_ForceModuleActive: 0
 --- !u!114 &257848019
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -19017,7 +18997,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: Connecting to server...
+  m_text: 
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f9bdee57e28c6c4ca07b29565f098bf, type: 2}
   m_sharedMaterial: {fileID: 583840982053765578, guid: 8f9bdee57e28c6c4ca07b29565f098bf, type: 2}
@@ -24744,7 +24724,6 @@ GameObject:
   - component: {fileID: 1606637407}
   - component: {fileID: 1606637410}
   - component: {fileID: 1606637409}
-  - component: {fileID: 1606637408}
   - component: {fileID: 1606637411}
   m_Layer: 5
   m_Name: Text
@@ -24772,19 +24751,6 @@ RectTransform:
   m_AnchoredPosition: {x: 3.29, y: -4.61}
   m_SizeDelta: {x: 370.19, y: 88.9}
   m_Pivot: {x: 0.5, y: 0.5}
---- !u!114 &1606637408
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1606637406}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 7a82ad0fa4d4c8f46a524dc9e0cf5bb9, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  LocalizationKey: Menu.Start
 --- !u!114 &1606637409
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -31178,9 +31144,6 @@ MonoBehaviour:
     - monster: {fileID: 1176884459242982445, guid: 5566c7c73111dd6449a300458ba14c59, type: 3}
       timing: 2
       direction: 6
-    - monster: {fileID: 3821527992036021174, guid: f7f5f7952a4740b4d96cc00b10357ac5, type: 3}
-      timing: 2
-      direction: 6
   - activate: 1
     spawnInfo:
     - monster: {fileID: 4133860276208987401, guid: 079ea7afb6444a34cab6e63ca3cf8d2d, type: 3}
@@ -31357,6 +31320,11 @@ MonoBehaviour:
       direction: 6
   - activate: 1
     spawnInfo:
+    - monster: {fileID: 3821527992036021174, guid: f7f5f7952a4740b4d96cc00b10357ac5, type: 3}
+      timing: 2
+      direction: 6
+  - activate: 1
+    spawnInfo:
     - monster: {fileID: 1176884459242982445, guid: 5566c7c73111dd6449a300458ba14c59, type: 3}
       timing: 2
       direction: 6
@@ -31410,6 +31378,8 @@ MonoBehaviour:
     availableLevel: 20
   - monster: {fileID: 1176884459242982445, guid: afd9ec1e2f71d1e48a9de60f4c9321e9, type: 3}
     availableLevel: 19
+  - monster: {fileID: 3821527992036021174, guid: f7f5f7952a4740b4d96cc00b10357ac5, type: 3}
+    availableLevel: 26
 --- !u!4 &2016462458
 Transform:
   m_ObjectHideFlags: 0

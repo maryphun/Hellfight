@@ -830,7 +830,8 @@ public class GameManager : MonoBehaviour
             }
             else
             {
-                gameoverText.SetText("Failed to connect server.");
+                Debug.Log("Failed to connect server");
+                gameoverText.SetText("");
                 rank = -1;
             }
         });

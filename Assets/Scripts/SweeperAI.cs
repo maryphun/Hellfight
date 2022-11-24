@@ -20,16 +20,23 @@ public class SweeperAI : MonoBehaviour
     [SerializeField] private float moveSpeed;
     [SerializeField] private float attackRange;
     [SerializeField] private float staminaRegenInterval;
-    [SerializeField] private float dealDamageDelay;
     [SerializeField] private int initialStamina = 100;
     [SerializeField] private float turningTime = 1.0f;
 
     [Header("SpecialSetting")]
     [SerializeField] private float rangeToAttack = 5.0f;
+    [SerializeField] private float dealDamageDelayAttack1 = 0.28f;
+    [SerializeField] private float dealDamageDelayAttack2 = 0.25f;
+    [SerializeField] private float dashRangeAttack1 = 0.5f;
+    [SerializeField] private float dashRangeAttack2 = 4.5f;
+    [SerializeField] private float darkTrackDistance = 1.0f;
 
     private EnemyControl controller;
 
     [Header("References")]
+    [SerializeField] private GameObject sweepEffect;
+    [SerializeField] private GameObject skullEffect;
+    [SerializeField] private GameObject trackEffect;
     private Animator animator;
     private LayerMask playerLayer;
     private SpriteRenderer graphic;
@@ -46,6 +53,12 @@ public class SweeperAI : MonoBehaviour
     float staminaRegenCnt;
     float dealDamageCnt;
     bool dealDamageAlready;
+    bool attackDashAlready;
+
+    // sweep attack related
+    const float darkpactLocationY = -3.059f;
+    float startPoint, endpoint, lastFramePos;
+    List<GameObject> tracks = new List<GameObject>();
 
     // Update is called once per frame
     void Start()
@@ -66,22 +79,21 @@ public class SweeperAI : MonoBehaviour
 
     private void SetScalingRule(int level)
     {
-        attackDamageBase += level * 2;
+        attackDamageBase += level * 1;
         attackDamageMax += level * (1 / 5);
         moveSpeed += Random.Range(-0.5f, 0.5f); ;
-        staminaRegenInterval = staminaRegenInterval / ((float)level/2);
 
         controller.AddMaxHp(level * 5);
 
         if (level > 10)
         {
-            controller.AddMaxHp(25);
+            controller.AddMaxHp(20);
             attackDamageBase += Random.Range(1, 3);
         }
         if (level > 20)
         {
-            controller.AddMaxHp(35);
-            attackDamageBase += Random.Range(1, 3);
+            controller.AddMaxHp(25);
+            attackDamageBase += Random.Range(2, 4);
         }
     }
 
@@ -139,15 +151,31 @@ public class SweeperAI : MonoBehaviour
                 statusTimer = 0.01f; // a delay before the next action
                 break;
             case Status.Attacking:
-                DecideAttackType();
-                AudioManager.Instance.PlaySFX("heartbeat");
-                animator.Play(enemyName + "Attack" + ((int)attackType+1).ToString());
-                Debug.Log("Anim name = " + enemyName + "Attack" + ((int)attackType+1).ToString());
-                statusTimer = controller.FindAnimation(animator, enemyName + "Attack" + ((int)attackType+1).ToString()).length;
-                dealDamageCnt = 0.0f;
-                dealDamageAlready = false;
-                controller.UseAllStamina();
-                break;
+                {
+                    controller.TurnTowardPlayer();
+                    DecideAttackType();
+                    //AudioManager.Instance.PlaySFX("heartbeat");
+                    animator.Play(GetAttackAnimationName(attackType));
+                    statusTimer = controller.FindAnimation(animator, GetAttackAnimationName(attackType)).length;
+                    dealDamageCnt = 0.0f;
+                    dealDamageAlready = false;
+                    attackDashAlready = false;
+                    controller.UseAllStamina();
+
+                    // spawn effect
+                    if (attackType == AttackType.Sweep)
+                    {
+                        int direction = graphic.flipX ? -1 : 1;
+                        controller.SpawnSpecialEffect(skullEffect, new Vector2(transform.position.x + (-direction * attackRange / 3f), transform.position.y), false);
+                    }
+
+                    // setup after bursts
+                    startPoint = transform.position.x;
+                    lastFramePos = transform.position.x;
+
+                    AudioManager.Instance.PlaySFX("SweeperReady", 2.0f);
+                    break;
+                }
             case Status.Attacked:
                 statusTimer = controller.FindAnimation(animator, enemyName + "Hit").length;
                 break;
@@ -171,13 +199,14 @@ public class SweeperAI : MonoBehaviour
                 isDashing = true;
                 animator.Play(enemyName + "Move");
                 animator.SetBool("Move", true);
+                AudioManager.Instance.PlaySFX("SweeperAwaken", 1.0f);
                 break;
             case Status.Fleeing:
                 break;
             case Status.SpecialAbility:
                 break;
             case Status.Dying:
-                AudioManager.Instance.PlaySFX(enemyName + "Dead");
+                AudioManager.Instance.PlaySFX(enemyName + "Dead", 0.4f);
                 break;
             default:
                 InitStatus(Status.Idle);
@@ -207,9 +236,10 @@ public class SweeperAI : MonoBehaviour
             && Mathf.Abs(player.transform.position.x - (transform.position.x + (direction * rangeToAttack / 2f))) < rangeToAttack
             && GetComponent<Rigidbody2D>().velocity.y == 0.0f)
         {
-            // only make this decision if enemy is in screen
-            if (   (transform.position.x < 8.5f && direction == 1) 
+            // only make this decision if enemy is in screen and not on air
+            if (   ((transform.position.x < 8.5f && direction == 1) 
                 || (transform.position.x > -8.5f && direction == -1))
+                && IsOnGround())
             {
                 InitStatus(Status.Attacking);
             }
@@ -256,9 +286,10 @@ public class SweeperAI : MonoBehaviour
         // reach destination
         if (Mathf.Abs(player.transform.position.x- transform.position.x ) < rangeToAttack)
         {
-            // only make this decision if enemy is in screen
-            if (   (transform.position.x < 8.5f && direction == 1) 
+            // only make this decision if enemy is in screen and not on air
+            if (   ((transform.position.x < 8.5f && direction == 1) 
                 || (transform.position.x > -8.5f && direction == -1))
+                && IsOnGround())
             {
                 InitStatus(Status.Attacking);
             }
@@ -268,98 +299,170 @@ public class SweeperAI : MonoBehaviour
     void AttackCtrl()
     {
         dealDamageCnt += Time.deltaTime;
-
-        float dashSpeed = 0.0f;
-
-        if (dealDamageCnt > dealDamageDelay && !dealDamageAlready)
+        float direction = graphic.flipX ? -1 : 1;
+        
+        if (dealDamageCnt > GetAttackDealDamageDelay(attackType))
         {
-            // deal damage 
-            float direction = graphic.flipX ? -1 : 1;
-            if (Mathf.Abs(player.transform.position.x -  (transform.position.x + (direction * attackRange / 2f))) < attackRange
-                && Mathf.Abs(player.transform.position.y - transform.position.y) < attackRange/2f
-                && ((player.transform.position.x > transform.position.x && !graphic.flipX) || (player.transform.position.x < transform.position.x && graphic.flipX)))
+            if (attackType == AttackType.Slam && !dealDamageAlready)
             {
-                player.DealDamage(attackDamageBase + Random.Range(0, attackDamageMax+1), transform);
+                // deal damage 
+                if (Mathf.Abs(player.transform.position.x - (transform.position.x + (direction * attackRange / 2f))) < attackRange
+                    && Mathf.Abs(player.transform.position.y - transform.position.y) < attackRange / 2f
+                    && ((player.transform.position.x > transform.position.x && !graphic.flipX) || (player.transform.position.x < transform.position.x && graphic.flipX)))
+                {
+                    player.DealDamage(attackDamageBase + Random.Range(0, attackDamageMax + 1), transform);
+                }
+                dealDamageAlready = true;
             }
-            AudioManager.Instance.PlaySFX("wind");
-            dealDamageAlready = true;
+            else if (attackType == AttackType.Sweep)
+            {
+                if (!dealDamageAlready && statusTimer > 0.15f)
+                {
+                    // deal damage 
+                    if (Mathf.Abs(player.transform.position.x - (transform.position.x + (direction * attackRange / 2f))) < attackRange
+                        && (controller.IsFacingPlayer())
+                        && !player.IsJumping())
+                    {
+                        player.DealDamage(attackDamageBase + Random.Range(0, attackDamageMax + 1), transform);
+                        dealDamageAlready = true;
+                    }
+                }
 
-            dashSpeed = 1.5f;
+                // left dark tracks on the ground
+                if (Mathf.Abs(transform.position.x - lastFramePos) >= darkTrackDistance)
+                {
+                    lastFramePos = Mathf.MoveTowards(lastFramePos, transform.position.x, darkTrackDistance);
+                    tracks.Add(controller.SpawnSpecialEffect(trackEffect, new Vector2(lastFramePos, darkpactLocationY), false));
+                }
+                
+                controller.CreateAfterImage(0.15f);
+            }
+            
+        }
+
+        // dash toward front
+        if (dealDamageCnt > GetAttackDealDamageDelay(attackType) && !attackDashAlready)
+        {
+            float dashRange = GetDashRange(attackType);
+            transform.DOMoveX(dashRange * direction, 0.1f);
+            attackDashAlready = true;
+            AudioManager.Instance.PlaySFX("SwordSwing", 1.5f);
         }
 
         if (statusTimer == 0.0f)
         {
             InitStatus(Status.Idle);
-        }
-        else
-        {
-            float direction = graphic.flipX ? -1 : 1;
-            //switch (attackType)
-            //{
-            //    case AttackType.Slam:
-            //        break;
-            //    case AttackType.Sweep:
-            //        dashSpeed = 13f;
-            //        break;
-            //    default:
-            //        break;
-            //}
 
-            // stop dashing if it's going offscreen
-            if (   (transform.position.x < 8.5f  && direction == 1)
-                || (transform.position.x > -8.5f && direction == -1))
+            if (attackType == AttackType.Sweep)
             {
-                transform.position = new Vector2(transform.position.x + direction * dashSpeed * Time.deltaTime, transform.position.y);
+                // after attack follow up
+                endpoint = transform.position.x;
+                
+                while (Mathf.Abs(lastFramePos - endpoint) >= darkTrackDistance)
+                {
+                    lastFramePos = Mathf.MoveTowards(lastFramePos, endpoint, darkTrackDistance);
+                }
+
+                List<GameObject> tmp = new List<GameObject>(tracks);
+                tracks.Clear();
+
+                StartCoroutine(AfterBurstAttack(tmp));
             }
         }
     }
 
-    public void CreateAfterImage()
+    IEnumerator AfterBurstAttack(List<GameObject> trackList)
     {
-        //--- spawning new empty object, copying tranform ---
-        GameObject afterImg = new GameObject("afterImg");
-        afterImg.transform.position = graphic.transform.position;
-        afterImg.transform.rotation = graphic.transform.rotation;
-        afterImg.transform.localScale = graphic.transform.localScale;
-        afterImg.gameObject.layer = 0;
-        //--- copying spriterenderer ---
-        SpriteRenderer tailRenderer = afterImg.AddComponent<SpriteRenderer>();
-        SpriteRenderer originalRenderer = graphic.GetComponent<SpriteRenderer>();
-        tailRenderer.sortingOrder = originalRenderer.sortingOrder - 1;
-        tailRenderer.sortingLayerID = originalRenderer.sortingLayerID;
-        tailRenderer.sprite = originalRenderer.sprite;
-        tailRenderer.color = originalRenderer.color;
-        tailRenderer.flipX = originalRenderer.flipX;
-        tailRenderer.material = originalRenderer.material;
-        //tailRenderer.material = originalMaterial;
-        //--- initiating tail ---
-        afterImg.AddComponent<Tail>();
-        afterImg.GetComponent<Tail>().Initialization(0.5f, tailRenderer, 0.5f);
-        //--- done ---
-        Destroy(afterImg, 0.5f);
+        bool alreadyDealDamage = false;
+
+        for (int i = 0; i < trackList.Count; i++)
+        {
+            controller.SpawnSpecialEffect(sweepEffect, new Vector2(trackList[i].transform.position.x, darkpactLocationY), false);
+            trackList[i].GetComponent<SpriteRenderer>().color = new Color(0, 0, 0, 0); // hide track
+            AudioManager.Instance.PlaySFX("DarkPact", 0.75f);
+
+            // deal damage
+            if (Mathf.Abs(player.transform.position.x - trackList[i].transform.position.x) < darkTrackDistance
+                   && Mathf.Abs(player.transform.position.y - trackList[i].transform.position.y) < attackRange
+                   && !alreadyDealDamage)
+            {
+                alreadyDealDamage = true;
+                player.DealDamage(attackDamageBase + Random.Range(0, attackDamageMax + 1), transform);
+            }
+
+            // stop this immediately if this enemy is dead
+            if (controller.GetCurrentStatus() == Status.Dying)
+            {
+                foreach (var track in trackList)
+                {
+                    Destroy(track);
+                }
+
+                yield break;
+            }
+            else
+            {
+                yield return new WaitForSeconds(0.05f);
+            }
+        }
+
+        foreach (var track in trackList)
+        {
+            Destroy(track);
+        }
     }
 
     private void DecideAttackType()
     {
         // decide attack type by distance from player
         float distance = Mathf.Abs(player.transform.position.x - transform.position.x);
-        if (distance < rangeToAttack)
+        if (distance < attackRange)
         {
-            if (distance < attackRange)
-            {
-                attackType = AttackType.Slam;
-                return;
-            }
-            else
-            {
-                attackType = AttackType.Sweep;
-                return;
-            }
+            attackType = AttackType.Slam;
         }
         else
         {
-            InitStatus(Status.Chasing);
-            return;
+            attackType = AttackType.Sweep;
         }
+    }
+
+    private string GetAttackAnimationName(AttackType attackType)
+    {
+        return enemyName + "Attack" + ((int)attackType + 1).ToString();
+    }
+
+    private float GetAttackDealDamageDelay(AttackType attackType)
+    {
+        switch (attackType)
+        {
+            case AttackType.Slam:
+                return dealDamageDelayAttack1;
+            case AttackType.Sweep:
+                return dealDamageDelayAttack2;
+            default:
+                break;
+        }
+
+        return 0.0f;
+    }
+    private float GetDashRange(AttackType attackType)
+    {
+        switch (attackType)
+        {
+            case AttackType.Slam:
+                return dashRangeAttack1;
+            case AttackType.Sweep:
+                return dashRangeAttack2;
+            default:
+                break;
+        }
+
+        return 0.0f;
+    }
+
+    private bool IsOnGround()
+    {
+       
+        return transform.position.y < -2.0f;
     }
 }

@@ -91,11 +91,11 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 3821527992036021173}
+  - component: {fileID: 3821527992036021170}
   - component: {fileID: 3821527992036021162}
   - component: {fileID: 3821527992036021172}
   - component: {fileID: 3821527992036021163}
   - component: {fileID: 3821527992036021171}
-  - component: {fileID: 3821527992036021170}
   m_Layer: 7
   m_Name: Sweeper
   m_TagString: Untagged
@@ -120,6 +120,37 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &3821527992036021170
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3821527992036021174}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 448c942349195314588e6c28c4d59197, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  haveTurnAnimation: 0
+  attackDamageBase: 15
+  attackDamageMax: 5
+  allowAttack: 1
+  moveSpeed: 1.8
+  attackRange: 2.55
+  staminaRegenInterval: 0.05
+  initialStamina: 100
+  turningTime: 0
+  rangeToAttack: 5
+  dealDamageDelayAttack1: 0.28
+  dealDamageDelayAttack2: 0.9
+  dashRangeAttack1: 0.5
+  dashRangeAttack2: 4.5
+  sweepEffect: {fileID: 8307599557492587543, guid: a2e317e7027d9434ea6e4b948b5dce4f, type: 3}
+  skullEffect: {fileID: 6187321815202764203, guid: f3a4e78fc370b694eafda03d90bb1522, type: 3}
+  trackEffect: {fileID: 6187321815202764203, guid: a520d0dd0a4258147bfc50b13ca855bd, type: 3}
+  statusTimer: 0
+  attackType: 0
 --- !u!114 &3821527992036021162
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -264,29 +295,6 @@ SpriteRenderer:
   m_WasSpriteAssigned: 0
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
---- !u!114 &3821527992036021170
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3821527992036021174}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 448c942349195314588e6c28c4d59197, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  haveTurnAnimation: 0
-  attackDamageBase: 15
-  attackDamageMax: 5
-  allowAttack: 1
-  moveSpeed: 1.8
-  attackRange: 2.55
-  staminaRegenInterval: 0.05
-  dealDamageDelay: 0.35
-  initialStamina: 100
-  turningTime: 0
-  statusTimer: 0
 --- !u!1 &3821527992688063349
 GameObject:
   m_ObjectHideFlags: 0

@@ -159,6 +159,7 @@ public class BroyonAI : MonoBehaviour
                 break;
             case Status.Dying:
                 AudioManager.Instance.PlaySFX(enemyName + "Dead");
+                AudioManager.Instance.PlaySFX("GhostDeath", 0.85f);
                 controller.GetRigidBody().bodyType = RigidbodyType2D.Dynamic;
                 break;
             default:

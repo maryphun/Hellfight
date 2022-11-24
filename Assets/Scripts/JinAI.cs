@@ -169,7 +169,8 @@ public class JinAI : MonoBehaviour
             case Status.SpecialAbility:
                 break;
             case Status.Dying:
-                AudioManager.Instance.PlaySFX("burst", 0.85f);
+                AudioManager.Instance.PlaySFX("burst", 0.5f);
+                AudioManager.Instance.PlaySFX("JinDeath", 0.75f);
                 break;
             default:
                 InitStatus(Status.Idle);
@@ -365,6 +366,10 @@ public class JinAI : MonoBehaviour
                 {
                     player.DealDamage(attackDamageBase + Random.Range(0, attackDamageMax + 1), transform);
                     dealDamageAlready = true;
+                }
+                else
+                {
+                    AudioManager.Instance.PlaySFX("JinAttackMiss", 0.5f);
                 }
             }
         }

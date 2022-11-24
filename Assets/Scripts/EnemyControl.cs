@@ -450,7 +450,7 @@ public class EnemyControl : MonoBehaviour
         //AudioManager.Instance.PlaySFX("impact", 0.7f);
     }
 
-    public void CreateAfterImage()
+    public void CreateAfterImage(float time = 0.5f)
     {
         //--- spawning new empty object, copying tranform ---
         GameObject afterImg = new GameObject("afterImg");
@@ -472,7 +472,24 @@ public class EnemyControl : MonoBehaviour
         afterImg.AddComponent<Tail>();
         afterImg.GetComponent<Tail>().Initialization(0.5f, tailRenderer, 0.5f);
         //--- done ---
-        Destroy(afterImg, 0.5f);
+        Destroy(afterImg, time);
+    }
+
+    public void TurnTowardPlayer()
+    {
+        if (!IsFacingPlayer())
+        {
+            graphic.flipX = !graphic.flipX;
+        }
+    }
+    
+    // spawn special effect. Return reference
+    public GameObject SpawnSpecialEffect(GameObject prefab, Vector2 pos, bool isParentThisEnemy)
+    {
+        GameObject tmp = Instantiate(prefab, pos, Quaternion.identity);
+         if (isParentThisEnemy) tmp.transform.SetParent(transform);
+
+        return tmp;
     }
 
     public void Pause(bool boolean)
