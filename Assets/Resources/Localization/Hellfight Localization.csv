@@ -1,5 +1,5 @@
 Key,English,ChineseTraditional,ChineseSimplified,Japanese
-Menu.Start,Press any Key/Start,按任意鍵開始遊戲,按任意键开始游戏,<font=JPPixel SDF>ボタン押してスタート
+Menu.Start,Press any key,按任意鍵開始遊戲,按任意键开始游戏,<font=JPPixel SDF>ボタン押してスタート
 Menu.MainGame,Main Game,開始遊戲,开始游戏,Main Game
 Menu.BossRushMode,<color=grey>Boss Rush Mode</color>,<color=grey>魔王模式</color>,<color=grey>魔王模式</color>,<color=grey>Boss Rush Mode</color>
 Menu.Leaderboard,Leaderboard,線上排行榜,线上排行榜,Leaderboard
@@ -62,6 +62,8 @@ PowerupName.HealingSalve,Healing Salve,治療藥膏,治愈药膏,治療薬
 PowerupDescription.HealingSalve,Gain a consumables potion that recharge every level. Grants <color=#00ffffff>{0:N0}%</color> health back.,"獲得一個消耗式的治療藥, 每層可以使用一次, 恢復<color=#00ffffff>{0:N0}%</color>生命值","获得一个消耗式的治愈药, 每楼可以使用一次, 恢复<color=#00ffffff>{0:N0}%</color>生命值","<color=#00ffffff>{0:N0}%</color>のHPを回復するアイテムを獲得する, ステージごとに一回使える"
 PowerupName.Echo,Echo,回音,回音,エコー
 PowerupDescription.Echo,"Gain a chance to summon an illusion that duplicate your attack, deal <color=#4c00b0ff>{0:N0}%</color> of your damage. The number can stack.",有几率複製你的攻擊，對敵人造成本體<color=#4c00b0ff>{0:N0}%</color>的攻擊力,有几率复制你的攻击，对敌人造成本体<color=#4c00b0ff>{0:N0}%</color>的攻击力,たまにキャラクターの攻撃を複製する。分身体は本体の<color=#4c00b0ff>{0:N0}%</color>の攻撃力を持っている。
+PowerupName.Juggernaut,Juggernaut,主宰,主宰,ジャガーノート
+PowerupDescription.Juggernaut,Attack cost no stamina start from <color=#4c00b0ff>{0:N0}%</color>th combo.,第<color=#4c00b0ff>{0:N0}%</color>次連擊的攻擊開始不消耗體力,第<color=#4c00b0ff>{0:N0}%</color>次连击的攻击开始不消耗体力,<color=#4c00b0ff>{0:N0}%</color>コンボからの攻撃にはスタミナの消耗はない
 TUTORIALS,,,,
 Tutorial.Attack,ATTACK,<font=LanaPixel SDF>攻擊</font>,<font=LanaPixel SDF>攻击</font>,<font=JPPixel SDF>攻撃</font>
 Tutorial.Jump,JUMP,<font=LanaPixel SDF>跳躍</font>,<font=LanaPixel SDF>跳跃</font>,<font=JPPixel SDF>ジャンプ</font>
@@ -75,7 +77,7 @@ Tutorial.TipsLevel10,"Find his weakness, try to jump!",<font=LanaPixel SDF>請�
 Tutorial.TipsLevel11,Your stamina gain slower as you dash continuously,<font=LanaPixel SDF>連續衝刺會導致體力值恢復速度減慢,<font=LanaPixel SDF>短时间连续冲刺会导致体力值恢复速度变慢,<font=JPPixel SDF>短時間ない連続でダッシュするとスタミナ回復も減少する
 Tutorial.TipsLevel15,They're adorable,<font=LanaPixel SDF>可愛的家伙们,<font=LanaPixel SDF>可爱的家伙们,<font=JPPixel SDF>可愛い奴らだ！
 Tutorial.TipsLevel25,Break his defense!,<font=LanaPixel SDF>突破他的防守!,<font=LanaPixel SDF>突破他的防守!,<font=JPPixel SDF>ガードを突破せよ
-Tutorial.TipsLevel26,Thank you for playing! The rest is still developing.,<font=LanaPixel SDF>感謝試玩! 請等待完整版!,<font=LanaPixel SDF>感谢试玩，请期待完整版!,<font=JPPixel SDF>これ以上の内容はまだ製作中です。遊んで頂きありがとうございました。
+Tutorial.TipsLevel29,Thank you for playing! The rest is still developing.,<font=LanaPixel SDF>感謝試玩! 請等待完整版!,<font=LanaPixel SDF>感谢试玩，请期待完整版!,<font=JPPixel SDF>これ以上の内容はまだ製作中です。遊んで頂きありがとうございました。
 OTHER,,,,
 Text.Proceedlvl9,Proceed to Boss Fight - <color=#ff00ffff>Broyon</color>!,區域霸主  - <color=#ff00ffff>布靈幽</color>,区域霸主  - <color=#ff00ffff>布灵幽</color>,<font=JPPixel SDF>ボス戦へ進む - <color=#ff00ffff>ブロヨン</color>
 Text.Proceedlvl19,Proceed to Boss Fight - <color=#550000ff>Hell Fighter</color>!,區域霸主  - <color=#550000ff>地獄使者</color>,区域霸主  - <color=#550000ff>地獄使者</color>,ボス戦へ進む - <color=#550000ff>地獄審判</color>

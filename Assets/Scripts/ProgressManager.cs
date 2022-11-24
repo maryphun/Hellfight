@@ -77,6 +77,11 @@ public class ProgressManager : Singleton<ProgressManager>
             rtn.Add(Skill.Echo);
         }
 
+        if (_old < 24 && _new >= 24)  // Juggernaut
+        {
+            rtn.Add(Skill.Juggernaut);
+        }
+
         return rtn;
     }
 
@@ -208,6 +213,12 @@ public class ProgressManager : Singleton<ProgressManager>
                 rtn.skill_name = "<color=#4c00b0ff>" + LocalizationManager.Localize("PowerupName.Echo") + "</color>";
                 rtn.skill_description = LocalizationManager.Localize("PowerupDescription.Echo", ((int)rtn.value).ToString());
                 rtn.skill_Icon = "echo";
+                break;
+            case Skill.Juggernaut:
+                rtn.value = 8 + Random.Range(0, 5);
+                rtn.skill_name = "<color=#4c00b0ff>" + LocalizationManager.Localize("PowerupName.Juggernaut") + "</color>";
+                rtn.skill_description = LocalizationManager.Localize("PowerupDescription.Juggernaut", ((int)rtn.value).ToString());
+                rtn.skill_Icon = "juggernaut";
                 break;
             default:
                 Debug.Log("<color=red>skill data not found!</color>");

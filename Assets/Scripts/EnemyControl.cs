@@ -540,6 +540,11 @@ public class EnemyControl : MonoBehaviour
         return ((player.transform.position.x > transform.position.x && !graphic.flipX) || (player.transform.position.x < transform.position.x && graphic.flipX));
     }
     
+    public bool IsInScreen()
+    {
+        return (transform.localPosition.x > -8.0f && transform.localPosition.x < 8.0f);
+    }
+
     public int GetDirectionInteger()
     {
         return graphic.flipX ? -1 : 1;

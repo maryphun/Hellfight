@@ -29,6 +29,7 @@ public enum Skill
     Berserker,
     Battlecry,
     Echo,
+    Juggernaut,
 
     List_Number
 }
@@ -248,6 +249,10 @@ public class AbilityLearnPanel : MonoBehaviour
             if (!player.GetIsBattlecry())
             {
                 CheckAndAdd(possibleSkill, Skill.Battlecry);
+            }
+            if (unlockLevel >= 24 && player.GetJuggernaut() == 0)
+            {
+                CheckAndAdd(possibleSkill, Skill.Juggernaut);
             }
         }
         if (unlockLevel >= 9 && level >= 8)

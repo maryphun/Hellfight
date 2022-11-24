@@ -21,6 +21,7 @@ public class Controller : MonoBehaviour
     [SerializeField] private bool battlecry = false;
     [SerializeField] private ProtectedUInt16 comboMaster = 0;
     [SerializeField] private ProtectedFloat echo = 0;
+    [SerializeField] private ProtectedUInt16 juggernaut = 0;
     [SerializeField] private ProtectedFloat windrunner = 0;
     [SerializeField] private ProtectedUInt16 breakfallCost = 0;
     [SerializeField] private ProtectedUInt16 potionHeal = 0;
@@ -804,7 +805,10 @@ public class Controller : MonoBehaviour
         if (currentStamina == 0)
         {
             // Need atleast 1 stamina point to attack
-            return;
+            if (!(juggernaut > 0 && attackCombo > juggernaut))
+            {
+                return;
+            }
         }
 
         int calculatedStaminaCost = GetAttackDamage() + GetMaxDamage() + staminaCostAttackBase;
@@ -812,6 +816,12 @@ public class Controller : MonoBehaviour
         if (currentStamina < calculatedStaminaCost && costStamina)
         {
             staminaRegenDelayCounter = staminaRegenDelay * 2.5f;
+        }
+
+        // this attack cost no stamina
+        if (juggernaut > 0 && attackCombo > juggernaut)
+        {
+            costStamina = false;
         }
 
         if (costStamina)
@@ -1655,6 +1665,9 @@ public class Controller : MonoBehaviour
             case Skill.Echo:
                 echo += value/100.0f;
                 break;
+            case Skill.Juggernaut:
+                juggernaut = (ProtectedUInt16)value;
+                break;
             default:
                 Debug.Log("<color=red>skill data not found!</color>");
                 break;
@@ -1790,6 +1803,10 @@ public class Controller : MonoBehaviour
     public float GetEcho()
     {
         return echo;
+    }
+    public int GetJuggernaut()
+    {
+        return juggernaut;
     }
     public bool IsFlip()
     {

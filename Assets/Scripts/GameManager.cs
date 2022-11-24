@@ -388,7 +388,7 @@ public class GameManager : MonoBehaviour
         {
             newGroundsAPI.NGUnlockMedal(65058);
         }
-        if (currentLevel == 26)
+        if (currentLevel == 29)
         {
             newGroundsAPI.NGUnlockMedal(65098);
         }
@@ -508,9 +508,9 @@ public class GameManager : MonoBehaviour
             tipsText.SetText(LocalizationManager.Localize("Tutorial.TipsLevel25"));
             tipsText.DOFade(1.0f, 0.5f);
         }
-        else if (level == 26)
+        else if (level == 29)
         {
-            tipsText.SetText(LocalizationManager.Localize("Tutorial.TipsLevel26"));
+            tipsText.SetText(LocalizationManager.Localize("Tutorial.TipsLevel29"));
             tipsText.DOFade(1.0f, 0.5f);
         }
         else  if (potionSelected && ProtectedPlayerPrefs.GetInt("TutorialPotion", 0) != 1)

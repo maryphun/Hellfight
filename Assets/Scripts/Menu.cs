@@ -599,9 +599,12 @@ public class Menu : MonoBehaviour
 
     private void GetLeaderboardData(LeaderboardType type, bool setupUIAfterSuccess)
     {
-        for (int i = 0; i < 20; i++)
+        if (!ReferenceEquals(leaderboardRankList, null))
         {
-            leaderboardRankList[i].Clear();
+            for (int i = 0; i < 20; i++)
+            {
+                leaderboardRankList[i].Clear();
+            }
         }
 
         leaderboardDataLoading = true;
