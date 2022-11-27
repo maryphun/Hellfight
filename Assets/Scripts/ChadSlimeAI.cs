@@ -277,7 +277,7 @@ public class ChadSlimeAI : MonoBehaviour
                 // DEAL DAMAGE
                 if (Mathf.Abs(player.transform.position.x - transform.position.x) < controller.GetCollider().bounds.size.x / 2f)
                 {
-                    player.StartJump();
+                    player.StartJump(false, true);
                     player.DealDamage(attackDamageBase + Random.Range(0, attackDamageMax + 1), transform);
                 }
             }

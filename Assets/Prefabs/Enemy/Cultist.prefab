@@ -341,7 +341,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   enemyName: Cultist
-  maxHp: 175
+  maxHp: 120
+  startHpPercentage: 1
   maxStamina: 45
   maxArmor: 20
   fadeOutAfterDead: 1

@@ -450,14 +450,14 @@ public class Menu : MonoBehaviour
                 leaderboardType = LeaderboardType.Min; // always open the first page.
                 StartCoroutine(OpenLeaderboardUI(0.4f, false));
                 leaderboardPageUI.GetComponent<LeaderboardPage>().SetLeaderboardMode(LeaderboardPage.LeaderboardMode.MainMenuMode);
-                AudioManager.Instance.PlaySFX("decide");
+                AudioManager.Instance.PlaySFX("confirmMenu");
                 break;
             case MenuSelection.Option:
                 disableMenuControl = false;
                 SelectionUp();
                 break;
             case MenuSelection.ResetLocalData:
-                AudioManager.Instance.PlaySFX("decide");
+                AudioManager.Instance.PlaySFX("confirmMenu");
                 OpenResetDataMenu();
                 break;
             case MenuSelection.Exit:

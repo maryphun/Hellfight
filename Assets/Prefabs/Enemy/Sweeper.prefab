@@ -133,8 +133,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   haveTurnAnimation: 0
-  attackDamageBase: 15
-  attackDamageMax: 5
+  attackDamageBase: 12
+  attackDamageMax: 10
   allowAttack: 1
   moveSpeed: 1.8
   attackRange: 2.55
@@ -144,8 +144,9 @@ MonoBehaviour:
   rangeToAttack: 5
   dealDamageDelayAttack1: 0.28
   dealDamageDelayAttack2: 0.9
-  dashRangeAttack1: 0.5
+  dashRangeAttack1: 0
   dashRangeAttack2: 4.5
+  darkTrackDistance: 1
   sweepEffect: {fileID: 8307599557492587543, guid: a2e317e7027d9434ea6e4b948b5dce4f, type: 3}
   skullEffect: {fileID: 6187321815202764203, guid: f3a4e78fc370b694eafda03d90bb1522, type: 3}
   trackEffect: {fileID: 6187321815202764203, guid: a520d0dd0a4258147bfc50b13ca855bd, type: 3}
@@ -164,12 +165,13 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   enemyName: Sweeper
-  maxHp: 65
-  maxStamina: 20
+  maxHp: 75
+  startHpPercentage: 1
+  maxStamina: 30
   maxArmor: 0
   fadeOutAfterDead: 1
   attackedStopAttack: 0
-  mass: 1.49
+  mass: 1.25
   critialHitOnly: 0
   backSideOnly: 0
   alwaysIgnoreKnockback: 0

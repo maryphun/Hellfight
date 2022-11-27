@@ -27,7 +27,7 @@ public class SweeperAI : MonoBehaviour
     [SerializeField] private float rangeToAttack = 5.0f;
     [SerializeField] private float dealDamageDelayAttack1 = 0.28f;
     [SerializeField] private float dealDamageDelayAttack2 = 0.25f;
-    [SerializeField] private float dashRangeAttack1 = 0.5f;
+    [SerializeField] private float dashRangeAttack1 = 0.0f;
     [SerializeField] private float dashRangeAttack2 = 4.5f;
     [SerializeField] private float darkTrackDistance = 1.0f;
 
@@ -80,7 +80,6 @@ public class SweeperAI : MonoBehaviour
     private void SetScalingRule(int level)
     {
         attackDamageBase += level * 1;
-        attackDamageMax += level * (1 / 5);
         moveSpeed += Random.Range(-0.5f, 0.5f); ;
 
         controller.AddMaxHp(level * 5);
@@ -344,7 +343,10 @@ public class SweeperAI : MonoBehaviour
         if (dealDamageCnt > GetAttackDealDamageDelay(attackType) && !attackDashAlready)
         {
             float dashRange = GetDashRange(attackType);
-            transform.DOMoveX(dashRange * direction, 0.1f);
+            if (dashRange > 0)
+            {
+                transform.DOMoveX(dashRange * direction, 0.1f);
+            }
             attackDashAlready = true;
             AudioManager.Instance.PlaySFX("SwordSwing", 1.5f);
         }

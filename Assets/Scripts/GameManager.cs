@@ -212,6 +212,7 @@ public class GameManager : MonoBehaviour
         yield return new WaitForSeconds(0.2f);
         SetStatusBarVisible(true);
         StartLevel(currentLevel);
+        SteamAchievementManager.Instance().UpdateLevelStat(currentLevel);
 
         yield return new WaitForSeconds(2.0f);
         levelText.DOFade(1.0f, 1.0f);
@@ -289,7 +290,7 @@ public class GameManager : MonoBehaviour
         if (currentLevel == 5)
         {
             backgroundSprite.GetComponent<Animator>().enabled = true;
-            backgroundSprite.color = new Color(GetThemeColor().r * 0.8f, GetThemeColor().g * 0.8f, GetThemeColor().b * 0.8f, 1.0f);
+            backgroundSprite.color = new Color(GetThemeColor().r * 1.5f, GetThemeColor().g * 1.5f, GetThemeColor().b * 1.5f, 1.0f);
             ResetParallax();
         }
         else if (currentLevel == 6)
@@ -388,7 +389,7 @@ public class GameManager : MonoBehaviour
         {
             newGroundsAPI.NGUnlockMedal(65058);
         }
-        if (currentLevel == 29)
+        if (currentLevel == 35)
         {
             newGroundsAPI.NGUnlockMedal(65098);
         }
@@ -400,6 +401,10 @@ public class GameManager : MonoBehaviour
         {
             newGroundsAPI.NGUnlockMedal(65095);
         }
+
+        // STEAMWORKS API
+        SteamAchievementManager.Instance().UpdateLevelStat(currentLevel);
+        SteamAchievementManager.Instance().CheckLevelAchievement(currentLevel);
     }
 
     public Transform RandomParallax()
@@ -508,9 +513,9 @@ public class GameManager : MonoBehaviour
             tipsText.SetText(LocalizationManager.Localize("Tutorial.TipsLevel25"));
             tipsText.DOFade(1.0f, 0.5f);
         }
-        else if (level == 29)
+        else if (level == 35)
         {
-            tipsText.SetText(LocalizationManager.Localize("Tutorial.TipsLevel29"));
+            tipsText.SetText(LocalizationManager.Localize("Tutorial.TipsLevel35"));
             tipsText.DOFade(1.0f, 0.5f);
         }
         else  if (potionSelected && ProtectedPlayerPrefs.GetInt("TutorialPotion", 0) != 1)
@@ -572,6 +577,7 @@ public class GameManager : MonoBehaviour
         NarrativeText.SetText(LocalizationManager.Localize("Text.Proceed"));
         if (currentLevel == 9) NarrativeText.SetText(LocalizationManager.Localize("Text.Proceedlvl9"));
         if (currentLevel == 19) NarrativeText.SetText(LocalizationManager.Localize("Text.Proceedlvl19"));
+        if (currentLevel == 29) NarrativeText.SetText(LocalizationManager.Localize("Text.Proceedlvl29"));
         if (LocalizationManagerHellFight.Instance().GetCurrentLanguage() == "Japanese") NarrativeText.SetText("<font=JPPixel SDF>" + NarrativeText.text + "</font>");
         // TIPS TEXT
         if (currentLevel == 1)
@@ -613,11 +619,13 @@ public class GameManager : MonoBehaviour
         }
     }
     
+    // player reach the botton -> let player pick new powerup -> next level
     private void OnTriggerEnter2D(Collider2D collision)
     {
         if (collision.GetComponent<Controller>() != null)
         {
             player.Regenerate(player.GetHPRegen()/* + (player.GetMaxHP() / 10)*/, player.GetStaminaMax(), false);
+            player.SetInvulnerable(false);
             itemUICooldown.fillAmount = 1f;
             openButton.SetActive(false);
             screenAlpha.DOFade(0.9f, 1.0f);
@@ -812,7 +820,6 @@ public class GameManager : MonoBehaviour
                 data = 0;
                 leaderboardID = 0;
                 return rank;
-                break;
         }
 
         // record leaderboard
@@ -1206,7 +1213,7 @@ public class GameManager : MonoBehaviour
         }
 
         backgroundSprite.sprite = Resources.Load<Sprite>("Background/" + name);
-        backgroundSprite.color = new Color(GetThemeColor().r * 0.8f, GetThemeColor().g * 0.8f, GetThemeColor().b * 0.8f, 1.0f);
+        backgroundSprite.color = new Color(GetThemeColor().r * 1.5f, GetThemeColor().g * 1.5f, GetThemeColor().b * 1.5f, 1.0f);
     }
 
     private void SetParallax(Transform parallaxParent, Color theme)
@@ -1219,25 +1226,26 @@ public class GameManager : MonoBehaviour
         // active the chosen one
         if (parallaxParent.childCount == 0) return;
 
-        Transform far = parallaxParent.GetChild(0);
-        if (far != null) far.GetComponent<SpriteRenderer>().color = new Color(theme.r, theme.g, theme.b, 0.1f);
-
-        if (parallaxParent.childCount < 2) return;
-
-        Transform mid = parallaxParent.GetChild(1);
-        if (mid != null) mid.GetComponent<SpriteRenderer>().color = new Color(theme.r, theme.g, theme.b, 0.5f);
-
-        if (parallaxParent.childCount < 3) return;
-
-        Transform close = parallaxParent.GetChild(2);
-        if (close != null) close.GetComponent<SpriteRenderer>().color = new Color(theme.r, theme.g, theme.b, 1f);
-
-        if (parallaxParent.childCount > 3)
+        for (int i = 0; i < parallaxParent.childCount; i++)
         {
-            for (int i = 3; i < parallaxParent.childCount; i++)
+            Transform child = parallaxParent.GetChild(i);
+            if (child != null)
             {
-                Transform child = parallaxParent.GetChild(i);
-                if (child != null) child.GetComponent<SpriteRenderer>().color = new Color(theme.r, theme.g, theme.b, 1f);
+                var component = child.GetComponent<SpriteRenderer>();
+                component.color = new Color(theme.r, theme.g, theme.b, component.color.a);
+
+                // child's child
+                if (child.childCount > 0)
+                {
+                    for (int j = 0; j < child.childCount; j++)
+                    {
+                        Transform sub = parallaxParent.GetChild(i);
+                        if (sub != null)
+                        {
+                            sub.GetComponent<SpriteRenderer>().color = new Color(theme.r, theme.g, theme.b, sub.GetComponent<SpriteRenderer>().color.a);
+                        }
+                    }
+                }
             }
         }
     }

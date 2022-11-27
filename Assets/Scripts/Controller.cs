@@ -76,6 +76,7 @@ public class Controller : MonoBehaviour
     bool isUsingPotion;
     bool isPotionUsed;
     bool isAlive;
+    bool isJumpCancellable;
     ProtectedFloat usingPotionTime;
     ProtectedFloat superDropAfterImgTimer;
     ProtectedFloat superDropAfterImgInterval = 0.05f;
@@ -92,6 +93,8 @@ public class Controller : MonoBehaviour
     private GameObject chargeEffect;
     private GameObject chargeEffectInstantiated;
     private GameObject bloodEffect;
+    private GameObject holyShieldEffect;
+    private GameObject holySwordEffect;
     public PlayerAction _input;
 
     [Header("References")]
@@ -162,6 +165,8 @@ public class Controller : MonoBehaviour
         potionHealEffect = Resources.Load("Prefabs/PotionHeal") as GameObject;
         lightningLashEffect = Resources.Load("Prefabs/LightningSlashPlayer") as GameObject;
         bloodEffect = Resources.Load("Prefabs/BloodPlayer") as GameObject;
+        holyShieldEffect = Resources.Load("Prefabs/HolyShield") as GameObject;
+        holySwordEffect = Resources.Load("Prefabs/HolySword") as GameObject;
 
         // INPUT SYSTEM
         _input = new PlayerAction();
@@ -341,7 +346,7 @@ public class Controller : MonoBehaviour
             {
                 if (!IsJumping())
                 {
-                    StartJump();
+                    StartJump(false, false);
                 }
                 else if (!jumpPressed && IsAlive())  // reset jump delay timer
                 {
@@ -734,12 +739,13 @@ public class Controller : MonoBehaviour
         input.move = Mathf.RoundToInt(Mathf.Clamp(_input.x + 5.7f, -1,1));
     }
 
-    public void StartJump(bool reviveJump = false)
+    public void StartJump(bool reviveJump = false, bool forcedJump = false)
     {
         // set flag
         jumpCancelled = false;
         jumpPressed = false;
         isJumping = true;
+        isJumpCancellable = true;
         attackCombo = 0;
 
         // leave collision
@@ -752,7 +758,12 @@ public class Controller : MonoBehaviour
         if (reviveJump) // this is a revive jump
         {
             rigidbody.AddForce(new Vector2(0.0f, jumpForce * 1.2f));
-            
+            isJumpCancellable = false;  // revive jump is forced
+        }
+        else if (forcedJump)
+        {
+            rigidbody.AddForce(new Vector2(0.0f, jumpForce * 0.8f));
+            isJumpCancellable = false;  // revive jump is not cancellable
         }
         else if (!input.jump)   // this is a delayed jump
         {
@@ -776,8 +787,11 @@ public class Controller : MonoBehaviour
 
     void CancelJump()
     {
-        jumpCancelled = true;
-        rigidbody.velocity = new Vector2(rigidbody.velocity.x, rigidbody.velocity.y / 2.0f);
+        if (isJumpCancellable)
+        {
+            jumpCancelled = true;
+            rigidbody.velocity = new Vector2(rigidbody.velocity.x, rigidbody.velocity.y / 2.0f);
+        }
     }
 
     void StartAttack()
@@ -837,7 +851,6 @@ public class Controller : MonoBehaviour
 
         staminaRegenDelayCounter = staminaRegenDelay;
 
-
         // ANIMATION RELATED
         alreadyDealDamage = false;
         attackEndAttackTimer = FindAnimation(animator, "Attack" + (attackCombo % 3).ToString()).length * attackEndTiming[(attackCombo % 3)];
@@ -889,12 +902,13 @@ public class Controller : MonoBehaviour
         AudioManager.Instance.PlaySFX("sword" + (attackCombo % 3).ToString());
 
         // chance to trigger echo ability
-        const float chanceForEcho = 0.34f;
+        const float chanceForEcho = 0.20f;
         if (isAttacking
             && echo > 0.0f 
             && Random.Range(0.0f, 1.0f) < chanceForEcho
             )
         {
+            AudioManager.Instance.PlaySFX("echo", 0.75f);
             float illusionDelayTime = animator.GetCurrentAnimatorStateInfo(0).length / 2.0f;
             string animationName = "Attack" + (attackCombo % 3).ToString();
             StartCoroutine(EchoAttack(illusionDelayTime, animationName, IsFlip(), attackCombo));
@@ -988,11 +1002,11 @@ public class Controller : MonoBehaviour
                     }
 
                     // calculate berserker lifesteal
-                    if (((float)currentHP / (float)maxHP) < 0.34f && berserker > 0)
+                    if (((float)currentHP / (float)maxHP) < 0.25f && berserker > 0)
                     {
                         regenerate += berserker;
 
-                        GameObject tmp = Instantiate(bloodEffect, Vector2.Lerp(transform.position, enemy.transform.position, Random.RandomRange(0.6f, 0.9f)), Quaternion.identity);
+                        GameObject tmp = Instantiate(bloodEffect, Vector2.Lerp(transform.position, enemy.transform.position, Random.Range(0.6f, 0.9f)), Quaternion.identity);
                         tmp.transform.SetParent(world);
                     }
 
@@ -1093,9 +1107,9 @@ public class Controller : MonoBehaviour
         {
             // STAMINA
             gameMng.SpawnFloatingText(new Vector2(transform.position.x, transform.position.y + collider.bounds.size.y / 2f), 2f, 25f,
-                                        (GetStaminaMax() - currentStamina).ToString(), Color.blue, new Vector2(0, 1), 80f);
+                                        ((GetStaminaMax() - currentStamina) / 2.0f).ToString(), Color.blue, new Vector2(0, 1), 80f);
 
-            Regenerate(0, (maxStamina - currentStamina) / 2);
+            Regenerate(0, (GetStaminaMax() - currentStamina) / 2);
 
             AudioManager.Instance.PlaySFX("deflect");
             AudioManager.Instance.PlaySFX("comboMaster");
@@ -1283,12 +1297,27 @@ public class Controller : MonoBehaviour
         currentStamina = Mathf.Clamp(currentStamina - amount, 0, maxStamina);
     }
 
+    public void StopStaminaRegenerate()
+    {
+        staminaRegenDelayCounter = staminaRegenDelay;
+    }
+    public void DisableDash(float time)
+    {
+        dashCooldownTimer = time;
+    }
+
     public bool DealDamage(int value, Transform source)
     {
         if (!isAlive) return false;
         if (isDashing) return false;
-        if (invulnerable) return false;
         if (value <= 0) return false;
+
+        if (invulnerable)
+        {
+            AudioManager.Instance.PlaySFX("defend2");
+            Instantiate(holyShieldEffect, Vector2.MoveTowards(transform.position, source.position, 0.5f), Quaternion.identity);
+            return false;
+        }
 
         // Break-fall effect
         if (breakfallCost > 0 && currentStamina >= breakfallCost && animator.GetCurrentAnimatorStateInfo(0).IsName("Crouch"))
@@ -1296,7 +1325,7 @@ public class Controller : MonoBehaviour
             Regenerate(0, -breakfallCost);
 
             AudioManager.Instance.PlaySFX("defend3");
-            Instantiate(shieldEffect, Vector2.Lerp(source.position, transform.position, 0.5f), Quaternion.identity);
+            Instantiate(shieldEffect, Vector2.MoveTowards(transform.position, source.position, 0.5f), Quaternion.identity);
             staminaRegenDelayCounter = staminaRegenDelay;
             return false;
         }
@@ -1306,8 +1335,8 @@ public class Controller : MonoBehaviour
 
         int originalHp = currentHP;
 
-        // deathblow system. Always give 1 more chance (1 hp left)
-        if (currentHP > 1)
+        // deathblow system. Sometimes it will give give 1 more chance (1 hp left)
+        if (((float)currentHP / (float)maxHP) > 0.25f || Random.Range(0.0f, 1.0f) < 0.2f)
         {
             currentHP = Mathf.Clamp(currentHP - value, 1, maxHP);
         }
@@ -1376,13 +1405,20 @@ public class Controller : MonoBehaviour
         {
             // revive
             Instantiate(reviveParticle, new Vector2(transform.position.x, -1.14f), Quaternion.identity);
+            Instantiate(holySwordEffect, new Vector2(transform.position.x, 2.0f), Quaternion.identity);
+            Instantiate(holySwordEffect, new Vector2(transform.position.x - 2.0f, 1.0f), Quaternion.identity);
+            Instantiate(holySwordEffect, new Vector2(transform.position.x + 2.0f, 1.0f), Quaternion.identity);
             AudioManager.Instance.PlaySFX("revive");
             animator.Play("Jump");
             isAlive = true;
             survivor = false;
-            StartJump(true);
+
+            // make sure player have full stamina before jump
             currentHP = maxHP;
             currentStamina = maxStamina;
+
+            StartJump(true, false);
+
             AfterEffectDuration(afterEffectInterval, 0.75f);
             gameMng.SpawnFloatingText(new Vector2(transform.position.x, transform.position.y + collider.bounds.size.y / 2f), 5f, 30f,
                                      "RESURRECTION", new Color(1f, 8.43f, 0.0f), new Vector2(0f, 1f), 100f);
@@ -1530,6 +1566,11 @@ public class Controller : MonoBehaviour
         yield return new WaitForSeconds(time);
 
         invulnerable = false;
+    }
+
+    public void SetInvulnerable(bool value)
+    {
+        invulnerable = value;
     }
 
     public void Knockback(float value, int direction, float time)

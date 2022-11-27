@@ -567,8 +567,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   haveTurnAnimation: 0
-  attackDamageBase: 22
-  attackDamageMax: 5
+  attackDamageBase: 9
+  attackDamageMax: 3
   allowAttack: 1
   moveSpeed: 2
   attackRange: 2.7
@@ -578,7 +578,7 @@ MonoBehaviour:
   initialStamina: 100
   turningTime: 1
   dashRange: 5
-  abilityChargeTime: 3
+  abilityChargeTime: 1.9
   abilityCooldownTime: 7
   abilityProgressBar: {fileID: 4729376278191079781}
   progressBarFill: {fileID: 2141095073471290310}
@@ -601,8 +601,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   enemyName: CatKnight
   maxHp: 270
+  startHpPercentage: 1
   maxStamina: 20
-  maxArmor: 235
+  maxArmor: 250
   fadeOutAfterDead: 1
   attackedStopAttack: 0
   mass: 1.9

@@ -108,13 +108,13 @@ public class ProgressManager : Singleton<ProgressManager>
                 rtn.skill_Icon = "basedamage";
                 break;
             case Skill.MaxDamage:
-                rtn.value = 5 + Random.Range(0, 4);
+                rtn.value = 4 + Random.Range(0, 4);
                 rtn.skill_name = "<color=#800000ff>" + LocalizationManager.Localize("PowerupName.MaxDamage") + "</color>";
                 rtn.skill_description = LocalizationManager.Localize("PowerupDescription.MaxDamage", ((int)rtn.value).ToString());
                 rtn.skill_Icon = "maxdamage";
                 break;
             case Skill.Vitality:
-                rtn.value = 13 + Random.Range(0, 11);
+                rtn.value = 12 + Random.Range(0, 20);
                 rtn.skill_name = "<color=#00ff00ff>" + LocalizationManager.Localize("PowerupName.Vitality") + "</color>";
                 rtn.skill_description = LocalizationManager.Localize("PowerupDescription.Vitality", ((int)rtn.value).ToString());
                 rtn.skill_Icon = "vitality";
@@ -168,8 +168,8 @@ public class ProgressManager : Singleton<ProgressManager>
                 rtn.skill_Icon = "survive";
                 break;
             case Skill.ComboMaster:
-                rtn.value = 8 + Random.Range(0, 4);
-                rtn.skill_name = "<color=blue>" + LocalizationManager.Localize("PowerupName.ComboMaster") + "</color>";
+                rtn.value = 7 + Random.Range(0, 4);
+                rtn.skill_name = "<color=#afe1afff>" + LocalizationManager.Localize("PowerupName.ComboMaster") + "</color>";
                 rtn.skill_description = LocalizationManager.Localize("PowerupDescription.ComboMaster", ((int)rtn.value).ToString());
                 rtn.skill_Icon = "combomaster";
                 break;
@@ -185,7 +185,7 @@ public class ProgressManager : Singleton<ProgressManager>
                 rtn.skill_description = LocalizationManager.Localize("PowerupDescription.Windrunner", ((int)rtn.value).ToString()); rtn.skill_Icon = "windrunner";
                 break;
             case Skill.Potion:
-                rtn.value = 20 + Random.Range(0, 5);
+                rtn.value = 15 + Random.Range(0, 11);
                 rtn.skill_name = "<color=#00ffffff>" + LocalizationManager.Localize("PowerupName.HealingSalve") + "</color>";
                 rtn.skill_description = LocalizationManager.Localize("PowerupDescription.HealingSalve", ((int)rtn.value).ToString());
                 rtn.skill_Icon = "potion";
@@ -197,7 +197,7 @@ public class ProgressManager : Singleton<ProgressManager>
                 rtn.skill_Icon = "deflect";
                 break;
             case Skill.Berserker:
-                rtn.value = 1 + Random.Range(0, 5);
+                rtn.value = 1 + Random.Range(0, 3);
                 rtn.skill_name = "<color=#a52a2aff>" + LocalizationManager.Localize("PowerupName.Berserker") + "</color>";
                 rtn.skill_description = LocalizationManager.Localize("PowerupDescription.Berserker", ((int)rtn.value).ToString());
                 rtn.skill_Icon = "berserker";
@@ -209,13 +209,13 @@ public class ProgressManager : Singleton<ProgressManager>
                 rtn.skill_Icon = "recover";
                 break;
             case Skill.Echo:
-                rtn.value = 5 + Random.Range(0, 18);
-                rtn.skill_name = "<color=#4c00b0ff>" + LocalizationManager.Localize("PowerupName.Echo") + "</color>";
+                rtn.value = 10 + Random.Range(0, 22);
+                rtn.skill_name = "<color=#ffa500ff>" + LocalizationManager.Localize("PowerupName.Echo") + "</color>";
                 rtn.skill_description = LocalizationManager.Localize("PowerupDescription.Echo", ((int)rtn.value).ToString());
                 rtn.skill_Icon = "echo";
                 break;
             case Skill.Juggernaut:
-                rtn.value = 8 + Random.Range(0, 5);
+                rtn.value = 8 + Random.Range(0, 8);
                 rtn.skill_name = "<color=#4c00b0ff>" + LocalizationManager.Localize("PowerupName.Juggernaut") + "</color>";
                 rtn.skill_description = LocalizationManager.Localize("PowerupDescription.Juggernaut", ((int)rtn.value).ToString());
                 rtn.skill_Icon = "juggernaut";

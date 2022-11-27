@@ -318,6 +318,8 @@ MonoBehaviour:
   haveTurnAnimation: 0
   attackDamageBase: 2
   attackDamageMax: 1
+  attackDamageBaseScaleCap: 40
+  attackDamageMaxScaleCap: 1
   allowAttack: 1
   moveSpeed: 1.5
   attackRange: 2
@@ -340,6 +342,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   enemyName: Skelly
   maxHp: 77
+  startHpPercentage: 1
   maxStamina: 20
   maxArmor: 20
   fadeOutAfterDead: 1

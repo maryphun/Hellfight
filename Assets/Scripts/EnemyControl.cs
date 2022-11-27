@@ -8,6 +8,7 @@ public class EnemyControl : MonoBehaviour
     [Header("Custom Parameter")]
     [SerializeField] private string enemyName = "JellySlime";
     [SerializeField] private int maxHp = 20;
+    [SerializeField] private float startHpPercentage = 1.0f;
     [SerializeField] private int maxStamina = 100;
     [SerializeField] private int maxArmor = 20;
     [SerializeField] private bool fadeOutAfterDead = false;
@@ -70,7 +71,7 @@ public class EnemyControl : MonoBehaviour
         player = FindObjectOfType<Controller>();
         collider = GetComponent<Collider2D>();
         rigidbody = GetComponent<Rigidbody2D>();
-        currentHp = maxHp;
+        currentHp = Mathf.FloorToInt((float)maxHp * startHpPercentage);
         currentArmor = maxArmor;
         isAlive = true;
         criticalHitted = false;
@@ -81,6 +82,10 @@ public class EnemyControl : MonoBehaviour
             originalHpBarScale = hpbar.transform.localScale.x;
             hpbar.DOFade(0.0f, 0.0f);
             hpbarFade.DOFade(0.0f, 0.0f);
+
+            // rescale
+            hpbar.transform.DOScaleX(((float)currentHp / (float)maxHp) * originalHpBarScale, 0.0f);
+            hpbarFade.transform.DOScaleX(((float)currentHp / (float)maxHp) * originalHpBarScale, 0.0f);
         }
 
         if (armorbar != null)
@@ -201,6 +206,23 @@ public class EnemyControl : MonoBehaviour
         graphic.DOColor(Color.white, 0.5f);
 
         return rtn;
+    }
+
+
+    public void Heal(int value)
+    {
+        currentHp = Mathf.Clamp(currentHp + value, 0, maxHp);
+
+        // rescale hp bar
+        hpbar.transform.DOScaleX(((float)currentHp / (float)maxHp) * originalHpBarScale, 1f);
+        hpbarFade.transform.DOScaleX(((float)currentHp / (float)maxHp) * originalHpBarScale, 0f);
+
+        // show and fade
+        hpbar.DOFade(1.0f, 0.0f);
+        hpbarFade.DOFade(1.0f, 0.0f);
+
+        hpbar.DOFade(0.0f, 2f);
+        hpbarFade.DOFade(0.0f, 2f);
     }
 
     public bool CheckIfCriticalHit(Vector2 damageSource)
@@ -439,6 +461,11 @@ public class EnemyControl : MonoBehaviour
         currentHp += value;
     }
 
+    public void SetCurrentHpDirectly(int value)
+    {
+        currentHp = value;
+    }
+
     public int GetLevel()
     {
         return level;
@@ -518,6 +545,10 @@ public class EnemyControl : MonoBehaviour
     public int GetCurrentHP()
     {
         return currentHp;
+    }
+    public int GetMaxHP()
+    {
+        return maxHp;
     }
 
     public float GetCurrentHPPercentage()

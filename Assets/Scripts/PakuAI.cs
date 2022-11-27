@@ -191,7 +191,7 @@ public class PakuAI : MonoBehaviour
                 controller.GetRigidBody().bodyType = RigidbodyType2D.Dynamic;
                 foreach (LightingBall ball in lightningBallList)
                 {
-                    ball.DestroyWithPaku();
+                    ball.DestroyWithOwner();
                 }
                 lightningBallList.Clear();
                 break;

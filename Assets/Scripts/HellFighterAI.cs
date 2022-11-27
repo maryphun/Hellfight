@@ -291,7 +291,7 @@ public class HellFighterAI : MonoBehaviour
                 firstTimeShockwave = false;
                 AudioManager.Instance.PlaySFX("wind", 0.8f);
                 shockwaveHitPlayer = false;
-                StartCoroutine(Shockwave(Mathf.Max(transform.position.y, -1.3f), transform.position.x + (direction * attackRange), 0.035f, direction * 1f, bounceNum));
+                StartCoroutine(Shockwave(Mathf.Max(transform.position.y, -1.7f), transform.position.x + (direction * attackRange), 0.035f, direction * 1f, bounceNum));
 
                 // SHAKE SCREEN
                 gameMng.ScreenImpactGround(0.05f, 0.1f);

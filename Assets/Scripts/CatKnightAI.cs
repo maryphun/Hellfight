@@ -18,7 +18,7 @@ public class CatKnightAI : MonoBehaviour
     [SerializeField] private int initialStamina = 100;
     [SerializeField] private float turningTime = 1.0f;
     [SerializeField] private float dashRange = 3.0f;
-    [SerializeField] private float abilityChargeTime = 3f;
+    [SerializeField] private float abilityChargeTime = 1.9f;
     [SerializeField] private float abilityCooldownTime = 7f;
 
     private EnemyControl controller;

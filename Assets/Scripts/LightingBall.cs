@@ -7,7 +7,8 @@ public class LightingBall : MonoBehaviour
 {
     GameManager gameMng;
     Controller player;
-    PakuAI master;
+    PakuAI ownerPaku;
+    TheHungryOneAI ownerTheHungryOne;
     int shootLeft;
     float shootInterval;
 
@@ -30,7 +31,23 @@ public class LightingBall : MonoBehaviour
     {
         gameMng = _gameMng;
         player = _player;
-        master = _master;
+        ownerPaku = _master;
+        shootLeft = shoot;
+        shootInterval = _shootInterval;
+        shootTimeCnt = _shootInterval;
+        dmg = damage;
+        maxDmg = maxDamage;
+
+        enabled = true;
+
+        // Move to target height
+        transform.DOLocalMoveY(1.5f, shootInterval);
+    }
+    public void Initialize(GameManager _gameMng, Controller _player, TheHungryOneAI _master, int shoot, float _shootInterval, int damage, int maxDamage)
+    {
+        gameMng = _gameMng;
+        player = _player;
+        ownerTheHungryOne = _master;
         shootLeft = shoot;
         shootInterval = _shootInterval;
         shootTimeCnt = _shootInterval;
@@ -45,7 +62,14 @@ public class LightingBall : MonoBehaviour
 
     public void DestroySelf(float time)
     {
-        master.ElectricBallUnRegister(this);
+        if (!ReferenceEquals(ownerPaku, null))
+        {
+            ownerPaku.ElectricBallUnRegister(this);
+        }
+        if (!ReferenceEquals(ownerTheHungryOne, null))
+        {
+            ownerTheHungryOne.ElectricBallUnRegister(this);
+        }
 
         GameObject tmp = Instantiate(electricSparkEffect, transform.position, Quaternion.identity);
 
@@ -54,7 +78,7 @@ public class LightingBall : MonoBehaviour
         Destroy(gameObject, time + Time.deltaTime);
     }
 
-    public void DestroyWithPaku()
+    public void DestroyWithOwner()
     {
         GameObject tmp = Instantiate(electricSparkEffect, transform.position, Quaternion.identity);
 
@@ -111,7 +135,7 @@ public class LightingBall : MonoBehaviour
             foreach (EnemyControl enemy in enemyList)
             {
                 if (Mathf.Abs(enemy.transform.position.x - transform.position.x) < 1.5f + enemy.GetCollider().bounds.size.x / 2f
-                        && enemy.transform.position.y < 2f && enemy.GetName() != "Paku")
+                        && enemy.transform.position.y < 2f && enemy.GetName() != "Paku" && enemy.GetName() != "TheHungryOne")
                 {
                     int calculatedDamage = dmg / 2 + Random.Range(0, maxDmg / 2 + 1);
 

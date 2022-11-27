@@ -9,6 +9,8 @@ public class SkellyAI : MonoBehaviour
     [SerializeField] private bool haveTurnAnimation;
     [SerializeField] private int attackDamageBase;
     [SerializeField] private int attackDamageMax;
+    [SerializeField] private int attackDamageBaseScaleCap = 40;
+    [SerializeField] private int attackDamageMaxScaleCap = 15;
     [SerializeField] private bool allowAttack;
     [SerializeField] private float moveSpeed;
     [SerializeField] private float attackRange;
@@ -57,6 +59,8 @@ public class SkellyAI : MonoBehaviour
     {
         attackDamageBase += level * 2;
         attackDamageMax += level * (1 / 5);
+        attackDamageBase = Mathf.Min(attackDamageBase, attackDamageBaseScaleCap);   // Cap
+        attackDamageMax = Mathf.Min(attackDamageMax, attackDamageMaxScaleCap);   // Cap
         moveSpeed += Random.Range(-0.5f, 0.5f); ;
         staminaRegenInterval = staminaRegenInterval / ((float)level/2);
 

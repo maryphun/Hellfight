@@ -220,7 +220,10 @@ public class AbilityLearnPanel : MonoBehaviour
             {
                 CheckAndAdd(possibleSkill, Skill.DashDamage);
             }
-            CheckAndAdd(possibleSkill, Skill.DashCooldown);
+            if (player.GetDashCD() > 0.25f)
+            {
+                CheckAndAdd(possibleSkill, Skill.DashCooldown);
+            }
             CheckAndAdd(possibleSkill, Skill.HPRegen);
             CheckAndAdd(possibleSkill, Skill.LifeDrain);
         }

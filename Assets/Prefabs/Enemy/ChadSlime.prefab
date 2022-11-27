@@ -153,7 +153,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   enemyName: ChadSlime
-  maxHp: 350
+  maxHp: 250
+  startHpPercentage: 1
   maxStamina: 30
   maxArmor: 20
   fadeOutAfterDead: 1

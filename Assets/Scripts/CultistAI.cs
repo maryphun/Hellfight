@@ -266,13 +266,13 @@ public class CultistAI : MonoBehaviour
         if (Mathf.Abs(player.transform.position.x - effect.transform.position.x) < 1.9f)
         {
             int calculatedDamage = attackDamageBase + Random.Range(0, attackDamageMax + 1);
-            player.DealDamage(calculatedDamage, transform);
-            dealtDamage += calculatedDamage;
-
-            player.StartJump();
-
-            GameObject tmp = Instantiate(fireBurstHitEffect, player.transform.position, Quaternion.identity);
-            tmp.transform.SetParent(player.transform.parent);
+            if (player.DealDamage(calculatedDamage, transform))
+            {
+                dealtDamage += calculatedDamage;
+                player.StartJump(false, true);
+                GameObject tmp = Instantiate(fireBurstHitEffect, player.transform.position, Quaternion.identity);
+                tmp.transform.SetParent(player.transform.parent);
+            }
         }
 
         // deal damage to enemy
@@ -286,17 +286,19 @@ public class CultistAI : MonoBehaviour
                         && enemy.transform.position.y < 2f && enemy.GetName() != "Cultist")
                 {
                     int calculatedDamage = attackDamageBase / 2 + Random.Range(0, attackDamageMax / 2 + 1);
-                    enemy.DealDamage(calculatedDamage);
-                    dealtDamage += calculatedDamage;
+                    if (enemy.DealDamage(calculatedDamage))
+                    {
+                        dealtDamage += calculatedDamage;
 
-                    GameObject tmp = Instantiate(fireBurstHitEffect, enemy.transform.position, Quaternion.identity);
-                    tmp.transform.SetParent(enemy.transform.parent);
+                        GameObject tmp = Instantiate(fireBurstHitEffect, enemy.transform.position, Quaternion.identity);
+                        tmp.transform.SetParent(enemy.transform.parent);
 
-                    Vector2 randomize = new Vector2(Random.Range(-enemy.GetComponent<Collider2D>().bounds.size.x / 2f, enemy.GetComponent<Collider2D>().bounds.size.x / 2f), Random.Range(-0.5f, 0.5f));
-                    Vector2 floatDirection = new Vector2(0.0f, 1.0f);
-                    controller.GetGameManager().SpawnFloatingText(new Vector2(enemy.transform.position.x, enemy.transform.position.y + enemy.GetComponent<Collider2D>().bounds.size.y * 0.75f) + randomize
-                                                 , 2f + Random.Range(0.0f, 1.0f), 25f + Random.Range(0.0f, 25.0f),
-                                                 calculatedDamage.ToString(), Color.white, floatDirection.normalized, 50f);
+                        Vector2 randomize = new Vector2(Random.Range(-enemy.GetComponent<Collider2D>().bounds.size.x / 2f, enemy.GetComponent<Collider2D>().bounds.size.x / 2f), Random.Range(-0.5f, 0.5f));
+                        Vector2 floatDirection = new Vector2(0.0f, 1.0f);
+                        controller.GetGameManager().SpawnFloatingText(new Vector2(enemy.transform.position.x, enemy.transform.position.y + enemy.GetComponent<Collider2D>().bounds.size.y * 0.75f) + randomize
+                                                     , 2f + Random.Range(0.0f, 1.0f), 25f + Random.Range(0.0f, 25.0f),
+                                                     calculatedDamage.ToString(), Color.white, floatDirection.normalized, 50f);
+                    }
                 }
             }
         }
@@ -304,7 +306,7 @@ public class CultistAI : MonoBehaviour
         if (dealtDamage > 0)
         {
             // heal cultist
-            controller.DealDamage(-dealtDamage * 2);
+            controller.Heal(dealtDamage * 2);
         }
     }
 }

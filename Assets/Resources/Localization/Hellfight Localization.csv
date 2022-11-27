@@ -43,7 +43,10 @@ PowerupDescription.LifeDrain,Heal <color=#800000ff>{0:N0}</color> hp when you ki
 PowerupName.Survivor,Survivor,生存者,生存者,サバイバー
 PowerupDescription.Survivor,Gives you a second chance when you're dead.,獲得一次復活機會,获得一次复活机会,復活チャンス一回貰える
 PowerupName.ComboMaster,Combo Master,連擊大師,连击大师,連撃達人
-PowerupDescription.ComboMaster,Gain <color=blue>{0:N0}</color> stamina per combo when combo ended.,"連擊結束後瞬間恢復體力值, 每一連擊增加<color=blue>{0:N0}</color>點體力","连击结束后瞬间回复体力值, 每一连击增加<color=blue>{0:N0}</color>点体力","コンボが終わった瞬間, コンボ数ごとに<color=blue>{0:N0}</color>点スタミナを回復する"
+PowerupDescription.ComboMaster,"Gain <color=#afe1afff>{0:N0}</color> stamina per combo when combo ended.
+<color=grey>The effect can stack</color>","連擊結束後瞬間恢復體力值, 每一連擊增加<color=#afe1afff>{0:N0}</color>點體力
+<color=grey>效果會叠加</color>","连击结束后瞬间回复体力值, 每一连击增加<color=#afe1afff>{0:N0}</color>点体力
+<color=grey>效果会叠加</color>","コンボが終わった瞬間, コンボ数ごとに<color=#afe1afff>{0:N0}</color>点スタミナを回復する"
 PowerupName.Break-Fall,Break-Fall,蓄勢待發,蓄势待发,力返し
 PowerupDescription.Break-Fall,Crouching block attack by the cost of <color=#008080ff>{0:N0}</color> stamina.,"蹲下時可以抵擋傷害, 消耗<color=#008080ff>{0:N0}</color>點體力值","蹲下时可以抵挡伤害, 消耗<color=#008080ff>{0:N0}</color>点体力值",しゃがむとダメージをスタミナ<color=#008080ff>{0:N0}</color>点で完全に防げる
 PowerupName.Windrunner,Windrunner,風行者,风行者,風行者
@@ -55,15 +58,15 @@ PowerupDescription.Deflect,"Restore <color=#800080ff>50% used stamina</color> ba
 <color=grey>对史莱姆无效</color>","敵の攻撃アニメーション中に相手に向けてダッシュするとスタミナ<color=#800080ff>50%回復</color>する
 <color=grey>スライムに無効</color>"
 PowerupName.Berserker,Berserk,狂暴,狂暴,バーサーカー
-PowerupDescription.Berserker,"When you have less than 33% HP, your attack heals <color=#a52a2aff>{0:N0} HP</color>. The effect can stack.","生命值低於33%時每次攻擊恢復<color=#a52a2aff>{0:N0}點</color>生命值, 數字可以疊加","生命值低於33%時每次攻击回复<color=#a52a2aff>{0:N0}點</color>生命值, 数字可以叠加",ライフが33%より低い場合攻撃ごとに<color=#a52a2aff>{0:N0}点</color>ライフ回復する
+PowerupDescription.Berserker,"When you have less than 34% HP, your attack heals <color=#a52a2aff>{0:N0} HP</color>. The effect can stack.","生命值低於34%時每次攻擊恢復<color=#a52a2aff>{0:N0}點</color>生命值, 數字可以疊加","生命值低於34%時每次攻击回复<color=#a52a2aff>{0:N0}點</color>生命值, 数字可以叠加",ライフが34%より低い場合攻撃ごとに<color=#a52a2aff>{0:N0}点</color>ライフ回復する
 PowerupName.Battlecry,Battlecry,戰吼,战吼,雄叫び
 PowerupDescription.Battlecry,Gain stamina <color=#00ffffff>{0:N0}% faster </color> when there are enemy nearby.,當敵人在附近時體力增速提升<color=#00ffffff>{0:N0}%,当敌人在附近时体力增速提升<color=#00ffffff>{0:N0}%</color>,敵が近くにいる時スタミナ回復速度が<color=#00ffffff>{0:N0}%</color>増加
 PowerupName.HealingSalve,Healing Salve,治療藥膏,治愈药膏,治療薬
 PowerupDescription.HealingSalve,Gain a consumables potion that recharge every level. Grants <color=#00ffffff>{0:N0}%</color> health back.,"獲得一個消耗式的治療藥, 每層可以使用一次, 恢復<color=#00ffffff>{0:N0}%</color>生命值","获得一个消耗式的治愈药, 每楼可以使用一次, 恢复<color=#00ffffff>{0:N0}%</color>生命值","<color=#00ffffff>{0:N0}%</color>のHPを回復するアイテムを獲得する, ステージごとに一回使える"
 PowerupName.Echo,Echo,回音,回音,エコー
-PowerupDescription.Echo,"Gain a chance to summon an illusion that duplicate your attack, deal <color=#4c00b0ff>{0:N0}%</color> of your damage. The number can stack.",有几率複製你的攻擊，對敵人造成本體<color=#4c00b0ff>{0:N0}%</color>的攻擊力,有几率复制你的攻击，对敌人造成本体<color=#4c00b0ff>{0:N0}%</color>的攻击力,たまにキャラクターの攻撃を複製する。分身体は本体の<color=#4c00b0ff>{0:N0}%</color>の攻撃力を持っている。
+PowerupDescription.Echo,"Gain a chance to summon an illusion that duplicate your attack, deal <color=#ffa500ff>{0:N0}%</color> of your damage. The number can stack.",有几率複製你的攻擊，對敵人造成本體<color=#ffa500ff>{0:N0}%</color>的攻擊力,有几率复制你的攻击，对敌人造成本体<color=#ffa500ff>{0:N0}%</color>的攻击力,たまにキャラクターの攻撃を複製する。分身体は本体の<color=#ffa500ff>{0:N0}%</color>の攻撃力を持っている。
 PowerupName.Juggernaut,Juggernaut,主宰,主宰,ジャガーノート
-PowerupDescription.Juggernaut,Attack cost no stamina start from <color=#4c00b0ff>{0:N0}%</color>th combo.,第<color=#4c00b0ff>{0:N0}%</color>次連擊的攻擊開始不消耗體力,第<color=#4c00b0ff>{0:N0}%</color>次连击的攻击开始不消耗体力,<color=#4c00b0ff>{0:N0}%</color>コンボからの攻撃にはスタミナの消耗はない
+PowerupDescription.Juggernaut,Attack cost no stamina start from <color=#4c00b0ff>{0:N0}</color>th combo.,第<color=#4c00b0ff>{0:N0}</color>次連擊的攻擊開始不消耗體力,第<color=#4c00b0ff>{0:N0}</color>次连击的攻击开始不消耗体力,<color=#4c00b0ff>{0:N0}</color>コンボからの攻撃にはスタミナの消耗はない
 TUTORIALS,,,,
 Tutorial.Attack,ATTACK,<font=LanaPixel SDF>攻擊</font>,<font=LanaPixel SDF>攻击</font>,<font=JPPixel SDF>攻撃</font>
 Tutorial.Jump,JUMP,<font=LanaPixel SDF>跳躍</font>,<font=LanaPixel SDF>跳跃</font>,<font=JPPixel SDF>ジャンプ</font>
@@ -77,10 +80,11 @@ Tutorial.TipsLevel10,"Find his weakness, try to jump!",<font=LanaPixel SDF>請�
 Tutorial.TipsLevel11,Your stamina gain slower as you dash continuously,<font=LanaPixel SDF>連續衝刺會導致體力值恢復速度減慢,<font=LanaPixel SDF>短时间连续冲刺会导致体力值恢复速度变慢,<font=JPPixel SDF>短時間ない連続でダッシュするとスタミナ回復も減少する
 Tutorial.TipsLevel15,They're adorable,<font=LanaPixel SDF>可愛的家伙们,<font=LanaPixel SDF>可爱的家伙们,<font=JPPixel SDF>可愛い奴らだ！
 Tutorial.TipsLevel25,Break his defense!,<font=LanaPixel SDF>突破他的防守!,<font=LanaPixel SDF>突破他的防守!,<font=JPPixel SDF>ガードを突破せよ
-Tutorial.TipsLevel29,Thank you for playing! The rest is still developing.,<font=LanaPixel SDF>感謝試玩! 請等待完整版!,<font=LanaPixel SDF>感谢试玩，请期待完整版!,<font=JPPixel SDF>これ以上の内容はまだ製作中です。遊んで頂きありがとうございました。
+Tutorial.TipsLevel35,Thank you for playing! The rest is still developing.,<font=LanaPixel SDF>感謝試玩! 請等待完整版!,<font=LanaPixel SDF>感谢试玩，请期待完整版!,<font=JPPixel SDF>これ以上の内容はまだ製作中です。遊んで頂きありがとうございました。
 OTHER,,,,
-Text.Proceedlvl9,Proceed to Boss Fight - <color=#ff00ffff>Broyon</color>!,區域霸主  - <color=#ff00ffff>布靈幽</color>,区域霸主  - <color=#ff00ffff>布灵幽</color>,<font=JPPixel SDF>ボス戦へ進む - <color=#ff00ffff>ブロヨン</color>
-Text.Proceedlvl19,Proceed to Boss Fight - <color=#550000ff>Hell Fighter</color>!,區域霸主  - <color=#550000ff>地獄使者</color>,区域霸主  - <color=#550000ff>地獄使者</color>,ボス戦へ進む - <color=#550000ff>地獄審判</color>
+Text.Proceedlvl9,Proceed to Boss Fight - <color=#ff00ffff>Broyon</color>,區域霸主  - <color=#ff00ffff>布靈幽</color>,区域霸主  - <color=#ff00ffff>布灵幽</color>,<font=JPPixel SDF>ボス戦へ進む - <color=#ff00ffff>ブロヨン</color>
+Text.Proceedlvl19,Proceed to Boss Fight - <color=#550000ff>Hell Fighter</color>,區域霸主  - <color=#550000ff>地獄使者</color>,区域霸主  - <color=#550000ff>地獄使者</color>,ボス戦へ進む - <color=#550000ff>地獄審判</color>
+Text.Proceedlvl29,Proceed to Boss Fight - <color=#550000ff>The Hungry One</color>,區域霸主  - <color=#550000ff>飢餓魔</color>,区域霸主  - <color=#550000ff>饥饿魔</color>,ボス戦へ進む  - <color=#550000ff>古き物</color>
 Text.Proceed,Jump and proceed to the next level,<font=LanaPixel SDF>向下跳跃,<font=LanaPixel SDF>向下跳跃,<font=JPPixel SDF>次のステージへジャンプ</font>
 Text.NewChallenger,Welcome our new challenger,<font=LanaPixel SDF>新的挑戰者,<font=LanaPixel SDF>新的挑战者,New challenger!
 Text.Retry,Welcome back!,<font=LanaPixel SDF>重新挑戰,<font=LanaPixel SDF>重新挑战,<font=JF-Dot-Paw16 SDF>再戦
