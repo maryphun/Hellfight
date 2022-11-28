@@ -40,4 +40,13 @@ public class SteamAchievementManager : Singleton<SteamAchievementManager>
             }
         }
     }
+
+    public void SteamLeaderboard()
+    {
+        if (SteamManager.Initialized)
+        {
+            //SteamUserStats.leader
+
+        }
+    }
 }

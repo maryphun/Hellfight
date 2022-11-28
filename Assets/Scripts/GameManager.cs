@@ -57,6 +57,7 @@ public class GameManager : MonoBehaviour
     [SerializeField] GameObject backCanvas;
     [SerializeField] string playerName;
     [SerializeField] TMP_Text countdownText;
+    [SerializeField] Image countdownHourGlassUI;
     [SerializeField] TMP_Text gameoverText;
     [SerializeField] SpriteRenderer monsterAlertArrowLeft;
     [SerializeField] SpriteRenderer monsterAlertArrowRight;
@@ -317,6 +318,11 @@ public class GameManager : MonoBehaviour
         else if (currentLevel == 25)
         {
             SetBackground("purple");
+            ResetParallax();
+        }
+        else if (currentLevel == 30)
+        {
+            SetBackground("night");
             ResetParallax();
         }
         else
@@ -975,7 +981,7 @@ public class GameManager : MonoBehaviour
         gameOver = false;
 
         openButton.SetActive(false);
-
+        countdownHourGlassUI.color = new Color(1, 1, 1, 0);
 
         // Reset timer
         timeCounter = 0;
@@ -1098,22 +1104,26 @@ public class GameManager : MonoBehaviour
     {
         int newTimeLeft = addTime;
         isAddTimerEffectRunning = true;
+        countdownHourGlassUI.DOColor(new Color(1, 1, 1, 0.25f), 0.1f);
         while (newTimeLeft > 0)
         {
             newTimeLeft--;
 
-            timer++;
+            timer = Mathf.Min(timer+1, 120); // maximum 2 minutes
             UpdateCountdownTimerTextUI(timer);
 
             countdownText.color = new Color(countdownText.color.r, countdownText.color.g, countdownText.color.b, 1.0f);
+            countdownHourGlassUI.GetComponent<RectTransform>().DOPunchPosition(new Vector3(0.1f, 0.1f, 0.1f), 0.1f);
             yield return new WaitForSeconds(0.1f);
         }
+        countdownHourGlassUI.DOColor(new Color(1, 1, 1, 0.2f), 1.5f);
         countdownText.color = new Color(countdownText.color.r, countdownText.color.g, countdownText.color.b, 0.5f);
         isAddTimerEffectRunning = false;
     }
 
     IEnumerator LevelTimer(int level)
     {
+        countdownHourGlassUI.DOColor(new Color(1, 1, 1, 0.2f), 4.0f);
         while (timer > 0)
         {
             if (isAddTimerEffectRunning) yield return new WaitForSeconds(1.0f);
@@ -1127,6 +1137,7 @@ public class GameManager : MonoBehaviour
                 {
                     AudioManager.Instance.PlaySFX("heartbeat");
                     countdownText.DOColor(Color.red, 0.1f);
+                    countdownHourGlassUI.GetComponent<RectTransform>().DOPunchPosition(new Vector3(0.2f, 0.2f, 0.2f), 0.2f);
                 }
 
                 countdownText.DOFade(0.8f, 0.1f);
@@ -1239,7 +1250,7 @@ public class GameManager : MonoBehaviour
                 {
                     for (int j = 0; j < child.childCount; j++)
                     {
-                        Transform sub = parallaxParent.GetChild(i);
+                        Transform sub = child.GetChild(j);
                         if (sub != null)
                         {
                             sub.GetComponent<SpriteRenderer>().color = new Color(theme.r, theme.g, theme.b, sub.GetComponent<SpriteRenderer>().color.a);

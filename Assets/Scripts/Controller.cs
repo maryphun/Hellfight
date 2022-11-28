@@ -96,6 +96,7 @@ public class Controller : MonoBehaviour
     private GameObject holyShieldEffect;
     private GameObject holySwordEffect;
     public PlayerAction _input;
+    private float moveAnimFrame = 0.0f;
 
     [Header("References")]
     [SerializeField] SpriteRenderer graphic;
@@ -319,6 +320,34 @@ public class Controller : MonoBehaviour
 
             animator.SetBool("IsJumping", rigidbody.velocity.y > 0.0f);
             animator.SetBool("IsFalling", rigidbody.velocity.y < 0.0f);
+
+            //if (input.move != 0.0f)
+            //{
+            //    if (!animator.GetBool("MoveX"))
+            //    {
+            //        animator.SetBool("MoveX", true);
+            //    }
+            //}
+            //else if (input.move == 0.0f)
+            //{
+            //    if (animator.GetBool("MoveX"))
+            //    {
+            //        if (animator.GetCurrentAnimatorStateInfo(0).IsName("Walk"))
+            //        {
+            //            moveAnimFrame = animator.GetCurrentAnimatorStateInfo(0).normalizedTime;
+            //        }
+            //        animator.SetBool("MoveX", false);
+            //    }
+            //}
+
+            //if (   animator.GetCurrentAnimatorStateInfo(0).IsName("Idle") 
+            //    && animator.GetCurrentAnimatorStateInfo(0).normalizedTime == 0.0f
+            //    && moveAnimFrame != 0.0f)
+            //{
+            //    animator.Play("Walk", 0, moveAnimFrame);
+            //    moveAnimFrame = 0.0f;
+            //}
+
             animator.SetBool("MoveX", input.move != 0.0f);
         }
 
