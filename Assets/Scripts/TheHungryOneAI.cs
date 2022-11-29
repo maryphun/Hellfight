@@ -47,6 +47,7 @@ public class TheHungryOneAI : MonoBehaviour
     [SerializeField] private float jumpTime;
     [SerializeField] private int jumpNumber;
     [SerializeField] private float afterImgInterval = 0.2f;
+    [SerializeField] private float footstepSEInterval = 0.25f;
 
     [Header("Debug")]
     [SerializeField] private float afterImgCnt;
@@ -60,6 +61,7 @@ public class TheHungryOneAI : MonoBehaviour
     bool dealDamageAlready;
     float attackChargeEffectCount;
     float jumpTimeCount;
+    float footstepCount = 0.0f;
 
     Coroutine ElectricBuffCoroutine;
     private List<LightingBall> lightningBallList;
@@ -78,6 +80,9 @@ public class TheHungryOneAI : MonoBehaviour
 
         controller.RegenStamina(initialStamina);
         lightningBallList = new List<LightingBall>();
+        
+        // SE
+        AudioManager.Instance.PlaySFX("TheHungryOneGrowl", 0.75f);
     }
 
     private void FixedUpdate()
@@ -163,12 +168,15 @@ public class TheHungryOneAI : MonoBehaviour
                 }
                 animator.Play(enemyName + "Move");
                 animator.SetBool("Move", true);
+                footstepCount = 0.0f;
                 break;
             case Status.Fleeing:
                 break;
             case Status.SpecialAbility:
                 break;
             case Status.Dying:
+                // SE
+                AudioManager.Instance.PlaySFX("TheHungryOneLaugh", 1f);
                 AudioManager.Instance.PlaySFX(enemyName + "Dead");
                 break;
             default:
@@ -277,6 +285,15 @@ public class TheHungryOneAI : MonoBehaviour
         // move toward player
         transform.DOMoveX(transform.position.x + moveSpeed * direction * Time.deltaTime, 0.0f, false);
 
+        // SE
+        footstepCount += Time.deltaTime;
+        if (footstepCount >= footstepSEInterval)
+        {
+            footstepCount = 0.0f;
+            AudioManager.Instance.PlaySFX("TheHungryOneFootstep", 1.5f);
+            controller.GetGameManager().ScreenImpactGround(0.02f, 0.02f);
+        }
+
         // reach destination
         if (Mathf.Abs(player.transform.position.x- transform.position.x ) < attackRange)
         {
@@ -383,6 +400,7 @@ public class TheHungryOneAI : MonoBehaviour
             obj.transform.SetParent(player.transform);
 
             // suck all player's stamina
+            controller.GetGameManager().ShakeStaminaBar(4);
             player.DamagePercentage(0.0f, 1.0f);
             player.StopStaminaRegenerate();
 
@@ -467,6 +485,8 @@ public class TheHungryOneAI : MonoBehaviour
 
         // SE
         AudioManager.Instance.PlaySFX("jump", 2.0f);
+        AudioManager.Instance.PlaySFX("TheHungryOneBreath", 0.8f);
+        controller.GetGameManager().ScreenImpactGround(0.02f, 0.02f);
 
         // flag
         isFalling = false;
@@ -502,6 +522,9 @@ public class TheHungryOneAI : MonoBehaviour
                 animator.Play(enemyName + "Slam");
                 statusTimer = controller.FindAnimation(animator, enemyName + "Slam").length - 0.5f;
 
+                // SE
+                AudioManager.Instance.PlaySFX("TheHungryOneBreath2", 1.5f);
+
                 // VFX
                 float posX = transform.position.x + ((float)controller.GetDirectionInteger() * 3f);
                 controller.SpawnSpecialEffect(thunderRayEffect, new Vector2(posX, 0.86f), false);
@@ -511,6 +534,9 @@ public class TheHungryOneAI : MonoBehaviour
                 // fall 
                 animator.Play(enemyName + "Fall");
                 statusTimer = 0.0f;
+
+                // SE
+                AudioManager.Instance.PlaySFX("TheHungryOneBreath", 1.0f);
 
                 // VFX
                 controller.SpawnSpecialEffect(thunderStrikeEffect, new Vector2(controller.transform.position.x, -1.07f), false);

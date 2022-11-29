@@ -37,6 +37,7 @@ public class Controller : MonoBehaviour
     [SerializeField] private ProtectedFloat pushEnemySpeedMultiplier = 0.15f;
     [SerializeField] private ProtectedFloat criticalDamageMultiplier = 1.5f;
     [SerializeField] private ProtectedFloat potionSpeed = 1.5f;
+    [SerializeField] private ProtectedUInt16 maxDashCharge = 5;
 
     [Header("Parameters")]
     [SerializeField] private ProtectedFloat jumpForce = 650;
@@ -132,6 +133,7 @@ public class Controller : MonoBehaviour
     [SerializeField] private float dashTimeCount;
     [SerializeField] private int currentHP;
     [SerializeField] private int currentStamina;
+    [SerializeField] private int currentDashCharge;
     [SerializeField] private bool superDrop;
     [SerializeField] private float hitTaintTimer;
     [SerializeField] int dashFequency;   // frquency of spamming dash
@@ -235,6 +237,7 @@ public class Controller : MonoBehaviour
 
         currentHP = maxHP;
         currentStamina = maxStamina;
+        currentDashCharge = maxDashCharge;
         playerColor = Color.white;
     }
 
@@ -254,6 +257,7 @@ public class Controller : MonoBehaviour
 
         currentHP = maxHP;
         currentStamina = maxStamina;
+        currentDashCharge = maxDashCharge;
         playerColor = Color.white;
     }
 
@@ -520,7 +524,7 @@ public class Controller : MonoBehaviour
 
             if (input.dash || dashPressMemoryDelay > 0.0f)
             {
-                if ((!isAttacking || attackEndAttackTimer == 0.0f) && dashCooldownTimer == 0.0f)
+                if ((!isAttacking || attackEndAttackTimer == 0.0f) && dashCooldownTimer == 0.0f && currentDashCharge > 0)
                 {
                     StartDash();
                 }
@@ -1173,6 +1177,10 @@ public class Controller : MonoBehaviour
         dashFequency++;
         animator.Play("Dash");
 
+        // Calculate dash charge first
+        currentDashCharge--;
+        gameMng.UseDashCharge();
+
         // if no key is pressed dash into facing direction
         if (input.move != 0)
         {
@@ -1291,6 +1299,14 @@ public class Controller : MonoBehaviour
     {
         return maxStamina;
     }
+    public int GetCurrentDashCharge()
+    {
+        return currentDashCharge;
+    }
+    public int GetMaxDashCharge()
+    {
+        return maxDashCharge;
+    }
 
     public void Regenerate(int hp, int stamina = 0, bool showFloatingText = true)
     {
@@ -1389,6 +1405,13 @@ public class Controller : MonoBehaviour
             gameMng.SpawnFloatingText(new Vector2(transform.position.x, transform.position.y) + randomizeOffset
                                          , 4f + Random.Range(1.0f, 3.0f), 25f + Random.Range(0.0f, 25.0f),
                                          damageDealt.ToString(), new Color(0.75f, 0.0f, 0.0f), new Vector2(direction * 1f, 1f), floatSize);
+        }
+
+        // Shake HP Bar if more than 1 damage is dealt
+        if (damageDealt > 0)
+        {
+            // shake 2 time minimal
+            gameMng.ShakeHPBar(Mathf.Max(damageDealt / 10, 2));
         }
 
         // color taint effect

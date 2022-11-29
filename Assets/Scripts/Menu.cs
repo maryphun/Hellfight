@@ -243,7 +243,7 @@ public class Menu : MonoBehaviour
                 selectIndex = MenuSelection.MainGame;
                 // SE
                 AudioManager.Instance.PlaySFX("decide");
-                AudioManager.Instance.PlayMusic("Battle-Sanctuary");
+                AudioManager.Instance.PlayMusicWithFade("The March", 2.0f);
 
                 // FLAG
                 disableMenuControl = false;

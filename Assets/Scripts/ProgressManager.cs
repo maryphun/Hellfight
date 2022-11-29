@@ -4,6 +4,13 @@ using UnityEngine;
 using OPS.AntiCheat.Prefs;
 using Assets.SimpleLocalization;
 
+public struct UnlockData
+{
+    public string unlock_name;
+    public string unlock_description;
+    public string unlock_Icon;
+}
+
 public class ProgressManager : Singleton<ProgressManager>
 {
     int unlockLevel;
@@ -19,20 +26,39 @@ public class ProgressManager : Singleton<ProgressManager>
         return unlockLevel;
     }
 
-    public List<Skill> NewStuffUnlocked(int currentLevel)
+    public List<UnlockData> NewStuffUnlocked(int currentLevel)
     {
-        List<Skill> newUnlock = new List<Skill>();
+        List<UnlockData> allUnlocks = new List<UnlockData>();
+
+        // check skill unlock
+        List<Skill> newSkillUnlock = new List<Skill>();
+        
         if (currentLevel > unlockLevel)
         {
             ProtectedPlayerPrefs.SetInt("UnlockLevel", currentLevel);
             int oldUnlockLevel = unlockLevel;
             unlockLevel = currentLevel;
-            newUnlock = GetNewUnlock(oldUnlockLevel, unlockLevel);
+            newSkillUnlock = GetNewSkillUnlock(oldUnlockLevel, unlockLevel);
         }
-        return newUnlock;
+
+        if (newSkillUnlock.Count > 0)
+        {
+            for (int i = 0; i < newSkillUnlock.Count; i++)
+            {
+                SelectionData skillData = EnumToData(newSkillUnlock[i]);
+                UnlockData data;
+                data.unlock_Icon = skillData.skill_Icon;
+                data.unlock_name = skillData.skill_name;
+                data.unlock_description = LocalizationManager.Localize("UnlockDescription." + newSkillUnlock[i].ToString());
+
+                allUnlocks.Add(data);
+            }
+        }
+
+        return allUnlocks;
     }
 
-    private List<Skill> GetNewUnlock(int _old, int _new)
+    private List<Skill> GetNewSkillUnlock(int _old, int _new)
     {
         List<Skill> rtn = new List<Skill>();
 

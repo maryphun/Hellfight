@@ -12,6 +12,9 @@ public class hpbar : MonoBehaviour
     [SerializeField] private float maxSize = 1.0f;
     SpriteRenderer sprite;
     RectTransform rectTransform;
+    bool isShaking = false;
+    float lastRoateDir = 1.0f;
+    Coroutine shake;
 
     // Start is called before the first frame update
     void Start()
@@ -29,6 +32,21 @@ public class hpbar : MonoBehaviour
         //GetComponent<RectTransform>().DOScaleX(Mathf.Min((player.GetMaxHP() / 100.0f) * maxSize, maxSize), 0.5f);
         fill.DOFillAmount((float)player.GetCurrentHP() / (float)player.GetMaxHP(), 0.5f);
         delayfill.DOFillAmount(fill.fillAmount, 0.5f);
+
+        // less than 10%
+        if (((float)player.GetCurrentHP() / (float)player.GetMaxHP()) < 0.1f
+            && player.GetCurrentHP() >= 1
+            && player.gameObject.activeSelf)
+        {
+            if (!isShaking)
+            {
+                StartShake(2);
+            }
+        }
+        else
+        {
+            rectTransform.rotation = Quaternion.Euler(0, 0, 0);
+        }
     }
 
     public void SetRectTransformLeft(RectTransform rt, float left)
@@ -39,5 +57,35 @@ public class hpbar : MonoBehaviour
     public void SetRectTransformRight(RectTransform rt, float right)
     {
         rt.offsetMax = new Vector2(-right, rt.offsetMax.y);
+    }
+
+    public void StartShake(int count)
+    {
+        if (isShaking)
+        {
+            StopCoroutine(shake);
+            isShaking = false;
+            rectTransform.rotation = Quaternion.Euler(0, 0, 0);
+        }
+
+        shake = StartCoroutine(ShakeBar(0.15f, count));
+    }
+
+    IEnumerator ShakeBar(float magnitude, int count)
+    {
+        rectTransform.DORewind();
+        isShaking = true;
+
+        for (int i = 0; i < count; i++)
+        {
+            lastRoateDir = lastRoateDir > 0.0f ? -1.0f : 1.0f; 
+            rectTransform.DORotate(new Vector3(0.0f, 0.0f, lastRoateDir * magnitude), 0.05f, RotateMode.Fast);
+            yield return new WaitForSeconds(0.05f);
+            rectTransform.DORotate(new Vector3(0.0f, 0.0f, 0.0f), 0.05f, RotateMode.Fast);
+            yield return new WaitForSeconds(0.05f);
+            rectTransform.rotation = Quaternion.Euler(0, 0, 0);
+        }
+
+        isShaking = false;
     }
 }

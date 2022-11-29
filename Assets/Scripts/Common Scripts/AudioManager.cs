@@ -37,6 +37,8 @@ public class AudioManager : MonoBehaviour
 
     private bool firstMusicSourceIsPlaying;
 
+    Coroutine musicPlayer;
+
     // loaded resources
     [SerializeField]
     private AudioClip[] seClips;
@@ -104,7 +106,7 @@ public class AudioManager : MonoBehaviour
 
         if (clipToPlay != null)
         {
-            StartCoroutine(UpdateMusicWithFade(activeSource, clipToPlay, transitionTime));
+            musicPlayer = StartCoroutine(UpdateMusicWithFade(activeSource, clipToPlay, transitionTime));
         }
     }
 
@@ -179,6 +181,7 @@ public class AudioManager : MonoBehaviour
             yield return null;
         }
 
+        StopCoroutine(musicPlayer);
         source.Stop();
     }
 

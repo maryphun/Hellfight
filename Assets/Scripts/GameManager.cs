@@ -11,7 +11,6 @@ using OPS.AntiCheat.Prefs;
 using OPS.AntiCheat.Detector;
 using Assets.SimpleLocalization;
 
-
 public class GameManager : MonoBehaviour
 {
     [SerializeField] int levelLeaderBoardID = 402;
@@ -37,6 +36,7 @@ public class GameManager : MonoBehaviour
     [SerializeField] GameObject hpBar;
     [SerializeField] GameObject staminaBar;
     [SerializeField] GameObject hpBarText;
+    [SerializeField] DashChargeBar dashChargeBar;
     [SerializeField] GameObject staminaBarText;
     [SerializeField] SpriteRenderer backgroundFrame;
     [SerializeField] SpriteRenderer background;
@@ -66,6 +66,7 @@ public class GameManager : MonoBehaviour
     [SerializeField] Image itemUICooldown;
     [SerializeField] GameObject newUnlockMenu;
     [SerializeField] TMP_Text newUnlockName;
+    [SerializeField] TMP_Text newUnlockDescription;
     [SerializeField] Image newUnlockIcon;
     [SerializeField] Image newUnlockAlpha;
     [SerializeField] NewGroundAPI newGroundsAPI;
@@ -92,7 +93,7 @@ public class GameManager : MonoBehaviour
     private int monsterSpawnCount;
     Coroutine roundTimer;
     Coroutine timeCounterCoroutine;
-    List<Skill> newUnlock = new List<Skill>();
+    List<UnlockData> newUnlock = new List<UnlockData>();
     public PlayerAction _input;
     bool confrimKey = false;
     bool isRoundTimerRunning = false;
@@ -151,6 +152,26 @@ public class GameManager : MonoBehaviour
         var tmp = Instantiate(floatingTextPrefab);
         tmp.transform.localPosition = loc;
         tmp.GetComponent<floaitngtext>().Initialize(time, _speed, text, color, direction, fontSize);
+    }
+
+    public void ShakeHPBar(int count)
+    {
+        hpBarText.GetComponent<HpText>().StartShake(count);
+    }
+
+    public void ShakeStaminaBar(int count)
+    {
+        staminaBarText.GetComponent<StaminaText>().StartShake(count);
+    }
+
+    public void UseDashCharge()
+    {
+        dashChargeBar.UseDashCharge();
+    }
+
+    public void RecoverDashCharge(int num)
+    {
+        dashChargeBar.RecoverDashCharge(num);
     }
 
     public static Vector3 WorldToScreenSpace(Vector3 worldPos, Camera cam, RectTransform area)
@@ -910,16 +931,15 @@ public class GameManager : MonoBehaviour
         {
             newUnlockAlpha.DOFade(0.0f, 0.25f).SetUpdate(true);
             AudioManager.Instance.PlaySFX("Unlock", 0.85f);
-            SelectionData data = ProgressManager.Instance().EnumToData(newUnlock[0]);
-            newUnlockIcon.sprite = Resources.Load<Sprite>("Icon/" + data.skill_Icon);
-            newUnlockName.SetText(data.skill_name);
+            UnlockData data = newUnlock[0];
+            newUnlockIcon.sprite = Resources.Load<Sprite>("Icon/" + data.unlock_Icon);
+            newUnlockName.SetText(data.unlock_name);
+            newUnlockDescription.SetText(data.unlock_description);
 
             while (!confrimKey)
             {
-                Debug.Log("waiting for input" + confrimKey);
                 yield return null;
             }
-            Debug.Log("YESS!" + confrimKey);
             confrimKey = false; // reset input
 
             if (newUnlock.Count == 1)

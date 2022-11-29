@@ -56,7 +56,7 @@ public class SweeperAI : MonoBehaviour
     bool attackDashAlready;
 
     // sweep attack related
-    const float darkpactLocationY = -3.059f;
+    const float darkpactLocationY = -2.992f;
     float startPoint, endpoint, lastFramePos;
     List<GameObject> tracks = new List<GameObject>();
 
