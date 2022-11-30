@@ -26,12 +26,13 @@ public class Controller : MonoBehaviour
     [SerializeField] private ProtectedUInt16 breakfallCost = 0;
     [SerializeField] private ProtectedUInt16 potionHeal = 0;
     [SerializeField] private ProtectedUInt16 staminaCostAttackBase = 2;
-    [SerializeField] private ProtectedUInt16 staminaCostDash = 20;
+    [SerializeField] private ProtectedUInt16 staminaCostDash = 10;
     [SerializeField] private ProtectedUInt16 maxHP = 5;
     [SerializeField] private ProtectedUInt16 maxStamina = 50;
     [SerializeField] private ProtectedFloat moveSpeed = 11.0f;
     [SerializeField] private ProtectedFloat dashRange = 3.0f;
     [SerializeField] private ProtectedFloat dashCooldown = 1.0f;
+    [SerializeField] private ProtectedFloat dashRechargeTime = 3.0f;
     [SerializeField] private ProtectedUInt16 staminaRegen = 1;
     [SerializeField] private ProtectedFloat staminaRegenInterval = 0.5f;
     [SerializeField] private ProtectedFloat pushEnemySpeedMultiplier = 0.15f;
@@ -67,6 +68,7 @@ public class Controller : MonoBehaviour
     Collider2D collider;
     ProtectedFloat dashDirection;
     ProtectedFloat dashCooldownTimer;
+    ProtectedFloat dashRechargeTimer;
     ProtectedFloat afterEffectCd;
     PlayerInput input;
     ProtectedFloat staminaRegenTimer;
@@ -558,7 +560,6 @@ public class Controller : MonoBehaviour
             {
                 // cooldown
                 dashCooldownTimer = Mathf.Clamp(dashCooldownTimer - Time.deltaTime, 0.0f, dashCooldown);
-                
             }
 
             if (dashStaminaCooldown > 0.0f)
@@ -745,20 +746,17 @@ public class Controller : MonoBehaviour
             }
             staminaRegenSlowed = (multiplier <= 0.2f);
 
-            //multiplier = 1.0f;
-            ////if (IsDashing()) multiplier = 0.0f;
-            ////if (IsJumping()) multiplier = 0.0f;
-            //if (monsterNearby) multiplier = 0.0f;
-            //if (IsAttacking()) multiplier = 0.0f;
-            //if (!IsAlive())    multiplier = 0.0f;
-            //if (gameMng.IsLevelEnded()) multiplier = 0.0f;
-            //if (gameMng.IsLevelEnded()) multiplier = 0.0f;
-            //hpRegenTimer = Mathf.Clamp(hpRegenTimer - (Time.deltaTime * multiplier), 0.0f, hpRegenInterval);
-            //if (hpRegenTimer == 0.0f)
-            //{
-            //    hpRegenTimer = hpRegenInterval;
-            //    Regenerate(hpRegen);
-            //}
+            // DASH CHARGE
+            if (dashRechargeTimer > 0.0f)
+            {
+                dashRechargeTimer = Mathf.Max(dashRechargeTimer - Time.deltaTime, 0.0f);
+                if (dashRechargeTimer == 0.0f)
+                {
+                    currentDashCharge++; // recover
+                    gameMng.RecoverDashCharge(1); // UI
+                    if (currentDashCharge < maxDashCharge) dashRechargeTimer = dashRechargeTime; // charge again
+                }
+            }
         }
 
         // WINDRUNNER
@@ -1178,8 +1176,9 @@ public class Controller : MonoBehaviour
         animator.Play("Dash");
 
         // Calculate dash charge first
+        if (currentDashCharge == maxDashCharge) dashRechargeTimer = dashRechargeTime; // first charge used
         currentDashCharge--;
-        gameMng.UseDashCharge();
+        gameMng.UseDashCharge(); // UI
 
         // if no key is pressed dash into facing direction
         if (input.move != 0)
@@ -1349,6 +1348,12 @@ public class Controller : MonoBehaviour
     public void DisableDash(float time)
     {
         dashCooldownTimer = time;
+    }
+
+    public void RecoverAllDashCharge()
+    {
+        gameMng.RecoverDashCharge(maxDashCharge - currentDashCharge);
+        currentDashCharge = maxDashCharge;
     }
 
     public bool DealDamage(int value, Transform source)
@@ -1713,7 +1718,6 @@ public class Controller : MonoBehaviour
                 break;
             case Skill.DashDamage:
                 dashDamage += (ProtectedUInt16)value;
-                dashCooldown += 0.25f;
                 break;
             case Skill.Stamina:
                 maxStamina += (ProtectedUInt16)value;

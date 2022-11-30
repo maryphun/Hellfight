@@ -29,7 +29,7 @@ PowerupDescription.Vitality,Increase your max health by <color=#00ff00ff>{0:N0}<
 PowerupName.DashCooldown,Dash Cooldown,衝刺冷卻,冲刺冷却,ダッシュ
 PowerupDescription.DashCooldown,Decrease dash cooldown time by <color=#ffff00ff>{0:N0}%</color>.,衝刺冷卻時間減少<color=#ffff00ff>{0:N0}%</color>,冲刺冷却时间减少<color=#ffff00ff>{0:N0}%</color>,ダッシュのクールタイム<color=#ffff00ff>{0:N0}%</color>短縮
 PowerupName.DashDamage,Dash Damage,衝刺傷害,冲刺伤害,<font=JF-Dot-Paw16 SDF>衝</font>撃
-PowerupDescription.DashDamage,Dashing deal <color=#008080ff>{0:N0} damage</color> but cooldown <color=red>0.25 sec</color> longer. The effect can stack.,衝刺對敵人造成<color=#008080ff>{0:N0}點傷害</color>但是冷卻時間增加<color=red>0.25秒</color>,冲刺对敌人造成<color=#008080ff>{0:N0}点伤害</color>但是冷却时间增加<color=red>0.25秒</color>,ダッシュが<color=#008080ff>{0:N0}ダメージ</color>を与えるがクールタイム<color=red>0.25秒</color>増える
+PowerupDescription.DashDamage,Dashing deal <color=#008080ff>{0:N0} damage</color>. The effect can stack.,衝刺對敵人造成<color=#008080ff>{0:N0}點傷害</color>,冲刺对敌人造成<color=#008080ff>{0:N0}点伤害</color>,ダッシュがモンスターに<color=#008080ff>{0:N0}ダメージ</color>を与えるが
 PowerupName.MaxStamina,Max Stamina,體力,体力,スタミナ
 PowerupDescription.MaxStamina,Gives <color=blue>{0:N0}</color> more stamina point to spend.,增加<color=blue>{0:N0}</color>點體力值,增加<color=blue>{0:N0}</color>點体力值,スタミナ<color=blue>{0:N0}</color>点増加
 PowerupName.StaminaRecoverSpeed,Stamina Recover,體力恢復,体力恢复,体力回復
@@ -104,3 +104,14 @@ Leaderboard.Speedrun20,Speedrun Level20,Speedrun Level20,Speedrun Level20,Speedr
 Leaderboard.Speedrun20Description,who bested Hell Fighter the fastest,以最快的速度擊倒地獄使者的戰士,以最快的速度击倒地狱使者的战士,地獄審判を最速の方法で倒した者
 Leaderboard.Legacy,LEGACY LEGENDS,遠古傳說,远古传说,伝説
 Leaderboard.LegacyDescription,The old time glory from the player in version 1.1.1beta (speedrun lvl20),1.1.1版前的傳說人物 (速通20層),1.1.1版以前的传说人物 (速通20层),1.1.1バージョンに名残した昔の伝説達 (ステージ20をスピードラン)
+UNLOCKS,,,,
+UnlockDescription.LightningLash,Perform a special attack if you attack during dash. Deal extra damage and convert part of dealt damage into heal.,衝刺時攻擊會促發特別效果，造成暴擊傷害，並恢復自身血量。,冲刺时攻击会促发特别效果，造成暴击伤害，并恢复自身血量。,ダッシュ途中で攻撃すると、特殊攻撃が発動される、ダメージを増やし、HPを回復する。
+UnlockDescription.Battlecry,Gain stamina faster when there are enemy nearby.,靠近敵人時體力恢復速度會加快。,靠近敌人时体力恢复速度会加快。,敵が近くにいる時スタミナの回復速度を増加。
+UnlockDescription.ComboMaster,"Recover stamina at end of your attack, base on your combo.",攻擊結束時立刻恢復體力。連擊數越多，恢復量也越大。,攻击结束时立刻恢复体力。连击数越多，恢复量也越大。,攻撃が終わったらコンボ数によってスタミナを即回復する。
+UnlockDescription.BreakFall,Block incoming attack by crouching.,蹲下可以抵擋傷害。,蹲下可以抵挡伤害。,しゃがむことで敵の攻撃を防御できる。
+UnlockDescription.Potion,Gain a potion you can use during battle.,獲得一個可以在戰鬥中使用的藥劑。,获得一个可以在战斗中使用的药剂。,戦闘中に使えるポーションをもらえる。
+UnlockDescription.Windrunner,Receive a temporary buff after dash. Increase movement speed and attacking cost only half of the actual stamina cost.,衝刺后獲得一個暫時的buff，期間移動速度大增，而且攻擊的體力消耗減半。,冲刺后获得一个暂时的buff，期间移动速度大增，而且攻击的体力消耗减半。,ダッシュ後にBUFFをもらえる。移動速度を大幅増加し、攻撃のスタミナ消耗を半減する。
+UnlockDescription.Deflect,Recover huge amount of stamina when you dash through an enemy during it's attack animation.,在敵人攻擊時通過衝刺穿過對方，瞬間恢復大量體力值。,在敌人攻击时通过冲刺穿过对方，瞬间恢复大量体力值。,モンスターの攻撃途中にダッシュで相手を抜かすことでスタミナを回復できる。
+UnlockDescription.Berserker,Attack heals you if your current HP is under a certain threshold.,血量少於一定量時，攻擊敵人會恢復自身血量。,血量少于一定量时，攻击敌人会恢复自身血量。,HPが少ない時発動する効果。モンスターを攻撃するとHPを回復できる。
+UnlockDescription.Echo,Gain a chance to summon an illusion that duplicate your attack.,偶爾會生成一個分身，複製你剛剛的攻擊。,偶尔会生成一个分身，复制你刚刚的攻击。,たまに分身を生成し、攻撃を複製する。
+UnlockDescription.Juggernaut,Your attack cost no stamina anymore after you reach a specific combo.,超過一定的連擊數后，攻擊不再消耗體力。,超过一定的连击数后，攻击不再消耗体力。,ある程度のコンボ数を貯めた後、攻撃にスタミナを消耗しない。

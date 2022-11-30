@@ -13,6 +13,7 @@ public struct UnlockData
 
 public class ProgressManager : Singleton<ProgressManager>
 {
+    float point;       // gain 1000 point to unlock next level's reward.
     int unlockLevel;
    
     public int LoadUnlockLevel()
@@ -146,7 +147,7 @@ public class ProgressManager : Singleton<ProgressManager>
                 rtn.skill_Icon = "vitality";
                 break;
             case Skill.DashCooldown:
-                rtn.value = 20 + Random.Range(0, 14);
+                rtn.value = 18 + Random.Range(0, 16);
                 rtn.skill_name = "<color=#ffff00ff>" + LocalizationManager.Localize("PowerupName.DashCooldown") + "</color>";
                 rtn.skill_description = LocalizationManager.Localize("PowerupDescription.DashCooldown", ((int)rtn.value).ToString());
                 rtn.skill_Icon = "dashcooldown";
@@ -176,7 +177,7 @@ public class ProgressManager : Singleton<ProgressManager>
                 rtn.skill_Icon = "hpregen";
                 break;
             case Skill.LightningLash:
-                rtn.value = 5 + Random.Range(0, 6);
+                rtn.value = 10 + Random.Range(0, 9);
                 rtn.skill_name = "<color=#800080ff>" + LocalizationManager.Localize("PowerupName.LightningLash") + "</color>";
                 rtn.skill_description = LocalizationManager.Localize("PowerupDescription.LightningLash", ((int)rtn.value).ToString());
                 rtn.skill_Icon = "lightninglash";

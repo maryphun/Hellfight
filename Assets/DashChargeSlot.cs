@@ -17,6 +17,7 @@ public class DashChargeSlot : MonoBehaviour
         if (isUsed) return;
 
         isUsed = true;
+        fill.DOComplete();
         StartCoroutine(UseCoroutine());
     }
 

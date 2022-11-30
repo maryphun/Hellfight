@@ -216,11 +216,11 @@ public class AbilityLearnPanel : MonoBehaviour
         }
         if (level >= 3)
         {
-            if (player.GetDashDamage() < 30)
+            if (player.GetDashDamage() < 100)
             {
                 CheckAndAdd(possibleSkill, Skill.DashDamage);
             }
-            if (player.GetDashCD() > 0.25f)
+            if (player.GetDashCD() > 0.05f)
             {
                 CheckAndAdd(possibleSkill, Skill.DashCooldown);
             }

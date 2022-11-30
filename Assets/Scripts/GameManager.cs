@@ -246,6 +246,7 @@ public class GameManager : MonoBehaviour
         staminaBar.SetActive(boolean);
         hpBarText.SetActive(boolean);
         staminaBarText.SetActive(boolean);
+        dashChargeBar.gameObject.SetActive(boolean);
 
         // only show item UI if potion is available
         if (IsPotionSelected() || !boolean)
@@ -652,6 +653,7 @@ public class GameManager : MonoBehaviour
         if (collision.GetComponent<Controller>() != null)
         {
             player.Regenerate(player.GetHPRegen()/* + (player.GetMaxHP() / 10)*/, player.GetStaminaMax(), false);
+            player.RecoverAllDashCharge();
             player.SetInvulnerable(false);
             itemUICooldown.fillAmount = 1f;
             openButton.SetActive(false);
