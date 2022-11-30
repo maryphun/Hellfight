@@ -97,13 +97,25 @@ public class Menu : MonoBehaviour
         disableMenuControl = true;
         leaderboardDataLoading = true;
 
+        // INITIALIZE GAME SAVE FILE (https://github.com/richardelms/FileBasedPlayerPrefs)
+        // configuration
+        var config = new FBPPConfig()
+        {
+            SaveFileName = "FBPP.txt",
+            AutoSaveData = false,
+            ScrambleSaveData = true,
+            EncryptionSecret = "encryption-secret-default",
+            SaveFilePath = Application.persistentDataPath
+        };
+        FBPP.Start(config);
+
         // INITIALIZE LOCALIZATION
-        string language = ProtectedPlayerPrefs.GetString("Language", string.Empty);
+        string language = FBPP.GetString("Language", string.Empty);
         LocalizationManagerHellFight.Instance().Initialization(Application.systemLanguage);
         LocalizationManagerHellFight.Instance().SetCurrentLanguage(language);
 
         // LOCAL NAME SAVED
-        playerNameText.text = ProtectedPlayerPrefs.GetString("PlayerName", string.Empty); ;
+        playerNameText.text = FBPP.GetString("PlayerName", string.Empty); ;
 
         // UPDATE VERSION NAME
         versionText.SetText("ver. " + Application.version + "(beta)");
@@ -211,8 +223,22 @@ public class Menu : MonoBehaviour
         obj.gameObject.SetActive(false);
         obj.position = originalPos;
 
-        string language = ProtectedPlayerPrefs.GetString("Language", string.Empty);
-        playerNameText.text = ProtectedPlayerPrefs.GetString("PlayerName", string.Empty);
+        string language = string.Empty;
+
+        // STEAM
+        if (SteamworksNetManager.Instance().IsSteamConnected())
+        {
+            playerNameText.text = SteamworksNetManager.Instance().GetSteamID();
+            language = SteamworksNetManager.Instance().GetSteamLanguage(true);
+            LocalizationManagerHellFight.Instance().SetCurrentLanguage(language);
+            FBPP.SetString("Language", language); // save setting into disk
+            FBPP.Save();
+        }
+        else // other platform
+        {
+            playerNameText.text = FBPP.GetString("PlayerName", string.Empty);
+            language = FBPP.GetString("Language", string.Empty);
+        }
 
         if (language == string.Empty)
         {
@@ -424,7 +450,8 @@ public class Menu : MonoBehaviour
                     LocalizationManagerHellFight.Instance().SetCurrentLanguage("English");
                     break;
             }
-            ProtectedPlayerPrefs.SetString("Language", LocalizationManagerHellFight.Instance().GetCurrentLanguage());
+            FBPP.SetString("Language", LocalizationManagerHellFight.Instance().GetCurrentLanguage());
+            FBPP.Save();
 
             // transition to next state
             AudioManager.Instance.PlaySFX("startgame");
@@ -694,7 +721,7 @@ public class Menu : MonoBehaviour
     public void ResetData()
     {
         // Delete Data
-        PlayerPrefs.DeleteAll();
+        FBPP.DeleteAll();
 
         // Close Menu
         CloseResetDataMenu();

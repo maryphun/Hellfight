@@ -21,7 +21,7 @@ public class ControlPattern : Singleton<ControlPattern>
     {
         controlPattern = pattern;
         hardSettedControlMethod = true;
-        PlayerPrefs.SetInt("ControlPattern", (int)pattern);
+        FBPP.SetInt("ControlPattern", (int)pattern);
     }
 
     public CtrlPattern GetControlPattern()
@@ -38,7 +38,7 @@ public class ControlPattern : Singleton<ControlPattern>
         }
 
         // check option setting
-        CtrlPattern option = (CtrlPattern)PlayerPrefs.GetInt("ControlPattern", -1);
+        CtrlPattern option = (CtrlPattern)FBPP.GetInt("ControlPattern", -1);
         if (option != CtrlPattern.NULL)
         {
             controlPattern = option;

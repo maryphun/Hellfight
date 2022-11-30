@@ -22,8 +22,8 @@ public class ProgressManager : Singleton<ProgressManager>
 
     public int LoadProgress()
     {
-        unlockLevel = ProtectedPlayerPrefs.GetInt("UnlockLevel", 0);
-        progressPoint = ProtectedPlayerPrefs.GetInt("ProgressPoint", 0);
+        unlockLevel = FBPP.GetInt("UnlockLevel", 0);
+        progressPoint = FBPP.GetInt("ProgressPoint", 0);
         return unlockLevel;
     }
 
@@ -41,12 +41,16 @@ public class ProgressManager : Singleton<ProgressManager>
         return c_progressionPointToNextLevelBase + (unlockLevel * c_progressionPointToNextLevelPerLevel);
     }
 
-    public void UpdateProgress(int point, int level)
+    public void UpdateProgress(int point, int level, bool saveFileImmediately = true)
     {
         progressPoint = point;
         unlockLevel = level;
-        ProtectedPlayerPrefs.SetInt("ProgressPoint", progressPoint);
-        ProtectedPlayerPrefs.SetInt("UnlockLevel", unlockLevel);
+        FBPP.SetInt("ProgressPoint", progressPoint);
+        FBPP.SetInt("UnlockLevel", unlockLevel);
+        if (saveFileImmediately)
+        {
+            FBPP.Save();
+        }
     }
 
     public List<UnlockData> NewStuffUnlocked(int currentLevel)
@@ -58,7 +62,8 @@ public class ProgressManager : Singleton<ProgressManager>
         
         if (currentLevel > unlockLevel)
         {
-            ProtectedPlayerPrefs.SetInt("UnlockLevel", currentLevel);
+            FBPP.SetInt("UnlockLevel", currentLevel);
+            FBPP.Save();
             int oldUnlockLevel = unlockLevel;
             unlockLevel = currentLevel;
             newSkillUnlock = GetNewSkillUnlock(oldUnlockLevel, unlockLevel);

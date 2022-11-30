@@ -169,6 +169,10 @@ public class ResultScreenUI : MonoBehaviour
         yield return new WaitForSecondsRealtime(0.4f);
         AddProggressPoint(progressPointReward, 0.5f);
 
+        // call this only once so it doesn't write all the time
+        FBPP.Save();
+        FBPP.GetSaveFileAsJson(); // backup to avoid data lost
+
         bookUI.DOShakePosition(0.5f, 3, 100, 90, false, true).SetUpdate(true);
 
         yield return new WaitForSecondsRealtime(0.25f);
@@ -224,8 +228,8 @@ public class ResultScreenUI : MonoBehaviour
 
         // update new progress data (save to cache)
         //@todo reduce call to only once
-        ProgressManager.Instance().UpdateProgress(pts, lvl);
-        Debug.Log(pts);
+        ProgressManager.Instance().UpdateProgress(pts, lvl, false);
+        
         // UI
         StartCoroutine(ProgressBarFillAnimation(((float)pts / (float)ProgressManager.Instance().GetPointRequiredToNextLevel()), animTime));
     }
@@ -257,6 +261,9 @@ public class ResultScreenUI : MonoBehaviour
             yield return null;
         }
         gameMng.ResetConfirmKey(); // reset input
+
+        // FADE OUT
+
 
         ResetUI();
         isFinished = true;

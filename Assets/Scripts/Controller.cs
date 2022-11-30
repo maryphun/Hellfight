@@ -1473,6 +1473,7 @@ public class Controller : MonoBehaviour
             // make sure player have full stamina before jump
             currentHP = maxHP;
             currentStamina = maxStamina;
+            RecoverAllDashCharge(false);
 
             StartJump(true, false);
 

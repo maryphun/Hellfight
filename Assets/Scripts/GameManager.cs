@@ -212,6 +212,9 @@ public class GameManager : MonoBehaviour
 
         // Result manager
         ResultManager.Instance().GameReset();
+
+        // Steam API call
+        SteamworksNetManager.Instance().SetSteamRichPresence(true, currentLevel); // level 1
     }
 
     IEnumerator StartGameCinematic()
@@ -241,7 +244,7 @@ public class GameManager : MonoBehaviour
         yield return new WaitForSeconds(0.2f);
         SetStatusBarVisible(true);
         StartLevel(currentLevel);
-        SteamAchievementManager.Instance().UpdateLevelStat(currentLevel);
+        SteamworksNetManager.Instance().UpdateLevelStat(currentLevel);
 
         yield return new WaitForSeconds(2.0f);
         levelText.DOFade(1.0f, 1.0f);
@@ -383,23 +386,22 @@ public class GameManager : MonoBehaviour
 
         // PLAYER DIE HERE LAST TIME?
         playerCorpse.gameObject.SetActive(false);
-        if (ProtectedPlayerPrefs.GetInt("LastDeath", -1) == currentLevel)
+        if (FBPP.GetInt("LastDeath", -1) == currentLevel)
         {
             // player die on here last time
-            playerCorpse.position = new Vector2(ProtectedPlayerPrefs.GetFloat("LastDeathPosition", 0.0f), playerCorpse.position.y);
-            playerCorpse.GetComponent<SpriteRenderer>().flipX = intToBool(ProtectedPlayerPrefs.GetInt("LastDeathFlip", 0));
+            playerCorpse.position = new Vector2(FBPP.GetFloat("LastDeathPosition", 0.0f), playerCorpse.position.y);
+            playerCorpse.GetComponent<SpriteRenderer>().flipX = intToBool(FBPP.GetInt("LastDeathFlip", 0));
             playerCorpse.gameObject.SetActive(true);
 
-            PlayerPrefs.DeleteKey("LastDeath");
-            PlayerPrefs.DeleteKey("LastDeathPosition");
-            PlayerPrefs.DeleteKey("LastDeathFlip");
-            PlayerPrefs.Save();
+            FBPP.DeleteKey("LastDeath");
+            FBPP.DeleteKey("LastDeathPosition");
+            FBPP.DeleteKey("LastDeathFlip");
         }
 
         // LEVEL TEXT
         levelText.SetText("Level " + currentLevel.ToString());
         musicText.DOFade(1.0f, 1.0f);
-        if (ProtectedPlayerPrefs.GetInt("ShowTimer", 0) == 1) timerText.DOFade(1.0f, 1.0f);
+        if (FBPP.GetInt("ShowTimer", 0) == 1) timerText.DOFade(1.0f, 1.0f);
         StartLevel(currentLevel);
 
         // CHANGE BGM
@@ -441,8 +443,12 @@ public class GameManager : MonoBehaviour
         ResultManager.Instance().SetLevelReached(currentLevel);
 
         // STEAMWORKS API
-        SteamAchievementManager.Instance().UpdateLevelStat(currentLevel);
-        SteamAchievementManager.Instance().CheckLevelAchievement(currentLevel);
+        SteamworksNetManager.Instance().UpdateLevelStat(currentLevel);
+        SteamworksNetManager.Instance().CheckLevelAchievement(currentLevel);
+        SteamworksNetManager.Instance().SetSteamRichPresence(true,currentLevel);
+
+        // SAVE GAME
+        FBPP.Save();
     }
 
     public Transform RandomParallax()
@@ -556,9 +562,9 @@ public class GameManager : MonoBehaviour
             tipsText.SetText(LocalizationManager.Localize("Tutorial.TipsLevel35"));
             tipsText.DOFade(1.0f, 0.5f);
         }
-        else if (potionSelected && ProtectedPlayerPrefs.GetInt("TutorialPotion", 0) != 1)
+        else if (potionSelected && FBPP.GetInt("TutorialPotion", 0) != 1)
         {
-            ProtectedPlayerPrefs.SetInt("TutorialPotion", 1);
+            FBPP.SetInt("TutorialPotion", 1);
             if (ControlPattern.Instance().IsJoystickConnected())
             {
                 tipsText.SetText("\n<font=pixelinput SDF>+</font> " + LocalizationManager.Localize("Tutorial.UseItem"));
@@ -567,6 +573,7 @@ public class GameManager : MonoBehaviour
             {
                 tipsText.SetText("<font=pixelinput SDF>c</font> " + LocalizationManager.Localize("Tutorial.UseItem"));
             }
+            FBPP.Save();
         }
         else
         {
@@ -675,22 +682,23 @@ public class GameManager : MonoBehaviour
             // SPEED RUNNER
             if (currentLevel == 10)
             {
-                float besttime = ProtectedPlayerPrefs.GetFloat("SpeedRunLevel10", 7200f);
+                float besttime = FBPP.GetFloat("SpeedRunLevel10", 7200f);
 
                 if (besttime > timeCounter)
                 {
-                    ProtectedPlayerPrefs.SetFloat("SpeedRunLevel10", timeCounter);
+                    FBPP.SetFloat("SpeedRunLevel10", timeCounter);
                 }
             }
             if (currentLevel == 20)
             {
-                float besttime = ProtectedPlayerPrefs.GetFloat("SpeedRunLevel20", 7200f);
+                float besttime = FBPP.GetFloat("SpeedRunLevel20", 7200f);
 
                 if (besttime > timeCounter)
                 {
-                    ProtectedPlayerPrefs.SetFloat("SpeedRunLevel20", timeCounter);
+                    FBPP.SetFloat("SpeedRunLevel20", timeCounter);
                 }
             }
+            FBPP.Save();
         }
     }
 
@@ -762,7 +770,8 @@ public class GameManager : MonoBehaviour
             timerText.DOFade(1.0f, 0.0f).SetUpdate(true);
         }
 
-        ProtectedPlayerPrefs.SetInt("ShowTimer", timerText.gameObject.activeSelf ? 1 : 0);
+        FBPP.SetInt("ShowTimer", timerText.gameObject.activeSelf ? 1 : 0);
+        FBPP.Save();
     }
 
     public void GameOver()
@@ -799,10 +808,10 @@ public class GameManager : MonoBehaviour
         allowRestart = true;
 
         // SAVE LOCAL DATA
-        ProtectedPlayerPrefs.SetInt("LastDeath", currentLevel);
-        ProtectedPlayerPrefs.SetFloat("LastDeathPosition", player.transform.position.x);
-        ProtectedPlayerPrefs.SetInt("LastDeathFlip", boolToInt(player.IsFlip()));
-        PlayerPrefs.Save();
+        FBPP.SetInt("LastDeath", currentLevel);
+        FBPP.SetFloat("LastDeathPosition", player.transform.position.x);
+        FBPP.SetInt("LastDeathFlip", boolToInt(player.IsFlip()));
+        FBPP.Save();
 
         newUnlock = ProgressManager.Instance().NewStuffUnlocked(currentLevel);
 
@@ -870,11 +879,11 @@ public class GameManager : MonoBehaviour
                 break;
             case LeaderboardType.SpeedRunLevel10:
                 leaderboardID = SpeedRun10LeaderBoardID;
-                data = Mathf.RoundToInt(ProtectedPlayerPrefs.GetFloat("SpeedRunLevel10", 7200f));
+                data = Mathf.RoundToInt(FBPP.GetFloat("SpeedRunLevel10", 7200f));
                 break;
             case LeaderboardType.SpeedRunLevel20:
                 leaderboardID = SpeedRun20LeaderBoardID;
-                data = Mathf.RoundToInt(ProtectedPlayerPrefs.GetFloat("SpeedRunLevel20", 7200f));
+                data = Mathf.RoundToInt(FBPP.GetFloat("SpeedRunLevel20", 7200f));
                 break;
             default:
                 Debug.Log("<color=red>LEADERBOARD TYPE NOT FOUND</color>");
@@ -1139,8 +1148,8 @@ public class GameManager : MonoBehaviour
     public void SetPlayerName(string value)
     {
         playerName = value;
-        ProtectedPlayerPrefs.SetString("PlayerName", value);
-        PlayerPrefs.Save();
+        FBPP.SetString("PlayerName", value);
+        FBPP.Save();
     }
 
     // add extra time to timer
