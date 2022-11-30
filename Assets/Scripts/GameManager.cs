@@ -171,9 +171,9 @@ public class GameManager : MonoBehaviour
         dashChargeBar.UseDashCharge();
     }
 
-    public void RecoverDashCharge(int num)
+    public void RecoverDashCharge(int num, bool instant)
     {
-        dashChargeBar.RecoverDashCharge(num);
+        dashChargeBar.RecoverDashCharge(num, instant);
     }
 
     public static Vector3 WorldToScreenSpace(Vector3 worldPos, Camera cam, RectTransform area)
@@ -663,7 +663,7 @@ public class GameManager : MonoBehaviour
         if (collision.GetComponent<Controller>() != null)
         {
             player.Regenerate(player.GetHPRegen()/* + (player.GetMaxHP() / 10)*/, player.GetStaminaMax(), false);
-            player.RecoverAllDashCharge();
+            player.RecoverAllDashCharge(false);
             player.SetInvulnerable(false);
             itemUICooldown.fillAmount = 1f;
             openButton.SetActive(false);

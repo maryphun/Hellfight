@@ -21,7 +21,7 @@ public class DashChargeBar : MonoBehaviour
         return false;
     }
 
-    public bool RecoverDashCharge(int number)
+    public bool RecoverDashCharge(int number, bool instant)
     {
         bool success = false;
         int recoverLeft = number;
@@ -32,7 +32,9 @@ public class DashChargeBar : MonoBehaviour
                 recoverLeft--;
                 chargeLeft++;
                 success = true;
-                DashChargeSlots[i].Recover(1.0f);
+
+                float animTime = instant ? 0.0f : 1.0f;
+                DashChargeSlots[i].Recover(1.0f, animTime);
             }
         }
 
@@ -45,7 +47,7 @@ public class DashChargeBar : MonoBehaviour
         chargeLeft = player.GetMaxDashCharge();
         for (int i = 0; i < DashChargeSlots.Count; i++)
         {
-            DashChargeSlots[i].Recover(1.0f);
+            DashChargeSlots[i].Recover(1.0f, 1.0f);
         }
     }
 }

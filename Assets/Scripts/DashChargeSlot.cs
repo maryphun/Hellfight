@@ -21,9 +21,9 @@ public class DashChargeSlot : MonoBehaviour
         StartCoroutine(UseCoroutine());
     }
 
-    public void Recover(float percentage)
+    public void Recover(float percentage, float time)
     {
-        fill.DOFillAmount(1.0f, percentage);
+        fill.DOFillAmount(percentage, time);
 
         if (percentage == 1.0f)
         {

@@ -239,7 +239,7 @@ public class Controller : MonoBehaviour
 
         currentHP = maxHP;
         currentStamina = maxStamina;
-        currentDashCharge = maxDashCharge;
+        RecoverAllDashCharge(true);
         playerColor = Color.white;
     }
 
@@ -753,7 +753,7 @@ public class Controller : MonoBehaviour
                 if (dashRechargeTimer == 0.0f)
                 {
                     currentDashCharge++; // recover
-                    gameMng.RecoverDashCharge(1); // UI
+                    gameMng.RecoverDashCharge(1, false); // UI
                     if (currentDashCharge < maxDashCharge) dashRechargeTimer = dashRechargeTime; // charge again
                 }
             }
@@ -1350,9 +1350,9 @@ public class Controller : MonoBehaviour
         dashCooldownTimer = time;
     }
 
-    public void RecoverAllDashCharge()
+    public void RecoverAllDashCharge(bool instant)
     {
-        gameMng.RecoverDashCharge(maxDashCharge - currentDashCharge);
+        gameMng.RecoverDashCharge(maxDashCharge - currentDashCharge, instant);
         currentDashCharge = maxDashCharge;
     }
 
