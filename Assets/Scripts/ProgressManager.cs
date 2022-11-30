@@ -13,18 +13,40 @@ public struct UnlockData
 
 public class ProgressManager : Singleton<ProgressManager>
 {
-    float point;       // gain 1000 point to unlock next level's reward.
+    // SETTING
+    const int c_progressionPointToNextLevelBase = 400;
+    const int c_progressionPointToNextLevelPerLevel = 100;
+
+    int progressPoint;       // gain 1000 point to unlock next level's reward.
     int unlockLevel;
-   
-    public int LoadUnlockLevel()
+
+    public int LoadProgress()
     {
         unlockLevel = ProtectedPlayerPrefs.GetInt("UnlockLevel", 0);
+        progressPoint = ProtectedPlayerPrefs.GetInt("ProgressPoint", 0);
         return unlockLevel;
     }
 
     public int GetUnlockLevel()
     {
         return unlockLevel;
+    }
+    public int GetProgressPoint()
+    {
+        return progressPoint;
+    }
+
+    public int GetPointRequiredToNextLevel()
+    {
+        return c_progressionPointToNextLevelBase + (unlockLevel * c_progressionPointToNextLevelPerLevel);
+    }
+
+    public void UpdateProgress(int point, int level)
+    {
+        progressPoint = point;
+        unlockLevel = level;
+        ProtectedPlayerPrefs.SetInt("ProgressPoint", progressPoint);
+        ProtectedPlayerPrefs.SetInt("UnlockLevel", unlockLevel);
     }
 
     public List<UnlockData> NewStuffUnlocked(int currentLevel)
@@ -260,4 +282,5 @@ public class ProgressManager : Singleton<ProgressManager>
         }
         return rtn;
     }
+
 }

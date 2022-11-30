@@ -7,6 +7,7 @@ public class EnemyControl : MonoBehaviour
 {
     [Header("Custom Parameter")]
     [SerializeField] private string enemyName = "JellySlime";
+    [SerializeField] private bool isBoss = false;
     [SerializeField] private int maxHp = 20;
     [SerializeField] private float startHpPercentage = 1.0f;
     [SerializeField] private int maxStamina = 100;
@@ -188,6 +189,10 @@ public class EnemyControl : MonoBehaviour
             currentStatus = Status.Dying;
             statusChanged = true;
             rtn = true;
+
+            // Result Manager Update
+            ResultManager.Instance().CountMonsterKill();
+            if (isBoss) ResultManager.Instance().CountBossKill();
         }
         else
         {

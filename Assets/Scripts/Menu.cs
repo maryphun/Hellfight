@@ -743,6 +743,6 @@ public class Menu : MonoBehaviour
 
     private void SetupMainMenuUI()
     {
-        highestRecordLevelText.text = Assets.SimpleLocalization.LocalizationManager.Localize("Menu.HighestRecordValue", ProgressManager.Instance().LoadUnlockLevel());
+        highestRecordLevelText.text = Assets.SimpleLocalization.LocalizationManager.Localize("Menu.HighestRecordValue", ProgressManager.Instance().LoadProgress());
     }
 }

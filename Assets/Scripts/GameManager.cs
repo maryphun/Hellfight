@@ -64,6 +64,7 @@ public class GameManager : MonoBehaviour
     [SerializeField] Transform playerCorpse;
     [SerializeField] RectTransform itemUI;
     [SerializeField] Image itemUICooldown;
+    [SerializeField] ResultScreenUI resultScreenUI;
     [SerializeField] GameObject newUnlockMenu;
     [SerializeField] TMP_Text newUnlockName;
     [SerializeField] TMP_Text newUnlockDescription;
@@ -104,7 +105,7 @@ public class GameManager : MonoBehaviour
     // Start is called before the first frame update
     void Awake()
     {
-        DOTween.SetTweensCapacity(1250,50);
+        DOTween.SetTweensCapacity(1250, 50);
         monsterList = new List<EnemyControl>();
         fireburstEffect = Resources.Load("Prefabs/FireBurst") as GameObject;
 
@@ -145,6 +146,7 @@ public class GameManager : MonoBehaviour
         {
             lastSpawnedSkill[i] = Skill.ComboMaster;
         }
+        resultScreenUI.Initialization(this);
     }
 
     public void SpawnFloatingText(Vector2 loc, float time, float _speed, string text, Color color, Vector2 direction, float fontSize)
@@ -190,6 +192,7 @@ public class GameManager : MonoBehaviour
 
     public void StartGame()
     {
+        // Reset flags
         survivorSelected = false;
         potionSelected = false;
         screenAlpha.DOFade(1.0f, 0.0f);
@@ -203,8 +206,12 @@ public class GameManager : MonoBehaviour
         currentLevel = 1;
         timer = initialTime;
 
-        ProgressManager.Instance().LoadUnlockLevel();
+        // Progress manager
+        ProgressManager.Instance().LoadProgress();
         StartCoroutine(StartGameCinematic());
+
+        // Result manager
+        ResultManager.Instance().GameReset();
     }
 
     IEnumerator StartGameCinematic()
@@ -366,7 +373,7 @@ public class GameManager : MonoBehaviour
         screenAlpha.DOFade(0.0f, 1.0f);
         NarrativeText.SetText(string.Empty);
         player.gameObject.SetActive(true);
-        player.transform.position = new Vector2(Mathf.Clamp(player.transform.position.x, - 8f, 8f), 6.9f);
+        player.transform.position = new Vector2(Mathf.Clamp(player.transform.position.x, -8f, 8f), 6.9f);
         player.GetComponent<Rigidbody2D>().velocity = new Vector2(0.0f, -60f);
     }
 
@@ -401,7 +408,7 @@ public class GameManager : MonoBehaviour
         if (currentLevel % 10 == 0)
         {
             // boss music
-            lastMusic = bossMusicList[(currentLevel / 10)-1];
+            lastMusic = bossMusicList[(currentLevel / 10) - 1];
         }
         musicText.SetText("♪ - " + lastMusic);
         musicText.DOFade(1.0f, 1.0f);
@@ -430,6 +437,9 @@ public class GameManager : MonoBehaviour
             newGroundsAPI.NGUnlockMedal(65095);
         }
 
+        // Result Manager
+        ResultManager.Instance().SetLevelReached(currentLevel);
+
         // STEAMWORKS API
         SteamAchievementManager.Instance().UpdateLevelStat(currentLevel);
         SteamAchievementManager.Instance().CheckLevelAchievement(currentLevel);
@@ -454,7 +464,7 @@ public class GameManager : MonoBehaviour
     {
         List<int> list = new List<int>();
 
-        for (int i = 0; i < musicList.Length; i++)   if (musicList[i] != lastMusic) list.Add(i);
+        for (int i = 0; i < musicList.Length; i++) if (musicList[i] != lastMusic) list.Add(i);
 
         return musicList[list[Random.Range(0, list.Count)]];
     }
@@ -491,14 +501,14 @@ public class GameManager : MonoBehaviour
         {
             if (ControlPattern.Instance().IsJoystickConnected())
             {
-                tipsText.SetText(Input.GetJoystickNames()[0] + "\n<font=pixelinput SDF>4</font> "+ LocalizationManager.Localize("Tutorial.Attack") + " <font=pixelinput SDF>6</font> " + LocalizationManager.Localize("Tutorial.Jump") + " <font=pixelinput SDF>7</font> " + LocalizationManager.Localize("Tutorial.Dash"));
+                tipsText.SetText(Input.GetJoystickNames()[0] + "\n<font=pixelinput SDF>4</font> " + LocalizationManager.Localize("Tutorial.Attack") + " <font=pixelinput SDF>6</font> " + LocalizationManager.Localize("Tutorial.Jump") + " <font=pixelinput SDF>7</font> " + LocalizationManager.Localize("Tutorial.Dash"));
             }
             else
             {
                 tipsText.SetText("<font=pixelinput SDF>W</font>\n<font=pixelinput SDF>ASD</font>\n" + LocalizationManager.Localize("Tutorial.Move") + "\n<font=pixelinput SDF>z</font> " + LocalizationManager.Localize("Tutorial.Attack") + " <font=pixelinput SDF>x</font> " + LocalizationManager.Localize("Tutorial.Jump"));
             }
             tipsText.DOFade(1.0f, 0.5f);
-        } 
+        }
         else if (level == 2 && record <= level)
         {
             if (ControlPattern.Instance().GetControlPattern() == ControlPattern.CtrlPattern.JOYSTICK)
@@ -546,7 +556,7 @@ public class GameManager : MonoBehaviour
             tipsText.SetText(LocalizationManager.Localize("Tutorial.TipsLevel35"));
             tipsText.DOFade(1.0f, 0.5f);
         }
-        else  if (potionSelected && ProtectedPlayerPrefs.GetInt("TutorialPotion", 0) != 1)
+        else if (potionSelected && ProtectedPlayerPrefs.GetInt("TutorialPotion", 0) != 1)
         {
             ProtectedPlayerPrefs.SetInt("TutorialPotion", 1);
             if (ControlPattern.Instance().IsJoystickConnected())
@@ -646,7 +656,7 @@ public class GameManager : MonoBehaviour
             EndLevel();
         }
     }
-    
+
     // player reach the botton -> let player pick new powerup -> next level
     private void OnTriggerEnter2D(Collider2D collision)
     {
@@ -675,7 +685,7 @@ public class GameManager : MonoBehaviour
             if (currentLevel == 20)
             {
                 float besttime = ProtectedPlayerPrefs.GetFloat("SpeedRunLevel20", 7200f);
-                
+
                 if (besttime > timeCounter)
                 {
                     ProtectedPlayerPrefs.SetFloat("SpeedRunLevel20", timeCounter);
@@ -708,7 +718,7 @@ public class GameManager : MonoBehaviour
 
         // pause game
         player.Pause(true);
-        foreach(EnemyControl enemy in monsterList)
+        foreach (EnemyControl enemy in monsterList)
         {
             enemy.Pause(true);
         }
@@ -770,21 +780,19 @@ public class GameManager : MonoBehaviour
 
         // DISABLE TOP-RIGHT MENU BUTTON
         openButton.SetActive(false);
-
-        // UI
-        GameOverPanel.gameObject.SetActive(true);
-
-        gameOverAlpha.DOFade(0.8f, 0.5f).SetUpdate(true);
-
-        menuCharacter.GetComponent<Animator>().Play("playerUIDead");
-        menuCharacter.GetComponent<RectTransform>().DOAnchorPosX(27f, 0.0f, false).SetUpdate(true);
+        
+        // Game progress
+        resultScreenUI.gameObject.SetActive(true);
+        resultScreenUI.ResetUI();
+        resultScreenUI.StartAnimation(ResultManager.Instance().GetResult());
+        StartCoroutine(WaitForResultScreenFinish());
 
         // Reset Text UI
         NarrativeText.text = string.Empty;
         comboText.text = string.Empty;
 
         // PAUSE GAME
-        Time.timeScale = 0.0f; 
+        Time.timeScale = 0.0f;
 
         // FLAG
         gameOver = true;
@@ -794,8 +802,8 @@ public class GameManager : MonoBehaviour
         ProtectedPlayerPrefs.SetInt("LastDeath", currentLevel);
         ProtectedPlayerPrefs.SetFloat("LastDeathPosition", player.transform.position.x);
         ProtectedPlayerPrefs.SetInt("LastDeathFlip", boolToInt(player.IsFlip()));
-        PlayerPrefs.Save(); 
-        
+        PlayerPrefs.Save();
+
         newUnlock = ProgressManager.Instance().NewStuffUnlocked(currentLevel);
 
         // SUBMIT NEWGROUNDS SCOREBOARD
@@ -804,6 +812,30 @@ public class GameManager : MonoBehaviour
         // SUBMIT LOOTLOCKER SCOREBOARD
         gameoverText.SetText("Uploading record to server...");
         int rank = UploadToLeaderBoard(LeaderboardType.Level);
+    }
+    
+    IEnumerator WaitForResultScreenFinish()
+    {
+        while (!resultScreenUI.IsFinished())
+        {
+            yield return null;
+        }
+
+        // determine need to enter new unlock phase or not
+        if (newUnlock.Count > 0)
+        {
+            // reset input
+            ResetConfirmKey();
+            StartCoroutine(NewUnlockMenuPhase(RestartDelay(0.5f)));
+        }
+        else
+        {
+            // UI
+            GameOverPanel.gameObject.SetActive(true);
+            gameOverAlpha.DOFade(0.8f, 0.5f).SetUpdate(true);
+            menuCharacter.GetComponent<Animator>().Play("playerUIDead");
+            menuCharacter.GetComponent<RectTransform>().DOAnchorPosX(27f, 0.0f, false).SetUpdate(true);
+        }
     }
 
     private int UploadToLeaderBoard(LeaderboardType type)
@@ -906,19 +938,9 @@ public class GameManager : MonoBehaviour
         screenAlpha.DOFade(1.0f, 0.5f).SetUpdate(true);
         AudioManager.Instance.PlaySFX("restart");
 
-        // determine need to enter new unlock phase or not
-        if (newUnlock.Count > 0)
-        {
-            // reset input
-            confrimKey = false;
-            StartCoroutine(NewUnlockMenuPhase(RestartDelay(0.5f)));
-        }
-        else
-        {
-            // there are no new unlock. restart the game.
-            Time.timeScale = 1.0f;
-            StartCoroutine(RestartDelay(2.0f));
-        }
+        // Restart Animation
+        Time.timeScale = 1.0f;
+        StartCoroutine(RestartDelay(2.0f));
     }
 
     IEnumerator NewUnlockMenuPhase(IEnumerator nextPhase)
@@ -938,11 +960,11 @@ public class GameManager : MonoBehaviour
             newUnlockName.SetText(data.unlock_name);
             newUnlockDescription.SetText(data.unlock_description);
 
-            while (!confrimKey)
+            while (!IsConfirmKeyPressed())
             {
                 yield return null;
             }
-            confrimKey = false; // reset input
+            ResetConfirmKey(); // reset input
 
             if (newUnlock.Count == 1)
             {
@@ -1043,7 +1065,7 @@ public class GameManager : MonoBehaviour
         comboText.DOFade(0.0f, 5.0f);
         comboText.fontSize = 40f + (combo * 3f);
     }
-    
+
     public void ResetCombo(int combo)
     {
         if (combo <= 0) return;
@@ -1131,7 +1153,7 @@ public class GameManager : MonoBehaviour
         {
             newTimeLeft--;
 
-            timer = Mathf.Min(timer+1, 120); // maximum 2 minutes
+            timer = Mathf.Min(timer + 1, 120); // maximum 2 minutes
             UpdateCountdownTimerTextUI(timer);
 
             countdownText.color = new Color(countdownText.color.r, countdownText.color.g, countdownText.color.b, 1.0f);
@@ -1233,7 +1255,12 @@ public class GameManager : MonoBehaviour
         {
             yield return new WaitForSeconds(1f);
             timeCounter++;
+
+            // update UI
             timerText.SetText("Time - " + (timeCounter / 60).ToString() + ":" + (timeCounter % 60).ToString("00"));
+
+            // update result manager
+            ResultManager.Instance().SetTotalTime(timeCounter);
         }
     }
 
@@ -1364,6 +1391,16 @@ public class GameManager : MonoBehaviour
         }
 
         return rtn;
+    }
+
+    public bool IsConfirmKeyPressed()
+    {
+        return confrimKey;
+    }
+
+    public void ResetConfirmKey()
+    {
+        confrimKey = false;
     }
 
     int boolToInt(bool val)
