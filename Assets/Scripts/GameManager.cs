@@ -33,6 +33,7 @@ public class GameManager : MonoBehaviour
     [SerializeField] TMP_Text levelText;
     [SerializeField] TMP_Text tipsText;
     [SerializeField] TMP_Text timerText;
+    [SerializeField] BossHPUI bossHPBar;
     [SerializeField] GameObject hpBar;
     [SerializeField] GameObject staminaBar;
     [SerializeField] GameObject hpBarText;
@@ -212,6 +213,7 @@ public class GameManager : MonoBehaviour
         newUnlock.Clear();
         currentLevel = 1;
         timer = initialTime;
+        bossHPBar.Initialize();
 
         // Animation
         StartCoroutine(StartGameCinematic());
@@ -301,32 +303,17 @@ public class GameManager : MonoBehaviour
     {
         if (currentLevel == 1) return;
 
-        // one of the color must be 255 to make sure it's not a dark color
-        int rand = Random.Range(0, 3);
-        Color newColor = new Color();
-        switch (rand)
-        {
-            case 0:
-                newColor = new Color(1.0f, Random.Range(0.0f, 1.0f), Random.Range(0.0f, 1.0f));
-                break;
-            case 1:
-                newColor = new Color(Random.Range(0.0f, 1.0f), 1.0f, Random.Range(0.0f, 1.0f));
-                break;
-            case 2:
-                newColor = new Color(Random.Range(0.0f, 1.0f), Random.Range(0.0f, 1.0f), 1.0f);
-                break;
-            default:
-                newColor = new Color(0.0f, 0.0f, 0.0f);
-                break;
-        }
+        // Get Preset color
+        Transform selectedParallax = RandomParallax();
+        Color presetColor = selectedParallax.GetComponent<BackgroundColorPalette>().colorSchemeList[Random.Range(0, selectedParallax.GetComponent<BackgroundColorPalette>().colorSchemeList.Count)];
 
-        backgroundFrame.color = newColor;
-        background.color = new Color(newColor.r / 10f, newColor.g / 10f, newColor.b / 10f, 1.0f);
-        backgroundSprite.color = new Color(newColor.r / 10f, newColor.g / 10f, newColor.b / 10f, 1.0f);
-        musicText.color = newColor;
-        levelText.color = newColor;
-        timerText.color = newColor;
-        countdownText.color = new Color(newColor.r, newColor.g, newColor.b, 0.5f); ;
+        backgroundFrame.color = presetColor;
+        background.color = new Color(presetColor.r / 10f, presetColor.g / 10f, presetColor.b / 10f, 1.0f);
+        backgroundSprite.color = new Color(presetColor.r / 10f, presetColor.g / 10f, presetColor.b / 10f, 1.0f);
+        musicText.color = presetColor;
+        levelText.color = presetColor;
+        timerText.color = presetColor;
+        countdownText.color = new Color(presetColor.r, presetColor.g, presetColor.b, 0.5f); ;
 
         // level specific theme
         if (currentLevel == 5)
@@ -339,7 +326,7 @@ public class GameManager : MonoBehaviour
         {
             backgroundSprite.GetComponent<Animator>().enabled = false;
             SetBackground(string.Empty);
-            SetParallax(RandomParallax(), newColor);
+            SetParallax(selectedParallax, presetColor);
         }
         else if (currentLevel == 10)
         {
@@ -369,7 +356,7 @@ public class GameManager : MonoBehaviour
         else
         {
             SetBackground(string.Empty);
-            SetParallax(RandomParallax(), newColor);
+            SetParallax(selectedParallax, presetColor);
         }
     }
 
@@ -474,7 +461,6 @@ public class GameManager : MonoBehaviour
                 list.Add(i);
             }
         }
-
         return parallaxList[list[Random.Range(0, list.Count)]];
     }
 
@@ -554,11 +540,6 @@ public class GameManager : MonoBehaviour
             tipsText.SetText(LocalizationManager.Localize("Tutorial.TipsLevel10"));
             tipsText.DOFade(1.0f, 0.5f);
         }
-        else if (level == 11 && record <= level)
-        {
-            tipsText.SetText(LocalizationManager.Localize("Tutorial.TipsLevel11"));
-            tipsText.DOFade(1.0f, 0.5f);
-        }
         else if (level == 15 && record <= level)
         {
             tipsText.SetText(LocalizationManager.Localize("Tutorial.TipsLevel15"));
@@ -567,11 +548,6 @@ public class GameManager : MonoBehaviour
         else if (level == 25 && record <= level)
         {
             tipsText.SetText(LocalizationManager.Localize("Tutorial.TipsLevel25"));
-            tipsText.DOFade(1.0f, 0.5f);
-        }
-        else if (level == 35)
-        {
-            tipsText.SetText(LocalizationManager.Localize("Tutorial.TipsLevel35"));
             tipsText.DOFade(1.0f, 0.5f);
         }
         else if (potionSelected && FBPP.GetInt("TutorialPotion", 0) != 1)
@@ -674,6 +650,11 @@ public class GameManager : MonoBehaviour
         {
             EndLevel();
         }
+    }
+
+    public void RregisterBoss(EnemyControl monster)
+    {
+        bossHPBar.Activate(monster);
     }
 
     // player reach the botton -> let player pick new powerup -> next level

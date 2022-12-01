@@ -256,7 +256,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   enemyName: HellFighter
-  isBoss: 0
+  isBoss: 1
   maxHp: 540
   startHpPercentage: 1
   maxStamina: 20

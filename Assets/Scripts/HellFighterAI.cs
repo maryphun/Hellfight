@@ -36,6 +36,8 @@ public class HellFighterAI : MonoBehaviour
     private GameObject hellFireEffect;
     private GameObject hellChargeEffect;
     private GameObject hellBurstEffect;
+    private GameObject darkFlameEffect;
+    private GameObject hellVortexEffect;
     private GameManager gameMng;
     bool firstTimeShockwave = true;
     bool shockwaveHitPlayer = false;
@@ -47,6 +49,8 @@ public class HellFighterAI : MonoBehaviour
         hellFireEffect = Resources.Load("Prefabs/HellFireBurst") as GameObject;
         hellChargeEffect = Resources.Load("Prefabs/HellCharge") as GameObject;
         hellBurstEffect = Resources.Load("Prefabs/HellBurst") as GameObject;
+        darkFlameEffect = Resources.Load("Prefabs/DarkFlame") as GameObject;
+        hellVortexEffect = Resources.Load("Prefabs/HellVortex") as GameObject;
     }
 
     // Update is called once per frame
@@ -242,6 +246,7 @@ public class HellFighterAI : MonoBehaviour
             statusTimer = controller.FindAnimation(animator, enemyName + "Attack").length * 2f;
             //Instantiate(hellFireEffect, new Vector2(transform.position.x, transform.position.y + GetComponent<Collider2D>().bounds.size.y /2f), Quaternion.identity);
             Instantiate(hellChargeEffect, new Vector2(transform.position.x, transform.position.y + GetComponent<Collider2D>().bounds.size.y /2f), Quaternion.identity);
+            Instantiate(hellVortexEffect, new Vector2(transform.position.x, transform.position.y + GetComponent<Collider2D>().bounds.size.y /2f), Quaternion.identity);
 
             // AUDIO
             AudioManager.Instance.PlaySFX("hellfightSpell", 0.5f);
@@ -370,6 +375,8 @@ public class HellFighterAI : MonoBehaviour
         transf.GetComponent<SpriteRenderer>().DOFade(0.75f, timeinterval * 10f);
         Destroy(transf.gameObject, timeinterval * 10f);
 
+        Instantiate(darkFlameEffect, new Vector2(initialPosition, y), Quaternion.identity).transform.SetParent(transform.parent);
+        
         // PLAY SOUND
         AudioManager.Instance.PlaySFX("burst", 0.10f);
 

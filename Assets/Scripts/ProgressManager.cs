@@ -205,7 +205,7 @@ public class ProgressManager : Singleton<ProgressManager>
                 rtn.skill_Icon = "dashcooldown";
                 break;
             case Skill.DashDamage:
-                rtn.value = 11 + Random.Range(0, 4);
+                rtn.value = 9 + Random.Range(0, 4);
                 rtn.skill_name = "<color=#008080ff>" + LocalizationManager.Localize("PowerupName.DashDamage") + "</color>";
                 rtn.skill_description = LocalizationManager.Localize("PowerupDescription.DashDamage", ((int)rtn.value).ToString());
                 rtn.skill_Icon = "dashdamage";

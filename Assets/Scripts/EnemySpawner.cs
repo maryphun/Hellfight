@@ -101,7 +101,10 @@ public class EnemySpawner : MonoBehaviour
         EnemyControl tmp = Instantiate(monsterPrefab, DirectionToVector(direction), Quaternion.identity).GetComponent<EnemyControl>();
         tmp.transform.SetParent(world, true);
         tmp.GetGraphic().maskInteraction = SpriteMaskInteraction.VisibleInsideMask;
+
         gameMng.RegisterMonsterInList(tmp);
+        if (tmp.IsBoss()) gameMng.RregisterBoss(tmp);
+
         tmp.SetLevel(level);
 
         if (direction == SpawnDirection.TOP_LEFT || direction == SpawnDirection.TOP_MIDDLE || direction == SpawnDirection.TOP_RIGHT)

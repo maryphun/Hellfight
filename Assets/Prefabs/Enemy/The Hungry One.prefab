@@ -170,7 +170,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   enemyName: TheHungryOne
-  isBoss: 0
+  isBoss: 1
   maxHp: 1500
   startHpPercentage: 0.5
   maxStamina: 40

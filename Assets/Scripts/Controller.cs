@@ -1137,7 +1137,7 @@ public class Controller : MonoBehaviour
         {
             // STAMINA
             gameMng.SpawnFloatingText(new Vector2(transform.position.x, transform.position.y + collider.bounds.size.y / 2f), 2f, 25f,
-                                        ((GetStaminaMax() - currentStamina) / 2.0f).ToString(), Color.blue, new Vector2(0, 1), 80f);
+                                     (Mathf.FloorToInt((GetStaminaMax() - currentStamina) / 2.0f)).ToString(), Color.blue, new Vector2(0, 1), 80f);
 
             Regenerate(0, (GetStaminaMax() - currentStamina) / 2);
 

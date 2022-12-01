@@ -2,13 +2,22 @@ Key,English,ChineseTraditional,ChineseSimplified,Japanese
 Menu.Start,Press any key,按任意鍵開始遊戲,按任意键开始游戏,<font=JPPixel SDF>ボタン押してスタート
 Menu.MainGame,Main Game,開始遊戲,开始游戏,Main Game
 Menu.BossRushMode,<color=grey>Boss Rush Mode</color>,<color=grey>魔王模式</color>,<color=grey>魔王模式</color>,<color=grey>Boss Rush Mode</color>
-Menu.Leaderboard,Leaderboard,線上排行榜,线上排行榜,Leaderboard
+Menu.Leaderboard,Leaderboard,排行榜,排行榜,ランキング
 Menu.Credits,<color=grey>Credits</color>,<color=grey>感謝名單</color>,<color=grey>感谢名单</color>,<color=grey>Credits</color>
 Menu.ResetLocalData,Reset Local Data,清除本地數據,清除本地数据,Reset Local Data
 Menu.Exit,<color=grey>Exit</color>,<color=grey>退出</color>,<color=grey>退出</color>,<color=grey>Exit</color>
 Menu.HighestRecord,highest record,最高紀錄,最高纪录,最高記録
 Menu.HighestRecordValue,Level {0:N0},Level {0:N0},Level {0:N0},Level {0:N0}
 Menu.Comfirmation,Are you sure?,確定嗎?,确定吗?,本当ですか?
+Menu.Setting,Setting,系統設定,系统设定,設定
+Menu.KeyConfig,Key configuration,按鍵設定,按键设定,キー設定
+Menu.Attack,Attack,攻擊,攻击,攻撃
+Menu.Dash,Dash,衝刺,冲刺,ダッシュ
+Menu.Potion,Potion,藥瓶,药瓶,ポーション
+Menu.Jump,Jump,跳躍,跳跃,ジャンプ
+Menu.Left,Left,左,左,左
+Menu.Right,Right,右,右,右
+Menu.Down,Down,下,下,下
 POWERUPS,,,,
 PowerupName.MoveSpeed,Move Speed,移動速度,移动速度,移動速度
 PowerupDescription.MoveSpeed,Increase your movement speed by <color=#ff00ffff>{0:N0}</color>.,增加<color=#ff00ffff>{0:N0}</color>點移動速度,增加<color=#ff00ffff>{0:N0}</color>点移动速度,移動速度増加<color=#ff00ffff>{0:N0}</color>点
@@ -75,16 +84,14 @@ Tutorial.Status,STATUS,<font=LanaPixel SDF>狀態欄</font>,<font=LanaPixel SDF>
 Tutorial.UseItem,USE ITEM,<font=LanaPixel SDF>物品</font>,<font=LanaPixel SDF>物品</font>,<font=JPPixel SDF>アイテム</font>
 Tutorial.Move,MOVE,<font=LanaPixel SDF>移動</font>,<font=LanaPixel SDF>移动</font>,<font=JPPixel SDF>移動</font>
 Tutorial.TipsLevel5,First Trial,<font=LanaPixel SDF>最初的試煉,<font=LanaPixel SDF>最初的试炼,<font=JF-Dot-Paw16 SDF>最初の試練
-Tutorial.TipsLevel8,Your third combo attack deal more damage,<font=LanaPixel SDF>第三連擊造成的傷害會稍微高一點,<font=LanaPixel SDF>第三连击的伤害会稍微高一点,<font=JPPixel SDF>
+Tutorial.TipsLevel8,Third attack combo deal more damage,<font=LanaPixel SDF>第三連擊造成的傷害較高,<font=LanaPixel SDF>第三连击的伤害较高,<font=JPPixel SDF>
 Tutorial.TipsLevel10,"Find his weakness, try to jump!",<font=LanaPixel SDF>請攻擊頭部!,<font=LanaPixel SDF>请攻击头部!,<font=JPPixel SDF>頭を狙え
-Tutorial.TipsLevel11,Your stamina gain slower as you dash continuously,<font=LanaPixel SDF>連續衝刺會導致體力值恢復速度減慢,<font=LanaPixel SDF>短时间连续冲刺会导致体力值恢复速度变慢,<font=JPPixel SDF>短時間ない連続でダッシュするとスタミナ回復も減少する
 Tutorial.TipsLevel15,They're adorable,<font=LanaPixel SDF>可愛的家伙们,<font=LanaPixel SDF>可爱的家伙们,<font=JPPixel SDF>可愛い奴らだ！
 Tutorial.TipsLevel25,Break his defense!,<font=LanaPixel SDF>突破他的防守!,<font=LanaPixel SDF>突破他的防守!,<font=JPPixel SDF>ガードを突破せよ
-Tutorial.TipsLevel35,Thank you for playing! The rest is still developing.,<font=LanaPixel SDF>感謝試玩! 請等待完整版!,<font=LanaPixel SDF>感谢试玩，请期待完整版!,<font=JPPixel SDF>これ以上の内容はまだ製作中です。遊んで頂きありがとうございました。
 OTHER,,,,
-Text.Proceedlvl9,Proceed to Boss Fight - <color=#ff00ffff>Broyon</color>,區域霸主  - <color=#ff00ffff>布靈幽</color>,区域霸主  - <color=#ff00ffff>布灵幽</color>,<font=JPPixel SDF>ボス戦へ進む - <color=#ff00ffff>ブロヨン</color>
-Text.Proceedlvl19,Proceed to Boss Fight - <color=#550000ff>Hell Fighter</color>,區域霸主  - <color=#550000ff>地獄使者</color>,区域霸主  - <color=#550000ff>地獄使者</color>,ボス戦へ進む - <color=#550000ff>地獄審判</color>
-Text.Proceedlvl29,Proceed to Boss Fight - <color=#550000ff>The Hungry One</color>,區域霸主  - <color=#550000ff>飢餓魔</color>,区域霸主  - <color=#550000ff>饥饿魔</color>,ボス戦へ進む  - <color=#550000ff>古き物</color>
+Text.Proceedlvl9,Proceed to Boss Fight - <color=#ff00ffff>Broyon</color>,頭目戰  - <color=#ff00ffff>布羅恩</color>,头目战 - <color=#ff00ffff>布罗恩</color>,<font=JPPixel SDF>ボス戦 - <color=#ff00ffff>ブロヨン</color>
+Text.Proceedlvl19,Proceed to Boss Fight - <color=#550000ff>Hell Fighter</color>,頭目戰  - <color=#550000ff>冥獄使者</color>,头目战  - <color=#550000ff>冥狱使者</color>,ボス戦 - <color=#550000ff>冥界使者</color>
+Text.Proceedlvl29,Proceed to Boss Fight - <color=#550000ff>The Hungry One</color>,頭目戰  - <color=#550000ff>飢餓魔</color>,头目战  - <color=#550000ff>饥饿魔</color>,ボス戦  - <color=#550000ff>古き物</color>
 Text.Proceed,Jump and proceed to the next level,<font=LanaPixel SDF>向下跳跃,<font=LanaPixel SDF>向下跳跃,<font=JPPixel SDF>次のステージへジャンプ</font>
 Text.NewChallenger,Welcome our new challenger,<font=LanaPixel SDF>新的挑戰者,<font=LanaPixel SDF>新的挑战者,New challenger!
 Text.Retry,Welcome back!,<font=LanaPixel SDF>重新挑戰,<font=LanaPixel SDF>重新挑战,<font=JF-Dot-Paw16 SDF>再戦

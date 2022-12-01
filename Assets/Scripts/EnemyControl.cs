@@ -81,13 +81,22 @@ public class EnemyControl : MonoBehaviour
 
         if (hpbar != null)
         {
-            originalHpBarScale = hpbar.transform.localScale.x;
-            hpbar.DOFade(0.0f, 0.0f);
-            hpbarFade.DOFade(0.0f, 0.0f);
+            if (!isBoss)
+            {
+                originalHpBarScale = hpbar.transform.localScale.x;
+                hpbar.DOFade(0.0f, 0.0f);
+                hpbarFade.DOFade(0.0f, 0.0f);
 
-            // rescale
-            hpbar.transform.DOScaleX(((float)currentHp / (float)maxHp) * originalHpBarScale, 0.0f);
-            hpbarFade.transform.DOScaleX(((float)currentHp / (float)maxHp) * originalHpBarScale, 0.0f);
+                // rescale
+                hpbar.transform.DOScaleX(((float)currentHp / (float)maxHp) * originalHpBarScale, 0.0f);
+                hpbarFade.transform.DOScaleX(((float)currentHp / (float)maxHp) * originalHpBarScale, 0.0f);
+            }
+            else
+            {
+                // boss unit have his dedicated hp bar so hide this local hp bar.
+                hpbar.gameObject.SetActive(false);
+                hpbarFade.gameObject.SetActive(false);
+            }
         }
 
         if (armorbar != null)
@@ -161,16 +170,19 @@ public class EnemyControl : MonoBehaviour
         bool rtn = false;
         currentHp = Mathf.Clamp(currentHp - value, 0, maxHp);
 
-        // rescale hp bar
-        hpbar.transform.DOScaleX(((float)currentHp / (float)maxHp) * originalHpBarScale, 0.0f);
-        hpbarFade.transform.DOScaleX(((float)currentHp / (float)maxHp) * originalHpBarScale, 1f);
+        if (!isBoss)
+        {
+            // rescale hp bar
+            hpbar.transform.DOScaleX(((float)currentHp / (float)maxHp) * originalHpBarScale, 0.0f);
+            hpbarFade.transform.DOScaleX(((float)currentHp / (float)maxHp) * originalHpBarScale, 1f);
 
-        // show and fade
-        hpbar.DOFade(1.0f, 0.0f);
-        hpbarFade.DOFade(1.0f, 0.0f);
+            // show and fade
+            hpbar.DOFade(1.0f, 0.0f);
+            hpbarFade.DOFade(1.0f, 0.0f);
 
-        hpbar.DOFade(0.0f, 2f);
-        hpbarFade.DOFade(0.0f, 2f);
+            hpbar.DOFade(0.0f, 2f);
+            hpbarFade.DOFade(0.0f, 2f);
+        }
 
         if (currentHp == 0)
         {
@@ -225,16 +237,19 @@ public class EnemyControl : MonoBehaviour
     {
         currentHp = Mathf.Clamp(currentHp + value, 0, maxHp);
 
-        // rescale hp bar
-        hpbar.transform.DOScaleX(((float)currentHp / (float)maxHp) * originalHpBarScale, 1f);
-        hpbarFade.transform.DOScaleX(((float)currentHp / (float)maxHp) * originalHpBarScale, 0f);
+        if (!isBoss)
+        {
+            // rescale hp bar
+            hpbar.transform.DOScaleX(((float)currentHp / (float)maxHp) * originalHpBarScale, 1f);
+            hpbarFade.transform.DOScaleX(((float)currentHp / (float)maxHp) * originalHpBarScale, 0f);
 
-        // show and fade
-        hpbar.DOFade(1.0f, 0.0f);
-        hpbarFade.DOFade(1.0f, 0.0f);
+            // show and fade
+            hpbar.DOFade(1.0f, 0.0f);
+            hpbarFade.DOFade(1.0f, 0.0f);
 
-        hpbar.DOFade(0.0f, 2f);
-        hpbarFade.DOFade(0.0f, 2f);
+            hpbar.DOFade(0.0f, 2f);
+            hpbarFade.DOFade(0.0f, 2f);
+        }
     }
 
     public bool CheckIfCriticalHit(Vector2 damageSource)
@@ -577,6 +592,11 @@ public class EnemyControl : MonoBehaviour
     {
         return invulnerable;
     }
+    public bool IsBoss()
+    {
+        return isBoss;
+    }
+
 
     public bool IsFacingPlayer()
     {

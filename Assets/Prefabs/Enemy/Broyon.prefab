@@ -258,7 +258,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   enemyName: Broyon
-  isBoss: 0
+  isBoss: 1
   maxHp: 300
   startHpPercentage: 1
   maxStamina: 50
