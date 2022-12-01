@@ -138,8 +138,6 @@ public class Controller : MonoBehaviour
     [SerializeField] private int currentDashCharge;
     [SerializeField] private bool superDrop;
     [SerializeField] private float hitTaintTimer;
-    [SerializeField] int dashFequency;   // frquency of spamming dash
-    [SerializeField] ProtectedFloat dashStaminaCooldown;
     [SerializeField] private bool invulnerable;
     [SerializeField] private bool staminaRegenSlowed;
     [SerializeField] private bool islightningLashAttack;
@@ -562,15 +560,6 @@ public class Controller : MonoBehaviour
                 dashCooldownTimer = Mathf.Clamp(dashCooldownTimer - Time.deltaTime, 0.0f, dashCooldown);
             }
 
-            if (dashStaminaCooldown > 0.0f)
-            {
-                dashStaminaCooldown = Mathf.Clamp(dashStaminaCooldown - Time.deltaTime, 0.0f, dashStaminaCooldown);
-                if (dashStaminaCooldown == 0.0f)
-                {
-                    dashFequency = 0;
-                }
-            }
-
             // reset input
             input.dash = false;
         }
@@ -729,7 +718,6 @@ public class Controller : MonoBehaviour
             }
 
             float multiplier = 1.0f;
-            if (dashFequency > 2)  multiplier /= dashFequency+1;
             if (IsAttacking())     multiplier = 0.0f;
             if (IsDashing())       multiplier *= 0.5f;
             if (input.move != 0)   multiplier *= 0.8f;
@@ -1170,8 +1158,6 @@ public class Controller : MonoBehaviour
         deflectSucceed = false;
         isDashing = true;
         dashCooldownTimer = dashCooldown;
-        dashStaminaCooldown = Mathf.Min(dashStaminaCooldown + dashCooldown * 2f , 3f);
-        dashFequency++;
         animator.Play("Dash");
 
         // Calculate dash charge first
