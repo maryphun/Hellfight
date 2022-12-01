@@ -6,17 +6,16 @@ public class DashChargeBar : MonoBehaviour
 {
     [SerializeField] List<DashChargeSlot> DashChargeSlots;
     [SerializeField] Controller player;
-
-    private int chargeLeft = 5;
-    private int chargeMax = 5;
     
     public bool UseDashCharge()
     {
-        if (chargeLeft > 0)
+        for (int i = DashChargeSlots.Count-1; i >= 0; i--)
         {
-            DashChargeSlots[chargeLeft - 1].Use();
-            chargeLeft--;
-            return true;
+            if (!DashChargeSlots[i].IsUsed())
+            {
+                DashChargeSlots[i].Use();
+                return true;
+            }
         }
         return false;
     }
@@ -25,12 +24,12 @@ public class DashChargeBar : MonoBehaviour
     {
         bool success = false;
         int recoverLeft = number;
-        for (int i = chargeLeft; i < DashChargeSlots.Count; i++)
+
+        for (int i = 0; i < DashChargeSlots.Count; i++)
         {
-            if (recoverLeft > 0)
+            if (DashChargeSlots[i].IsUsed() && recoverLeft > 0)
             {
                 recoverLeft--;
-                chargeLeft++;
                 success = true;
 
                 float animTime = instant ? 0.0f : 1.0f;
@@ -40,14 +39,16 @@ public class DashChargeBar : MonoBehaviour
 
         return success;
     }
-
-
-    public void RecoverAllDashSlot()
+    
+    public void RecoverAllDashSlot(bool instant)
     {
-        chargeLeft = player.GetMaxDashCharge();
+        float animTime = instant ? 0.0f : 1.0f;
         for (int i = 0; i < DashChargeSlots.Count; i++)
         {
-            DashChargeSlots[i].Recover(1.0f, 1.0f);
+            if (DashChargeSlots[i].IsUsed())
+            {
+                DashChargeSlots[i].Recover(1.0f, animTime);
+            }
         }
     }
 }

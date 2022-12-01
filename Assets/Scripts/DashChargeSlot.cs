@@ -39,4 +39,9 @@ public class DashChargeSlot : MonoBehaviour
         yield return new WaitForSeconds(0.1f);
         fill.fillAmount = 0.0f;
     }
+
+    public bool IsUsed()
+    {
+        return isUsed;
+    }
 }

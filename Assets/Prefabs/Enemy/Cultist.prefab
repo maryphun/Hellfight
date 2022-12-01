@@ -341,6 +341,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   enemyName: Cultist
+  isBoss: 0
   maxHp: 120
   startHpPercentage: 1
   maxStamina: 45
@@ -348,6 +349,7 @@ MonoBehaviour:
   fadeOutAfterDead: 1
   attackedStopAttack: 0
   mass: 1.49
+  steamAchievementCode: MONSTER_CULT
   critialHitOnly: 0
   backSideOnly: 0
   alwaysIgnoreKnockback: 0

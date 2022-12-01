@@ -600,6 +600,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   enemyName: CatKnight
+  isBoss: 0
   maxHp: 270
   startHpPercentage: 1
   maxStamina: 20
@@ -607,6 +608,7 @@ MonoBehaviour:
   fadeOutAfterDead: 1
   attackedStopAttack: 0
   mass: 1.9
+  steamAchievementCode: MONSTER_CATKNIGHT
   critialHitOnly: 0
   backSideOnly: 0
   alwaysIgnoreKnockback: 0

@@ -259,12 +259,15 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   enemyName: Paku
+  isBoss: 0
   maxHp: 80
+  startHpPercentage: 1
   maxStamina: 60
   maxArmor: 20
   fadeOutAfterDead: 1
   attackedStopAttack: 0
   mass: 1.49
+  steamAchievementCode: MONSTER_PAKU
   critialHitOnly: 0
   backSideOnly: 0
   alwaysIgnoreKnockback: 1

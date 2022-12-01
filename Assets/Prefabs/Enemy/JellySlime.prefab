@@ -153,12 +153,15 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   enemyName: JellySlime
+  isBoss: 0
   maxHp: 45
+  startHpPercentage: 1
   maxStamina: 60
   maxArmor: 20
   fadeOutAfterDead: 1
   attackedStopAttack: 1
   mass: 1
+  steamAchievementCode: MONSTER_JELLYSLIME
   critialHitOnly: 0
   backSideOnly: 0
   alwaysIgnoreKnockback: 0

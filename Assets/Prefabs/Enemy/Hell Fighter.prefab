@@ -256,12 +256,15 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   enemyName: HellFighter
+  isBoss: 0
   maxHp: 540
+  startHpPercentage: 1
   maxStamina: 20
   maxArmor: 20
   fadeOutAfterDead: 0
   attackedStopAttack: 0
   mass: 1.34
+  steamAchievementCode: MONSTER_HELLFIGHTER
   critialHitOnly: 0
   backSideOnly: 0
   alwaysIgnoreKnockback: 0

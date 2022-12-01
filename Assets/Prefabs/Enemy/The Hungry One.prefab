@@ -170,6 +170,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   enemyName: TheHungryOne
+  isBoss: 0
   maxHp: 1500
   startHpPercentage: 0.5
   maxStamina: 40
@@ -177,6 +178,7 @@ MonoBehaviour:
   fadeOutAfterDead: 1
   attackedStopAttack: 0
   mass: 3
+  steamAchievementCode: MONSTER_THEHUNGRYONE
   critialHitOnly: 0
   backSideOnly: 0
   alwaysIgnoreKnockback: 0

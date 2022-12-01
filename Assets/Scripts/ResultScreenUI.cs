@@ -9,6 +9,7 @@ public class ResultScreenUI : MonoBehaviour
 {
     [Header("Book UI")]
     [Header("References")]
+    [SerializeField] GameObject titleUI;
     [SerializeField] RectTransform bookUI;
     [SerializeField] TMP_Text levelReachValue;
     [SerializeField] TMP_Text monsterCntValue;
@@ -60,6 +61,10 @@ public class ResultScreenUI : MonoBehaviour
         resultStamp.color = new Color(1, 1, 1, 0);
 
         progressBarFill.fillAmount = ProgressManager.Instance().GetProgressPoint() / ProgressManager.Instance().GetPointRequiredToNextLevel();
+
+        titleUI.gameObject.SetActive(false);
+        bookUI.gameObject.SetActive(false);
+        progressBar.gameObject.SetActive(false);
     }
 
     public void StartAnimation(Result result)
@@ -70,6 +75,10 @@ public class ResultScreenUI : MonoBehaviour
 
     IEnumerator ResultAnimation(Result result)
     {
+        yield return new WaitForSecondsRealtime(0.5f);
+        titleUI.gameObject.SetActive(true);
+        bookUI.gameObject.SetActive(true);
+        progressBar.gameObject.SetActive(true);
         // LEVEL REACH
         for (int i = 0; i <= result.levelReached; i++)
         {
@@ -88,7 +97,7 @@ public class ResultScreenUI : MonoBehaviour
         {
             monsterCntValue.text = i.ToString();
             AudioManager.Instance.PlaySFX("Ui Bleep", 0.1f);
-            if (i > 0) AddProggressPoint(5, 0.04f);
+            if (i > 0) AddProggressPoint(25, 0.04f);
             yield return new WaitForSecondsRealtime(0.04f);
         }
         AudioManager.Instance.PlaySFX("collect");
@@ -242,15 +251,20 @@ public class ResultScreenUI : MonoBehaviour
         }
         else // level up
         {
-            progressBarFill.DOFillAmount(1.0f, totalTime / 2.0f).SetUpdate(true);
+            progressBarFill.DOFillAmount(1.0f, totalTime * 0.3f).SetUpdate(true);
 
-            yield return new WaitForSecondsRealtime(totalTime / 2.0f);
-            AudioManager.Instance.PlaySFX("UnlockLevelUp", 1.5f);
-
+            yield return new WaitForSecondsRealtime(totalTime * 0.3f);
+            //progressBarFill.GetComponent<Image>().do
             progressBar.DOShakePosition(0.5f, 3, 100, 90, false, true).SetUpdate(true);
+            Color col = progressBarFill.color;
+            progressBarFill.DOColor(new Color(col.r,col.g,col.b,0), totalTime * 0.2f).SetUpdate(true);
+            AudioManager.Instance.PlaySFX("UnlockLevelUp", 1.5f);
+            yield return new WaitForSecondsRealtime(totalTime * 0.2f);
 
+            progressBarFill.DOComplete();
+            progressBarFill.color = col;
             progressBarFill.fillAmount = 0.0f;
-            progressBarFill.DOFillAmount(fillTarget, totalTime / 2.0f).SetUpdate(true);
+            progressBarFill.DOFillAmount(fillTarget, totalTime * 0.5f).SetUpdate(true);
         }
     }
 
@@ -267,6 +281,10 @@ public class ResultScreenUI : MonoBehaviour
 
         ResetUI();
         isFinished = true;
+
+        titleUI.gameObject.SetActive(false);
+        bookUI.gameObject.SetActive(false);
+        progressBar.gameObject.SetActive(false);
         gameObject.SetActive(false);
     }
 

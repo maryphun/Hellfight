@@ -19,12 +19,39 @@ public class ProgressManager : Singleton<ProgressManager>
 
     int progressPoint;       // gain 1000 point to unlock next level's reward.
     int unlockLevel;
+    int oldUnlockLevel;
+
+    List<KeyValuePair<int, Skill>> unlockList = new List<KeyValuePair<int, Skill>>();
+    
+    public void Initialization()
+    {
+        unlockList.Add(new KeyValuePair<int, Skill>(1, Skill.Potion));
+        unlockList.Add(new KeyValuePair<int, Skill>(2, Skill.LightningLash));
+        unlockList.Add(new KeyValuePair<int, Skill>(3, Skill.Battlecry));
+        unlockList.Add(new KeyValuePair<int, Skill>(4, Skill.ComboMaster));
+        unlockList.Add(new KeyValuePair<int, Skill>(5, Skill.BreakFall));
+        unlockList.Add(new KeyValuePair<int, Skill>(6, Skill.Deflect));
+        unlockList.Add(new KeyValuePair<int, Skill>(7, Skill.Windrunner));
+        unlockList.Add(new KeyValuePair<int, Skill>(8, Skill.Berserker));
+        unlockList.Add(new KeyValuePair<int, Skill>(9, Skill.Echo));
+        unlockList.Add(new KeyValuePair<int, Skill>(10, Skill.Juggernaut));
+    }
 
     public int LoadProgress()
     {
         unlockLevel = FBPP.GetInt("UnlockLevel", 0);
+        oldUnlockLevel = unlockLevel;
         progressPoint = FBPP.GetInt("ProgressPoint", 0);
+
+        Debug.Log("Unlock level = " + unlockLevel);
         return unlockLevel;
+    }
+
+    public void ResetProgress()
+    {
+        progressPoint = 0;
+        unlockLevel = 0;
+        oldUnlockLevel = 0;
     }
 
     public int GetUnlockLevel()
@@ -53,22 +80,34 @@ public class ProgressManager : Singleton<ProgressManager>
         }
     }
 
-    public List<UnlockData> NewStuffUnlocked(int currentLevel)
+    // return true if reach new record
+    public bool UpdateHighestLevel(int level)
+    {
+        int oldRecord = FBPP.GetInt("HighestLevel", 0);
+        if (oldRecord < level)
+        {
+            FBPP.SetInt("HighestLevel", level);
+            FBPP.Save();
+            return true;
+        }
+        return false;
+    }
+
+    public int GetHighestLevelRecord()
+    {
+        return FBPP.GetInt("HighestLevel", 0);
+    }
+
+    public List<UnlockData> GetNewUnlockList()
     {
         List<UnlockData> allUnlocks = new List<UnlockData>();
 
         // check skill unlock
         List<Skill> newSkillUnlock = new List<Skill>();
+        newSkillUnlock = GetNewSkillUnlock(oldUnlockLevel, unlockLevel);
+        oldUnlockLevel = unlockLevel;
         
-        if (currentLevel > unlockLevel)
-        {
-            FBPP.SetInt("UnlockLevel", currentLevel);
-            FBPP.Save();
-            int oldUnlockLevel = unlockLevel;
-            unlockLevel = currentLevel;
-            newSkillUnlock = GetNewSkillUnlock(oldUnlockLevel, unlockLevel);
-        }
-
+        // convert skill unlock into data
         if (newSkillUnlock.Count > 0)
         {
             for (int i = 0; i < newSkillUnlock.Count; i++)
@@ -89,54 +128,40 @@ public class ProgressManager : Singleton<ProgressManager>
     private List<Skill> GetNewSkillUnlock(int _old, int _new)
     {
         List<Skill> rtn = new List<Skill>();
-
-        if (_old < 4 && _new >= 4)  // Lightning Lash
+        Debug.Log("Old unlock level = " + _old.ToString() + ", New unlock level = " + _new.ToString());
+        for (int i = 0; i < unlockList.Count; i++)
         {
-            rtn.Add(Skill.LightningLash);
-        }
-
-        if (_old < 7 && _new >= 7)  // Recover
-        {
-            rtn.Add(Skill.Battlecry);
-        }
-
-        if (_old < 9 && _new >= 9)  // Combo Master
-        {
-            rtn.Add(Skill.ComboMaster);
-        }
-
-        if (_old < 10 && _new >= 10)  // BreakFall and potion
-        {
-            rtn.Add(Skill.BreakFall);
-            rtn.Add(Skill.Potion);
-        }
-
-        if (_old < 18 && _new >= 18)  // Windrunner
-        {
-            rtn.Add(Skill.Windrunner);
-        }
-
-        if (_old < 12 && _new >= 12)  // Deflect
-        {
-            rtn.Add(Skill.Deflect);
-        }
-
-        if (_old < 13 && _new >= 13)  // Berserker
-        {
-            rtn.Add(Skill.Berserker);
-        }
-
-        if (_old < 20 && _new >= 20)  // Echo
-        {
-            rtn.Add(Skill.Echo);
-        }
-
-        if (_old < 24 && _new >= 24)  // Juggernaut
-        {
-            rtn.Add(Skill.Juggernaut);
+            if (_old < unlockList[i].Key && _new >= unlockList[i].Key)
+            {
+                Debug.Log("Unlock skill " + unlockList[i].Value.ToString());
+                rtn.Add(unlockList[i].Value);
+            }
         }
 
         return rtn;
+    }
+
+    public bool IsSkillUnlocked(Skill skill)
+    {
+        for (int i = 0; i < unlockList.Count; i++)
+        {
+            if (unlockList[i].Value == skill)
+            {
+                if (unlockList[i].Key > unlockLevel)
+                {
+                    // not unlocked yet
+                    return false;
+                }
+                else
+                {
+                    // unlocked
+                    return true;
+                }
+            }
+        }
+
+        // the skill is not in unlock list ---- it's unlocked by default.
+        return true;
     }
 
     public SelectionData EnumToData(Skill skill)

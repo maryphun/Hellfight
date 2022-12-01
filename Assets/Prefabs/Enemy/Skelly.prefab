@@ -341,6 +341,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   enemyName: Skelly
+  isBoss: 0
   maxHp: 77
   startHpPercentage: 1
   maxStamina: 20
@@ -348,6 +349,7 @@ MonoBehaviour:
   fadeOutAfterDead: 1
   attackedStopAttack: 0
   mass: 1.49
+  steamAchievementCode: MONSTER_SKELLY
   critialHitOnly: 0
   backSideOnly: 0
   alwaysIgnoreKnockback: 0

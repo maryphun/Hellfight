@@ -168,12 +168,19 @@ public class GameManager : MonoBehaviour
 
     public void UseDashCharge()
     {
+        player.SetCurrentDashCharge(Mathf.Max(player.GetCurrentDashCharge() - 1, 0));
         dashChargeBar.UseDashCharge();
     }
 
     public void RecoverDashCharge(int num, bool instant)
     {
+        player.SetCurrentDashCharge(player.GetCurrentDashCharge() + num);
         dashChargeBar.RecoverDashCharge(num, instant);
+    }
+    public void RecoverAllDashCharge(bool instant)
+    {
+        player.SetCurrentDashCharge(player.GetMaxDashCharge());
+        dashChargeBar.RecoverAllDashSlot(instant);
     }
 
     public static Vector3 WorldToScreenSpace(Vector3 worldPos, Camera cam, RectTransform area)
@@ -206,9 +213,11 @@ public class GameManager : MonoBehaviour
         currentLevel = 1;
         timer = initialTime;
 
-        // Progress manager
-        ProgressManager.Instance().LoadProgress();
+        // Animation
         StartCoroutine(StartGameCinematic());
+
+        // Progress manager
+        ProgressManager.Instance().UpdateHighestLevel(currentLevel);
 
         // Result manager
         ResultManager.Instance().GameReset();
@@ -439,12 +448,15 @@ public class GameManager : MonoBehaviour
             newGroundsAPI.NGUnlockMedal(65095);
         }
 
+        // Progress manager
+        ProgressManager.Instance().UpdateHighestLevel(currentLevel);
+
         // Result Manager
         ResultManager.Instance().SetLevelReached(currentLevel);
 
         // STEAMWORKS API
         SteamworksNetManager.Instance().UpdateLevelStat(currentLevel);
-        SteamworksNetManager.Instance().CheckLevelAchievement(currentLevel);
+       // SteamworksNetManager.Instance().CheckLevelAchievement(currentLevel);
         SteamworksNetManager.Instance().SetSteamRichPresence(true,currentLevel);
 
         // SAVE GAME
@@ -502,7 +514,7 @@ public class GameManager : MonoBehaviour
         }
 
         // Tips and narrative
-        int record = ProgressManager.Instance().GetUnlockLevel();
+        int record = ProgressManager.Instance().GetHighestLevelRecord();
         if (level == 1 && (record <= level))
         {
             if (ControlPattern.Instance().IsJoystickConnected())
@@ -789,8 +801,9 @@ public class GameManager : MonoBehaviour
 
         // DISABLE TOP-RIGHT MENU BUTTON
         openButton.SetActive(false);
-        
+
         // Game progress
+        gameOverAlpha.DOFade(0.8f, 0.5f).SetUpdate(true);
         resultScreenUI.gameObject.SetActive(true);
         resultScreenUI.ResetUI();
         resultScreenUI.StartAnimation(ResultManager.Instance().GetResult());
@@ -813,8 +826,6 @@ public class GameManager : MonoBehaviour
         FBPP.SetInt("LastDeathFlip", boolToInt(player.IsFlip()));
         FBPP.Save();
 
-        newUnlock = ProgressManager.Instance().NewStuffUnlocked(currentLevel);
-
         // SUBMIT NEWGROUNDS SCOREBOARD
         newGroundsAPI.NGSubmitScore(10762, currentLevel);
 
@@ -829,19 +840,18 @@ public class GameManager : MonoBehaviour
         {
             yield return null;
         }
-
+        
         // determine need to enter new unlock phase or not
+        newUnlock = ProgressManager.Instance().GetNewUnlockList();
         if (newUnlock.Count > 0)
         {
-            // reset input
-            ResetConfirmKey();
+            // Go to unlock screen
             StartCoroutine(NewUnlockMenuPhase(RestartDelay(0.5f)));
         }
         else
         {
-            // UI
+            // Go to game over panel
             GameOverPanel.gameObject.SetActive(true);
-            gameOverAlpha.DOFade(0.8f, 0.5f).SetUpdate(true);
             menuCharacter.GetComponent<Animator>().Play("playerUIDead");
             menuCharacter.GetComponent<RectTransform>().DOAnchorPosX(27f, 0.0f, false).SetUpdate(true);
         }
@@ -954,8 +964,8 @@ public class GameManager : MonoBehaviour
 
     IEnumerator NewUnlockMenuPhase(IEnumerator nextPhase)
     {
-        yield return new WaitForSecondsRealtime(1.0f);
         newUnlockAlpha.DOFade(1.0f, 0.0f).SetUpdate(true);
+        yield return new WaitForSecondsRealtime(0.5f);
         // CHECK IF NEW STUFF UNLOCKED
         newUnlockMenu.SetActive(true);
 
@@ -992,9 +1002,11 @@ public class GameManager : MonoBehaviour
         yield return new WaitForSecondsRealtime(1.0f);
 
         newUnlockMenu.SetActive(false);
-
-        Time.timeScale = 1.0f;
-        StartCoroutine(nextPhase);
+        
+        // Game Over Panel
+        GameOverPanel.gameObject.SetActive(true);
+        menuCharacter.GetComponent<Animator>().Play("playerUIDead");
+        menuCharacter.GetComponent<RectTransform>().DOAnchorPosX(27f, 0.0f, false).SetUpdate(true);
     }
 
     IEnumerator RestartDelay(float waitTime)

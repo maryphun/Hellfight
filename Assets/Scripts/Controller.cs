@@ -259,7 +259,7 @@ public class Controller : MonoBehaviour
 
         currentHP = maxHP;
         currentStamina = maxStamina;
-        currentDashCharge = maxDashCharge;
+        RecoverAllDashCharge(true);
         playerColor = Color.white;
     }
 
@@ -752,7 +752,6 @@ public class Controller : MonoBehaviour
                 dashRechargeTimer = Mathf.Max(dashRechargeTimer - Time.deltaTime, 0.0f);
                 if (dashRechargeTimer == 0.0f)
                 {
-                    currentDashCharge++; // recover
                     gameMng.RecoverDashCharge(1, false); // UI
                     if (currentDashCharge < maxDashCharge) dashRechargeTimer = dashRechargeTime; // charge again
                 }
@@ -1177,7 +1176,6 @@ public class Controller : MonoBehaviour
 
         // Calculate dash charge first
         if (currentDashCharge == maxDashCharge) dashRechargeTimer = dashRechargeTime; // first charge used
-        currentDashCharge--;
         gameMng.UseDashCharge(); // UI
 
         // if no key is pressed dash into facing direction
@@ -1306,6 +1304,10 @@ public class Controller : MonoBehaviour
     {
         return maxDashCharge;
     }
+    public void SetCurrentDashCharge(int value)
+    {
+        currentDashCharge = value;
+    }
 
     public void Regenerate(int hp, int stamina = 0, bool showFloatingText = true)
     {
@@ -1352,8 +1354,7 @@ public class Controller : MonoBehaviour
 
     public void RecoverAllDashCharge(bool instant)
     {
-        gameMng.RecoverDashCharge(maxDashCharge - currentDashCharge, instant);
-        currentDashCharge = maxDashCharge;
+        gameMng.RecoverAllDashCharge(instant);
     }
 
     public bool DealDamage(int value, Transform source)
@@ -1386,7 +1387,7 @@ public class Controller : MonoBehaviour
         int originalHp = currentHP;
 
         // deathblow system. Sometimes it will give give 1 more chance (1 hp left)
-        if (((float)currentHP / (float)maxHP) > 0.25f || Random.Range(0.0f, 1.0f) < 0.2f)
+        if (((float)currentHP / (float)maxHP) > 0.1f && Random.Range(0.0f, 1.0f) < 0.2f)
         {
             currentHP = Mathf.Clamp(currentHP - value, 1, maxHP);
         }

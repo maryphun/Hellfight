@@ -240,7 +240,7 @@ public class HellFighterAI : MonoBehaviour
             // SHOCKWAVE
             animator.Play(enemyName + "Attack");
             statusTimer = controller.FindAnimation(animator, enemyName + "Attack").length * 2f;
-            Instantiate(hellFireEffect, new Vector2(transform.position.x, transform.position.y + GetComponent<Collider2D>().bounds.size.y /2f), Quaternion.identity);
+            //Instantiate(hellFireEffect, new Vector2(transform.position.x, transform.position.y + GetComponent<Collider2D>().bounds.size.y /2f), Quaternion.identity);
             Instantiate(hellChargeEffect, new Vector2(transform.position.x, transform.position.y + GetComponent<Collider2D>().bounds.size.y /2f), Quaternion.identity);
 
             // AUDIO
@@ -367,6 +367,8 @@ public class HellFighterAI : MonoBehaviour
 
         // PLAY SPECIAL EFFECT
         Transform transf = Instantiate(hellFireEffect, new Vector2(initialPosition, y), Quaternion.identity).transform;
+        transf.GetComponent<SpriteRenderer>().DOFade(0.75f, timeinterval * 10f);
+        Destroy(transf.gameObject, timeinterval * 10f);
 
         // PLAY SOUND
         AudioManager.Instance.PlaySFX("burst", 0.10f);

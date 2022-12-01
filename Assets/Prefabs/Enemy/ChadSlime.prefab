@@ -153,6 +153,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   enemyName: ChadSlime
+  isBoss: 0
   maxHp: 250
   startHpPercentage: 1
   maxStamina: 30
@@ -160,6 +161,7 @@ MonoBehaviour:
   fadeOutAfterDead: 1
   attackedStopAttack: 0
   mass: 3
+  steamAchievementCode: MONSTER_CHADSLIME
   critialHitOnly: 0
   backSideOnly: 0
   alwaysIgnoreKnockback: 0

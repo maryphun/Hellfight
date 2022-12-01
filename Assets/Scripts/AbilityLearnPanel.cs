@@ -209,7 +209,7 @@ public class AbilityLearnPanel : MonoBehaviour
             {
                 CheckAndAdd(possibleSkill, Skill.StaminaRecoverSpeed);
             }
-            if (unlockLevel >= 10 && !gameMng.IsPotionSelected())
+            if (!gameMng.IsPotionSelected())
             {
                 CheckAndAdd(possibleSkill, Skill.Potion);
             }
@@ -230,11 +230,11 @@ public class AbilityLearnPanel : MonoBehaviour
 
         if (level >= 5)
         {
-            if (unlockLevel >= 12 && !player.GetDeflect())
+            if (!player.GetDeflect())
             {
                 CheckAndAdd(possibleSkill, Skill.Deflect);
             }
-            if (unlockLevel >= 4 && player.GetLightningLash() < 0.15f)
+            if (player.GetLightningLash() < 0.15f)
             {
                 CheckAndAdd(possibleSkill, Skill.LightningLash);
             }
@@ -242,38 +242,29 @@ public class AbilityLearnPanel : MonoBehaviour
             {
                 possibleSkill.Add(Skill.Survivor);
             }
-            if (unlockLevel >= 20)
-            {
-                CheckAndAdd(possibleSkill, Skill.Echo);
-            }
+            CheckAndAdd(possibleSkill, Skill.Echo);
         }
-        if (unlockLevel >= 7 && level >= 7)
+        if (level >= 7)
         {
             if (!player.GetIsBattlecry())
             {
                 CheckAndAdd(possibleSkill, Skill.Battlecry);
             }
-            if (unlockLevel >= 24 && player.GetJuggernaut() == 0)
+            if (player.GetJuggernaut() == 0)
             {
                 CheckAndAdd(possibleSkill, Skill.Juggernaut);
             }
         }
-        if (unlockLevel >= 9 && level >= 8)
+        if (level >= 8)
         {
-            if (unlockLevel >= 9)
-            {
-                CheckAndAdd(possibleSkill, Skill.ComboMaster);
-            }
-            if (unlockLevel >= 13)
-            {
-                CheckAndAdd(possibleSkill, Skill.Berserker);
-            }
+            CheckAndAdd(possibleSkill, Skill.ComboMaster);
+            CheckAndAdd(possibleSkill, Skill.Berserker);
         }
-        if (unlockLevel >= 10 && level >= 13 && player.GetBreakFallCost() == 0f)
+        if (level >= 13 && player.GetBreakFallCost() == 0f)
         {
             CheckAndAdd(possibleSkill, Skill.BreakFall);
         }
-        if (unlockLevel >= 18 && level >= 10 && player.GetWindrunner() < 1.5f)
+        if (level >= 10 && player.GetWindrunner() < 1.5f)
         {
             CheckAndAdd(possibleSkill, Skill.Windrunner);
         }
@@ -338,12 +329,17 @@ public class AbilityLearnPanel : MonoBehaviour
 
     private bool CheckAndAdd(List<Skill> list, Skill targetSkill)
     {
-        if (!gameMng.IsSkillSpawnedLastLevel(targetSkill))
-        {
-            list.Add(targetSkill);
-            return true;
-        }
-        return false;
+        // check if skill is unlocked
+        if (!ProgressManager.Instance().IsSkillUnlocked(targetSkill))
+            return false;
+
+        // check if this skill is spawned last level
+        if (gameMng.IsSkillSpawnedLastLevel(targetSkill))
+            return false;
+        
+        // add this skill into the potential choice list
+        list.Add(targetSkill);
+        return true;
     }
 
     IEnumerator SelectionAnimation(int selectedIndex)

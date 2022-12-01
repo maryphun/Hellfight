@@ -165,6 +165,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   enemyName: Sweeper
+  isBoss: 0
   maxHp: 75
   startHpPercentage: 1
   maxStamina: 30
@@ -172,6 +173,7 @@ MonoBehaviour:
   fadeOutAfterDead: 1
   attackedStopAttack: 0
   mass: 1.25
+  steamAchievementCode: MONSTER_SWEEPER
   critialHitOnly: 0
   backSideOnly: 0
   alwaysIgnoreKnockback: 0

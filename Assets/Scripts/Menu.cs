@@ -107,7 +107,13 @@ public class Menu : MonoBehaviour
             EncryptionSecret = "encryption-secret-default",
             SaveFilePath = Application.persistentDataPath
         };
+
+        Debug.Log(Application.persistentDataPath);
         FBPP.Start(config);
+
+        // LOAD SAVE DATA
+        ProgressManager.Instance().Initialization();
+        ProgressManager.Instance().LoadProgress();
 
         // INITIALIZE LOCALIZATION
         string language = FBPP.GetString("Language", string.Empty);
@@ -722,6 +728,7 @@ public class Menu : MonoBehaviour
     {
         // Delete Data
         FBPP.DeleteAll();
+        ProgressManager.Instance().ResetProgress();
 
         // Close Menu
         CloseResetDataMenu();
@@ -770,6 +777,6 @@ public class Menu : MonoBehaviour
 
     private void SetupMainMenuUI()
     {
-        highestRecordLevelText.text = Assets.SimpleLocalization.LocalizationManager.Localize("Menu.HighestRecordValue", ProgressManager.Instance().LoadProgress());
+        highestRecordLevelText.text = Assets.SimpleLocalization.LocalizationManager.Localize("Menu.HighestRecordValue", ProgressManager.Instance().GetHighestLevelRecord());
     }
 }

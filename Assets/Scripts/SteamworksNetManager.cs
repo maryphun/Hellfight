@@ -41,12 +41,35 @@ public class SteamworksNetManager : Singleton<SteamworksNetManager>
         }
     }
 
+    public void UnlockAchievement(string code)
+    {
+        if (SteamManager.Initialized)
+        {
+            // Check Achievement and set
+            Steamworks.SteamUserStats.GetAchievement(code, out bool achievementCompleted);
+            if (!achievementCompleted)
+            {
+                SteamUserStats.SetAchievement(code);
+                SteamUserStats.StoreStats();
+            }
+        }
+    }
+
+    public void ClearSteamAchievement(string code)
+    {
+        if (SteamManager.Initialized)
+        {
+            SteamUserStats.ClearAchievement(code);
+            SteamUserStats.StoreStats();
+            Debug.Log("Steam Achievement reset: " + code);
+        }
+    }
+
     public void SteamLeaderboard()
     {
         if (SteamManager.Initialized)
         {
-            //SteamUserStats.leader
-            
+            //SteamUserStats.
         }
     }
     public bool SetSteamRichPresence(bool isPlaying, int level)
@@ -82,7 +105,7 @@ public class SteamworksNetManager : Singleton<SteamworksNetManager>
     {
         if (SteamManager.Initialized)
         {
-            string languageCode = SteamUtils.GetSteamUILanguage();
+            string languageCode = SteamApps.GetCurrentGameLanguage();
             if (!convert)
             {
                 return languageCode;

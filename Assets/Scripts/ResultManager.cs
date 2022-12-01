@@ -8,7 +8,7 @@ public class Result
     {
         monsterSlayed = 0;
         bossSlayed = 0;
-        levelReached = 0;
+        levelReached = 1;
         totalTime = 0;
     }
 

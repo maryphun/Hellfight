@@ -6129,7 +6129,7 @@ MonoBehaviour:
   - {fileID: 2078531230}
   - {fileID: 776850157}
   - {fileID: 478657515}
-  player: {fileID: 0}
+  player: {fileID: 1653193418}
 --- !u!1 &308832196
 GameObject:
   m_ObjectHideFlags: 0
@@ -13884,6 +13884,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d1471a8ef41eabf44b30c74fdf37778e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  titleUI: {fileID: 1749352433}
   bookUI: {fileID: 1146199528}
   levelReachValue: {fileID: 1618862144}
   monsterCntValue: {fileID: 1624257229}

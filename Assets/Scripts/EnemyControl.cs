@@ -15,6 +15,7 @@ public class EnemyControl : MonoBehaviour
     [SerializeField] private bool fadeOutAfterDead = false;
     [SerializeField] private bool attackedStopAttack = true;
     [SerializeField, Range(0.1f, 3.0f)] private float mass = 1.0f;
+    [SerializeField] private string steamAchievementCode = "";
 
     [Header("Special")]
     [SerializeField] private bool critialHitOnly = false;
@@ -193,6 +194,12 @@ public class EnemyControl : MonoBehaviour
             // Result Manager Update
             ResultManager.Instance().CountMonsterKill();
             if (isBoss) ResultManager.Instance().CountBossKill();
+
+            // SteamAchivement Unlock
+            if (steamAchievementCode != string.Empty)
+            {
+                SteamworksNetManager.Instance().UnlockAchievement(steamAchievementCode);
+            }
         }
         else
         {
