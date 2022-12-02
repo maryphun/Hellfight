@@ -132,7 +132,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   haveTurnAnimation: 1
-  attackDamageBase: 45
+  attackDamageBase: 35
   attackDamageMax: 13
   allowAttack: 1
   moveSpeed: 3
@@ -149,7 +149,11 @@ MonoBehaviour:
   thunderRayEffect: {fileID: 4900868942041658589, guid: 05e306b4d1c6a30428560012df01d938, type: 3}
   thunderExplosionEffect: {fileID: 1339150327724516618, guid: 0f655aa532acbaf45a80627a04ce7589, type: 3}
   attackChargeEffectInterval: 0.1
-  jumpTime: 1
+  jumpTime:
+  - 1.5
+  - 1
+  - 0.85
+  - 1
   jumpNumber: 4
   afterImgInterval: 0.2
   footstepSEInterval: 0.3
@@ -171,8 +175,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   enemyName: TheHungryOne
   isBoss: 1
-  maxHp: 1500
-  startHpPercentage: 0.5
+  maxHp: 960
+  startHpPercentage: 1
   maxStamina: 40
   maxArmor: 20
   fadeOutAfterDead: 1

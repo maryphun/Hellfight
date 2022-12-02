@@ -22,7 +22,7 @@ public enum Skill
     ComboMaster,
     Windrunner,
     Potion,
-    DashAttack,
+    DashAttack, // < this skill is not available
     BreakFall,
     LightningLash,
     Deflect,

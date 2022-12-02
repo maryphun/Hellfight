@@ -13,6 +13,16 @@ using Assets.SimpleLocalization;
 
 public class GameManager : MonoBehaviour
 {
+#if UNITY_EDITOR
+    [Header("Debug tools")]
+    [SerializeField] bool debugMode = false;
+    [SerializeField] int debug_initialLevel = 1;
+    [SerializeField] bool debug_strongerPlayer = false;
+    [SerializeField] bool debug_fixedColor_enable = false;
+    [SerializeField] Color debug_fixedColor = new Color(1, 1, 1, 1);
+#endif
+
+    [Header("References Object")]
     [SerializeField] int levelLeaderBoardID = 402;
     [SerializeField] int SpeedRun10LeaderBoardID = 402;
     [SerializeField] int SpeedRun20LeaderBoardID = 402;
@@ -74,6 +84,7 @@ public class GameManager : MonoBehaviour
     [SerializeField] NewGroundAPI newGroundsAPI;
     [SerializeField] string[] musicList;
     [SerializeField] string[] bossMusicList;
+    [SerializeField] Color[] bossColorThemeList;
     [SerializeField] Transform[] parallaxList;
 
     [Header("Game Configuaration")]
@@ -216,7 +227,7 @@ public class GameManager : MonoBehaviour
         bossHPBar.Initialize();
 
         // Animation
-        StartCoroutine(StartGameCinematic());
+        Coroutine cinematic = StartCoroutine(StartGameCinematic());
 
         // Progress manager
         ProgressManager.Instance().UpdateHighestLevel(currentLevel);
@@ -226,6 +237,60 @@ public class GameManager : MonoBehaviour
 
         // Steam API call
         SteamworksNetManager.Instance().SetSteamRichPresence(true, currentLevel); // level 1
+
+#if UNITY_EDITOR
+        // Debug Tools
+        if (debugMode)
+        {
+            if (debug_initialLevel > 1)
+            {
+                player.gameObject.SetActive(true);
+                currentLevel = debug_initialLevel;
+                StopCoroutine(cinematic);
+
+                // UI
+                {
+                    levelText.DOFade(1.0f, 1.0f);
+                    NarrativeText.color = new Color(1.0f, 0.9f, 0.0f, 0.0f);
+                    NarrativeText.DOFade(1.0f, 2.0f);
+                    StartLevelCinematic();
+                    SetStatusBarVisible(true);
+                    StartLevel(currentLevel);
+                    SteamworksNetManager.Instance().UpdateLevelStat(currentLevel);
+                }
+
+                // BGM
+                {
+                    AudioManager.Instance.SetMusicVolume(musicVolume);
+                    lastMusic = RandomMusic();
+                    if (currentLevel % 10 == 0)
+                    {
+                        // boss music
+                        lastMusic = bossMusicList[(currentLevel / 10) - 1];
+                    }
+                    musicText.SetText("♪ - " + lastMusic);
+                    musicText.DOFade(1.0f, 1.0f);
+                    AudioManager.Instance.PlayMusic(lastMusic);
+                }
+            }
+
+            if (debug_strongerPlayer)
+            {
+                player.ApplyBonus(Skill.BaseDamage, currentLevel * 0.6f);
+                player.ApplyBonus(Skill.LightningLash, 10.0f);
+                player.ApplyBonus(Skill.Potion, 10.0f);
+                player.ApplyBonus(Skill.MoveSpeed, 2.0f);
+                player.ApplyBonus(Skill.Windrunner, Mathf.Floor(currentLevel / 10));
+                player.ApplyBonus(Skill.Survivor, 1.0f);
+                player.ApplyBonus(Skill.Stamina, currentLevel * 2.5f);
+                player.ApplyBonus(Skill.Vitality, currentLevel * 2f);
+                player.ApplyBonus(Skill.Berserker, 5.0f);
+                player.ApplyBonus(Skill.Deflect, 20.0f);
+                player.ApplyBonus(Skill.DashCooldown, 50.0f);
+                player.ApplyBonus(Skill.DashDamage, (float)currentLevel);
+            }
+        }
+#endif
     }
 
     IEnumerator StartGameCinematic()
@@ -307,9 +372,21 @@ public class GameManager : MonoBehaviour
         Transform selectedParallax = RandomParallax();
         Color presetColor = selectedParallax.GetComponent<BackgroundColorPalette>().colorSchemeList[Random.Range(0, selectedParallax.GetComponent<BackgroundColorPalette>().colorSchemeList.Count)];
 
+#if UNITY_EDITOR
+        if (debugMode && debug_fixedColor_enable) presetColor = debug_fixedColor;
+#endif
+
+        // Boss preset color
+        if (currentLevel % 10 == 0)
+        {
+            presetColor = bossColorThemeList[(currentLevel / 10) - 1];
+        }
+
         backgroundFrame.color = presetColor;
         background.color = new Color(presetColor.r / 10f, presetColor.g / 10f, presetColor.b / 10f, 1.0f);
         backgroundSprite.color = new Color(presetColor.r / 10f, presetColor.g / 10f, presetColor.b / 10f, 1.0f);
+        bossHPBar.ChangeFrameColor(new Color(presetColor.r * 0.5f, presetColor.g * 0.5f, presetColor.b * 0.5f, 1.0f));
+
         musicText.color = presetColor;
         levelText.color = presetColor;
         timerText.color = presetColor;
@@ -350,7 +427,12 @@ public class GameManager : MonoBehaviour
         }
         else if (currentLevel == 30)
         {
-            SetBackground("night");
+            SetBackground("thehungryone");
+            ResetParallax();
+        }
+        else if (currentLevel == 40)
+        {
+            SetBackground("eclipse");
             ResetParallax();
         }
         else

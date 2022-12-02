@@ -781,7 +781,7 @@ public class Controller : MonoBehaviour
         else if (forcedJump)
         {
             rigidbody.AddForce(new Vector2(0.0f, jumpForce * 0.8f));
-            isJumpCancellable = false;  // revive jump is not cancellable
+            isJumpCancellable = false;  // forced jump is not cancellable
         }
         else if (!input.jump)   // this is a delayed jump
         {
@@ -801,6 +801,22 @@ public class Controller : MonoBehaviour
         AudioManager.Instance.PlaySFX("jump");
 
         gameMng.PlayerJumped();
+    }
+
+    public void ForceJump(float velocityForce = 0.4f)
+    {
+        // set flag
+        jumpCancelled = false;
+        jumpPressed = false;
+        isJumping = true;
+        isJumpCancellable = false;
+        attackCombo = 0;
+        
+        // leave collision
+        rigidbody.velocity = new Vector2(0f, 0.1f);
+        rigidbody.AddForce(new Vector2(0.0f, jumpForce * velocityForce));
+        gameMng.PlayerJumped();
+
     }
 
     void CancelJump()
@@ -1693,6 +1709,7 @@ public class Controller : MonoBehaviour
                 break;
             case Skill.BaseDamage:
                 baseDamage += (ProtectedUInt16)value;
+                Debug.Log("player damage gained + " + value.ToString());
                 break;
             case Skill.MaxDamage:
                 maxDamage += (ProtectedUInt16)value;

@@ -61,6 +61,8 @@ public class EnemyControl : MonoBehaviour
     private bool isPaused;
     private GameObject shieldEffect;
     private Controller player;
+    private bool isInitialized = false;
+    private Color originalColor = Color.white;
 
     private void Awake()
     {
@@ -70,6 +72,13 @@ public class EnemyControl : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        Initialization();
+    }
+
+    public void Initialization()
+    {
+        if (isInitialized) return; // avoid double init
+        isInitialized = true;
         player = FindObjectOfType<Controller>();
         collider = GetComponent<Collider2D>();
         rigidbody = GetComponent<Rigidbody2D>();
@@ -105,6 +114,8 @@ public class EnemyControl : MonoBehaviour
             armorbar.DOFade(0.0f, 0.0f);
             armorFade.DOFade(0.0f, 0.0f);
         }
+
+        originalColor = graphic.color;
     }
 
     // Update is called once per frame
@@ -161,8 +172,8 @@ public class EnemyControl : MonoBehaviour
 
     public void DefendDamage()
     {
-        graphic.DOColor(Color.blue, 0.0f);
-        graphic.DOColor(Color.white, 0.5f);
+        graphic.DOColor(new Color(Color.blue.r, Color.blue.g, Color.blue.b, originalColor.a), 0.0f);
+        graphic.DOColor(originalColor, 0.5f);
     }
 
     public bool DealDamage(int value)
@@ -226,8 +237,8 @@ public class EnemyControl : MonoBehaviour
             }
         }
 
-        graphic.DOColor(Color.red, 0.0f);
-        graphic.DOColor(Color.white, 0.5f);
+        graphic.DOColor(new Color(Color.red.r, Color.red.g, Color.red.b, originalColor.a), 0.0f);
+        graphic.DOColor(originalColor, 0.5f);
 
         return rtn;
     }
@@ -306,20 +317,22 @@ public class EnemyControl : MonoBehaviour
             tmp.transform.SetParent(transform.parent);
 
             // color tint
-            graphic.DOColor(Color.blue, 0.0f);
-            graphic.DOColor(Color.white, 0.5f);
+            graphic.DOColor(new Color(Color.blue.r, Color.blue.g, Color.blue.b, originalColor.a), 0.0f);
+            graphic.DOColor(originalColor, 0.5f);
 
             // rescale armor bar
-            armorbar.transform.DOScaleX(((float)currentArmor / (float)maxArmor) * originalArmorBarScale, 0.0f);
-            armorFade.transform.DOScaleX(((float)currentArmor / (float)maxArmor) * originalArmorBarScale, 1f);
+            if (!ReferenceEquals(armorbar, null) && !ReferenceEquals(armorFade, null))
+            {
+                armorbar.transform.DOScaleX(((float)currentArmor / (float)maxArmor) * originalArmorBarScale, 0.0f);
+                armorFade.transform.DOScaleX(((float)currentArmor / (float)maxArmor) * originalArmorBarScale, 1f);
 
-            // show and fade
-            armorbar.DOFade(1.0f, 0.0f);
-            armorFade.DOFade(1.0f, 0.0f);
+                // show and fade
+                armorbar.DOFade(1.0f, 0.0f);
+                armorFade.DOFade(1.0f, 0.0f);
 
-            armorbar.DOFade(0.0f, 2f);
-            armorFade.DOFade(0.0f, 2f);
-
+                armorbar.DOFade(0.0f, 2f);
+                armorFade.DOFade(0.0f, 2f);
+            }
             return true;
         }
 
@@ -649,12 +662,15 @@ public class EnemyControl : MonoBehaviour
 
     public void ShowArmorBar()
     {
-        // rescale armor bar
-        armorbar.transform.DOScaleX(((float)currentArmor / (float)maxArmor) * originalArmorBarScale, 0.5f);
-        armorFade.transform.DOScaleX(((float)currentArmor / (float)maxArmor) * originalArmorBarScale, 0.5f);
+        if (!ReferenceEquals(armorbar, null) && !ReferenceEquals(armorFade, null))
+        {
+            // rescale armor bar
+            armorbar.transform.DOScaleX(((float)currentArmor / (float)maxArmor) * originalArmorBarScale, 0.5f);
+            armorFade.transform.DOScaleX(((float)currentArmor / (float)maxArmor) * originalArmorBarScale, 0.5f);
 
-        armorbar.DOFade(1.0f, 0.0f);
-        armorbar.DOFade(0.0f, 2f);
+            armorbar.DOFade(1.0f, 0.0f);
+            armorbar.DOFade(0.0f, 2f);
+        }
     }
 
     public void RegeneraeArmor(int value)
@@ -666,5 +682,10 @@ public class EnemyControl : MonoBehaviour
             gameMng.SpawnFloatingText(new Vector2(transform.position.x, transform.position.y + collider.bounds.size.y / 2f), 2f, 25f,
                                         value.ToString(), new Color(0.3f, 0.3f, 1.0f), new Vector2(0, 1), 80f);
         }
+    }
+
+    public void SetIsBoss(bool value)
+    {
+        isBoss = value;
     }
 }

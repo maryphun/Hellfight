@@ -20706,6 +20706,88 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 1
   m_SpriteSortPoint: 0
+--- !u!1 &923294814
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 923294815}
+  - component: {fileID: 923294816}
+  m_Layer: 0
+  m_Name: Tomb
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &923294815
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 923294814}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: -0.46, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 1648814951}
+  m_RootOrder: 1
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!212 &923294816
+SpriteRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 923294814}
+  m_Enabled: 1
+  m_CastShadows: 0
+  m_ReceiveShadows: 0
+  m_DynamicOccludee: 1
+  m_MotionVectors: 1
+  m_LightProbeUsage: 1
+  m_ReflectionProbeUsage: 1
+  m_RayTracingMode: 0
+  m_RayTraceProcedural: 0
+  m_RenderingLayerMask: 1
+  m_RendererPriority: 0
+  m_Materials:
+  - {fileID: 10754, guid: 0000000000000000f000000000000000, type: 0}
+  m_StaticBatchInfo:
+    firstSubMesh: 0
+    subMeshCount: 0
+  m_StaticBatchRoot: {fileID: 0}
+  m_ProbeAnchor: {fileID: 0}
+  m_LightProbeVolumeOverride: {fileID: 0}
+  m_ScaleInLightmap: 1
+  m_ReceiveGI: 1
+  m_PreserveUVs: 0
+  m_IgnoreNormalsForChartDetection: 0
+  m_ImportantGI: 0
+  m_StitchLightmapSeams: 1
+  m_SelectedEditorRenderState: 0
+  m_MinimumChartSize: 4
+  m_AutoUVMaxDistance: 0.5
+  m_AutoUVMaxAngle: 89
+  m_LightmapParameters: {fileID: 0}
+  m_SortingLayerID: -1682992271
+  m_SortingLayer: 1
+  m_SortingOrder: -3
+  m_Sprite: {fileID: 21300000, guid: f447564df19e7c94d95c8eb84702bce2, type: 3}
+  m_Color: {r: 0.4764151, g: 1, b: 0.83851707, a: 1}
+  m_FlipX: 0
+  m_FlipY: 0
+  m_DrawMode: 0
+  m_Size: {x: 1, y: 1}
+  m_AdaptiveModeThreshold: 0.5
+  m_SpriteTileMode: 0
+  m_WasSpriteAssigned: 1
+  m_MaskInteraction: 1
+  m_SpriteSortPoint: 0
 --- !u!1 &928880150
 GameObject:
   m_ObjectHideFlags: 0
@@ -21695,6 +21777,88 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 981208426}
   m_CullTransparentMesh: 1
+--- !u!1 &981475343
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 981475344}
+  - component: {fileID: 981475345}
+  m_Layer: 0
+  m_Name: Grass
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &981475344
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 981475343}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: -1.47, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 1648814951}
+  m_RootOrder: 0
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!212 &981475345
+SpriteRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 981475343}
+  m_Enabled: 1
+  m_CastShadows: 0
+  m_ReceiveShadows: 0
+  m_DynamicOccludee: 1
+  m_MotionVectors: 1
+  m_LightProbeUsage: 1
+  m_ReflectionProbeUsage: 1
+  m_RayTracingMode: 0
+  m_RayTraceProcedural: 0
+  m_RenderingLayerMask: 1
+  m_RendererPriority: 0
+  m_Materials:
+  - {fileID: 10754, guid: 0000000000000000f000000000000000, type: 0}
+  m_StaticBatchInfo:
+    firstSubMesh: 0
+    subMeshCount: 0
+  m_StaticBatchRoot: {fileID: 0}
+  m_ProbeAnchor: {fileID: 0}
+  m_LightProbeVolumeOverride: {fileID: 0}
+  m_ScaleInLightmap: 1
+  m_ReceiveGI: 1
+  m_PreserveUVs: 0
+  m_IgnoreNormalsForChartDetection: 0
+  m_ImportantGI: 0
+  m_StitchLightmapSeams: 1
+  m_SelectedEditorRenderState: 0
+  m_MinimumChartSize: 4
+  m_AutoUVMaxDistance: 0.5
+  m_AutoUVMaxAngle: 89
+  m_LightmapParameters: {fileID: 0}
+  m_SortingLayerID: -1682992271
+  m_SortingLayer: 1
+  m_SortingOrder: -2
+  m_Sprite: {fileID: 21300000, guid: b538404349e83a447a18a6e64089272b, type: 3}
+  m_Color: {r: 1, g: 1, b: 1, a: 0.6666667}
+  m_FlipX: 0
+  m_FlipY: 0
+  m_DrawMode: 0
+  m_Size: {x: 1, y: 1}
+  m_AdaptiveModeThreshold: 0.5
+  m_SpriteTileMode: 0
+  m_WasSpriteAssigned: 1
+  m_MaskInteraction: 1
+  m_SpriteSortPoint: 0
 --- !u!1 &984078060
 GameObject:
   m_ObjectHideFlags: 0
@@ -31722,6 +31886,7 @@ MonoBehaviour:
   showPosY: 180
   fill: {fileID: 493593514}
   fillDelay: {fileID: 303136789}
+  frame: {fileID: 414708089}
   name: {fileID: 1663077105}
   canvasGroup: {fileID: 1464878078}
 --- !u!225 &1464878078
@@ -35650,6 +35815,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9fced1ac29d4ca84cbc9a0070511776d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  debugMode: 1
+  debug_initialLevel: 40
+  debug_strongerPlayer: 1
+  debug_fixedColor_enable: 0
+  debug_fixedColor: {r: 0.754717, g: 0.754717, b: 0.754717, a: 1}
   levelLeaderBoardID: 9066
   SpeedRun10LeaderBoardID: 9067
   SpeedRun20LeaderBoardID: 9068
@@ -35723,6 +35893,12 @@ MonoBehaviour:
   - Battle Ricercare
   - Song of the End
   - Final Battle of Demons
+  - Deep Unison
+  bossColorThemeList:
+  - {r: 0.9866957, g: 1, b: 0.740566, a: 1}
+  - {r: 0.85812545, g: 0.5473478, b: 0.9433962, a: 1}
+  - {r: 0.5518868, g: 0.596086, b: 1, a: 1}
+  - {r: 0.7529412, g: 0.7529412, b: 0.7529412, a: 1}
   parallaxList:
   - {fileID: 686306821}
   - {fileID: 240144353}
@@ -35867,7 +36043,9 @@ Transform:
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: -2.5, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
-  m_Children: []
+  m_Children:
+  - {fileID: 981475344}
+  - {fileID: 923294815}
   m_Father: {fileID: 324273624}
   m_RootOrder: 16
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -36148,9 +36326,6 @@ MonoBehaviour:
   currentDashCharge: 0
   superDrop: 0
   hitTaintTimer: 0
-  dashFequency: 0
-  dashStaminaCooldown:
-    fakeValue: 0
   invulnerable: 0
   staminaRegenSlowed: 0
   islightningLashAttack: 0
@@ -44388,6 +44563,21 @@ MonoBehaviour:
   - activate: 1
     spawnInfo:
     - monster: {fileID: 2563176564286290611, guid: 91d21c433a21c5e4e83f421931e16e09, type: 3}
+      timing: 2
+      direction: 3
+  - activate: 1
+    spawnInfo:
+    - monster: {fileID: 2563176564286290611, guid: 91d21c433a21c5e4e83f421931e16e09, type: 3}
+      timing: 2
+      direction: 3
+  - activate: 1
+    spawnInfo:
+    - monster: {fileID: 2563176564286290611, guid: 91d21c433a21c5e4e83f421931e16e09, type: 3}
+      timing: 2
+      direction: 3
+  - activate: 1
+    spawnInfo:
+    - monster: {fileID: 3749304767267310702, guid: a87f347867c1c324baa2002b54466495, type: 3}
       timing: 2
       direction: 3
   randomList:

@@ -44,7 +44,7 @@ public class TheHungryOneAI : MonoBehaviour
 
     [Header("Special Setting")]
     [SerializeField] private float attackChargeEffectInterval;
-    [SerializeField] private float jumpTime;
+    [SerializeField] private List<float> jumpTime;
     [SerializeField] private int jumpNumber;
     [SerializeField] private float afterImgInterval = 0.2f;
     [SerializeField] private float footstepSEInterval = 0.25f;
@@ -393,7 +393,7 @@ public class TheHungryOneAI : MonoBehaviour
     IEnumerator ElectricShockBuff(float duration, float effectInterval)
     {
         float timeElapsed = 0.0f;
-        while (timeElapsed < duration)
+        while (timeElapsed < duration && player.IsAlive())
         {
             // create an effect in the center
             GameObject obj = controller.SpawnSpecialEffect(electricShockEffect, player.transform.position, false);
@@ -509,7 +509,7 @@ public class TheHungryOneAI : MonoBehaviour
         }
 
         // check fall
-        if (jumpTimeCount > jumpTime && !isFalling)
+        if (jumpTimeCount > jumpTime[jumpCount] && !isFalling)
         {
             // animator
             animator.SetBool("Fall", true);
@@ -575,7 +575,7 @@ public class TheHungryOneAI : MonoBehaviour
                 // animator
                 animator.SetBool("Fall", false);
 
-                // force character stick into the ground
+                // snap character into the ground
                 transform.localPosition = new Vector2(transform.localPosition.x, -2.334f);
 
                 // visuals and sounds
@@ -587,7 +587,8 @@ public class TheHungryOneAI : MonoBehaviour
                 // deal damage
                 if (!dealDamageAlready
                     &&
-                    Mathf.Abs(player.transform.position.x - transform.position.x) < controller.GetCollider().bounds.size.x / 1.75f)
+                    Mathf.Abs(player.transform.position.x - transform.position.x) < 
+                    (controller.GetCollider().bounds.size.x * 0.5f) + (player.GetComponent<Collider2D>().bounds.size.x * 0.5f)) //@todo optimization
                 {
                     player.StartJump(false, true);
                     if (player.DealDamage(attackDamageBase + Random.Range(0, attackDamageMax + 1), transform))
@@ -636,9 +637,15 @@ public class TheHungryOneAI : MonoBehaviour
 
             // deal damage
             if (!dealDamageAlready
-                && Mathf.Abs(player.transform.position.x - transform.position.x) < attackRange
-                && Mathf.Abs(player.transform.position.y - transform.position.y) < 1.0f
-                && controller.IsFacingPlayer())
+                && 
+                (  Mathf.Abs(player.transform.position.x - transform.position.x) < attackRange * 1.5f
+                && Mathf.Abs(player.transform.position.y - transform.position.y) < 3.5f
+                && controller.IsFacingPlayer()
+                && jumpCount >= jumpNumber)
+                ||
+                ( Mathf.Abs(player.transform.position.x - transform.position.x) < 2.5f
+               && Mathf.Abs(player.transform.position.y - transform.position.y) < 3.5f
+               && jumpCount < jumpNumber))
             {
                 player.StartJump(false, true);
                 if (player.DealDamage(attackDamageBase + Random.Range(0, attackDamageMax + 1), transform))
