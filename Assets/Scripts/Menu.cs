@@ -28,6 +28,7 @@ public class Menu : MonoBehaviour
         NAME_INPUT,
         MAIN_MENU,
         LEADERBOARD,
+        CREDITS,
     }
 
     enum MenuSelection
@@ -35,7 +36,7 @@ public class Menu : MonoBehaviour
         MainGame,
         BossRushMode,
         Leaderboard,
-        Option,
+        Credits,
         ResetLocalData,
         Exit,
 
@@ -53,28 +54,26 @@ public class Menu : MonoBehaviour
     }
 
     [SerializeField] Animator pageAnimator;
-    [SerializeField] Image frame;
     [SerializeField] Image background;
     [SerializeField] TMP_Text logo;
-    [SerializeField] Image leaderboardBack;
     [SerializeField] TMP_Text versionText;
     [SerializeField] GameObject copyrightUI;
-    [SerializeField] Image menuAlpha;
     [SerializeField] GameManager gameMng;
     [SerializeField] TMP_InputField playerNameText;
     [SerializeField] RectTransform playerNameText_UI;
-    [SerializeField] Leaderboard leaderboardObject;
     [SerializeField] RectTransform resetDataComfirmation;
     [SerializeField] GameObject startGameText;
     [SerializeField] RectTransform mainMenuUI;
     [SerializeField] RectTransform mainPageUI;
     [SerializeField] RectTransform leaderboardPageUI;
+    [SerializeField] RectTransform creditsPageUI;
     [SerializeField] RectTransform languageSelectionParent;
     [SerializeField] RectTransform selectIcon;
     [SerializeField] RectTransform languageSelectIcon;
     [SerializeField] TMP_Text[] choiceText;
     [SerializeField] TMP_Text[] languageChoiceText;
     [SerializeField] TMP_Text highestRecordLevelText;
+    [SerializeField] TMP_Text unlockLevelText;
 
     [Header("Debug")]
     [SerializeField] MenuSelection selectIndex;
@@ -147,9 +146,6 @@ public class Menu : MonoBehaviour
         AudioManager.Instance.SetMusicVolume(0.7f);
         AudioManager.Instance.SetSEMasterVolume(0.25f);
 
-        // FADE IN
-        menuAlpha.DOFade(0.0f, 2.0f);
-
         // INIT
         menuState = MenuState.START;
     }
@@ -191,11 +187,7 @@ public class Menu : MonoBehaviour
         AudioManager.Instance.PlaySFX("startgame");
 
         const float animTime = 0.5f;
-        RectTransform component = startGameText.GetComponent<RectTransform>();
-
-        component.DORotate(new Vector3(0.0f, 0.0f, -360.0f), animTime, RotateMode.FastBeyond360);
-
-        StartCoroutine(StartMenuAnimation(component, new Vector2(-391.0f, -265.0f), animTime));
+        StartCoroutine(StartMenuAnimation(startGameText, new Vector2(-391.0f, -265.0f), animTime));
         copyrightUI.GetComponent<RectTransform>().DOLocalMoveX(465.0f, animTime);
     }
 
@@ -215,19 +207,37 @@ public class Menu : MonoBehaviour
         // SE
         AudioManager.Instance.PlaySFX("startgame");
         // ANIMATION
-        StartCoroutine(StartMenuAnimation(playerNameText_UI, new Vector2(-391.0f, -265.0f), 1.5f));
+        StartCoroutine(StartMenuAnimation(playerNameText_UI.gameObject, new Vector2(-391.0f, -265.0f), 1.5f));
     }
 
-    IEnumerator StartMenuAnimation(RectTransform obj, Vector2 endPos, float animTime)
+    IEnumerator StartMenuAnimation(GameObject obj, Vector2 endPos, float animTime)
     {
         // play animation as requested
-        Vector3 originalPos = obj.position;
-        obj.DOLocalMove(endPos, animTime);
+        Vector3 originalPos = obj.transform.position;
+        Color originalColor = Color.white;
+        if (!ReferenceEquals(obj.GetComponent<Image>(), null))
+        {
+            originalColor = obj.GetComponent<Image>().color;
+            obj.GetComponent<Image>().DOFade(0.0f, animTime);
+        }
+        else if (!ReferenceEquals(obj.GetComponent<CanvasGroup>(), null))
+        {
+            obj.GetComponent<CanvasGroup>().DOFade(0.0f, animTime);
+        }
+
         yield return new WaitForSeconds(animTime);
 
         // return to original position and hide it.
         obj.gameObject.SetActive(false);
-        obj.position = originalPos;
+        if (!ReferenceEquals(obj.GetComponent<Image>(), null))
+        {
+            obj.GetComponent<Image>().color = originalColor;
+        }
+        else if (!ReferenceEquals(obj.GetComponent<CanvasGroup>(), null))
+        {
+            obj.GetComponent<CanvasGroup>().DOFade(1.0f, animTime);
+        }
+        obj.transform.position = originalPos;
 
         string language = string.Empty;
 
@@ -273,18 +283,35 @@ public class Menu : MonoBehaviour
                 logo.gameObject.SetActive(true);
                 mainMenuUI.gameObject.SetActive(true);
                 selectIndex = MenuSelection.MainGame;
+
                 // SE
                 AudioManager.Instance.PlaySFX("decide");
                 AudioManager.Instance.PlayMusicWithFade("The March", 2.0f);
 
-                // FLAG
-                disableMenuControl = false;
-
+                // Setup Text
+                SetupMainMenuUI();
                 // Default selection choice
                 ChangeSelection(MenuSelection.MainGame, 107.375f);
 
-                // Setup Text
-                SetupMainMenuUI();
+                // Animation
+                float mainMenuAnimTime = 2.0f;
+                AudioManager.Instance.PlaySFX("stamp", 0.7f);
+                mainMenuUI.GetComponent<CanvasGroup>().alpha = 0.0f;
+                mainMenuUI.GetComponent<CanvasGroup>().DOFade(1.0f, mainMenuAnimTime);
+                mainMenuUI.localScale = new Vector3(3.0f,3.0f,1.0f);
+
+                mainMenuUI.DOScale(1.0f, mainMenuAnimTime * 0.25f);
+                yield return new WaitForSeconds(mainMenuAnimTime * 0.25f);
+                mainMenuUI.DOShakePosition(0.5f, 9, 20, 90);
+
+
+                Color backgroundColor = background.color;
+                background.color = new Color(0.3f, 0.1f, 0.1f, 1.0f);
+                background.DOColor(backgroundColor, 0.75f);
+
+                // FLAG
+                disableMenuControl = false;
+
                 break;
             case MenuState.NAME_INPUT:
                 playerNameText.characterValidation = TMP_InputField.CharacterValidation.Alphanumeric;
@@ -407,7 +434,11 @@ public class Menu : MonoBehaviour
         AudioManager.Instance.PlaySFX("cursor");
 
         selectIndex--;
-        if (selectIndex == MenuSelection.BossRushMode || selectIndex == MenuSelection.Exit || selectIndex == MenuSelection.Option)
+        if (selectIndex == MenuSelection.BossRushMode
+#if DISABLESTEAMWORKS
+            || selectIndex == MenuSelection.Exit 
+#endif
+            )
         {
             selectIndex--;
         }
@@ -425,7 +456,11 @@ public class Menu : MonoBehaviour
         AudioManager.Instance.PlaySFX("cursor");
 
         selectIndex++;
-        if (selectIndex == MenuSelection.BossRushMode || selectIndex == MenuSelection.Exit || selectIndex == MenuSelection.Option)
+        if (selectIndex == MenuSelection.BossRushMode
+#if DISABLESTEAMWORKS
+            || selectIndex == MenuSelection.Exit
+#endif
+            )
         {
             selectIndex++;
         }
@@ -461,7 +496,7 @@ public class Menu : MonoBehaviour
 
             // transition to next state
             AudioManager.Instance.PlaySFX("startgame");
-            StartCoroutine(StartMenuAnimation(languageSelectionParent.GetComponent<RectTransform>(), new Vector2(-553.0f, -0.0f), 0.9f));
+            StartCoroutine(StartMenuAnimation(languageSelectionParent.gameObject, new Vector2(-553.0f, -0.0f), 0.9f));
         }
         if (menuState != MenuState.MAIN_MENU) return;
         if (disableMenuControl) return;
@@ -471,7 +506,6 @@ public class Menu : MonoBehaviour
             case MenuSelection.MainGame:
                 RecordPlayerName();
                 AudioManager.Instance.StopMusicWithFade(0.1f);
-                menuAlpha.DOFade(1.0f, 1.0f);
                 StartCoroutine(startgame(1.1f));
                 AudioManager.Instance.PlaySFX("Confirm");
                 break;
@@ -485,8 +519,9 @@ public class Menu : MonoBehaviour
                 leaderboardPageUI.GetComponent<LeaderboardPage>().SetLeaderboardMode(LeaderboardPage.LeaderboardMode.MainMenuMode);
                 AudioManager.Instance.PlaySFX("confirmMenu");
                 break;
-            case MenuSelection.Option:
+            case MenuSelection.Credits:
                 disableMenuControl = false;
+                StartCoroutine(CreditNextPage(0.4f, "BookFlipLeft"));
                 SelectionUp();
                 break;
             case MenuSelection.ResetLocalData:
@@ -495,7 +530,7 @@ public class Menu : MonoBehaviour
                 break;
             case MenuSelection.Exit:
                 disableMenuControl = false;
-                SelectionUp();
+                Application.Quit();
                 break;
             default:
                 break;
@@ -577,11 +612,21 @@ public class Menu : MonoBehaviour
         gameMng.SetPlayerName(nameWritten);
     }
 
-    IEnumerator startgame(float delay) 
+    IEnumerator startgame(float delay)
     {
+        // animations
+        mainMenuUI.DOScale(0.8f, delay);
+        mainMenuUI.GetComponent<CanvasGroup>().DOFade(0.0f, delay);
+        Color originalColor = background.color;
+        background.DOColor(Color.black, delay);
+
         yield return new WaitForSeconds(delay);
         gameMng.StartGame();
-        menuAlpha.DOFade(0.0f, 0.0f);
+
+        // reset everything to original
+        background.color = originalColor;
+        mainMenuUI.localScale = new Vector3(1, 1, 1);
+        mainMenuUI.GetComponent<CanvasGroup>().alpha = 1.0f;
     }
 
     public void HideLeaderBoard()
@@ -737,7 +782,6 @@ public class Menu : MonoBehaviour
 
         // close music
         AudioManager.Instance.StopMusicWithFade(1.0f);
-        menuAlpha.DOFade(1.0f, 1.0f);
 
         // Back to start menu
         menuState = MenuState.START;
@@ -751,7 +795,6 @@ public class Menu : MonoBehaviour
     IEnumerator RestartFromStartMenu(float time)
     {
         yield return new WaitForSecondsRealtime(time);
-        menuAlpha.DOFade(0.0f, 1.0f);
     }
 
     public void OpenResetDataMenu()
@@ -777,6 +820,48 @@ public class Menu : MonoBehaviour
 
     private void SetupMainMenuUI()
     {
-        highestRecordLevelText.text = Assets.SimpleLocalization.LocalizationManager.Localize("Menu.HighestRecordValue", ProgressManager.Instance().GetHighestLevelRecord());
+        highestRecordLevelText.text = Assets.SimpleLocalization.LocalizationManager.Localize("Menu.HighestRecordValue", 
+            ProgressManager.Instance().GetHighestLevelRecord());
+
+        unlockLevelText.text =
+            ProgressManager.Instance().GetUnlockLevel() + "/" +ProgressManager.Instance().GetHighestUnlockLevel();
+    }
+
+
+    // ---------------------- CREDITS
+    IEnumerator CreditNextPage(float time, string animationName)
+    {
+        // next page
+        disableMenuControl = true;
+        mainPageUI.gameObject.SetActive(false);
+
+        // SE
+        AudioManager.Instance.PlaySFX("page");
+        pageAnimator.Play(animationName);
+        yield return new WaitForSecondsRealtime(time);
+
+        creditsPageUI.gameObject.SetActive(true);
+        menuState = MenuState.CREDITS;
+    }
+
+    public void CreditsBackToMainMenu()
+    {
+        StartCoroutine(CreditBack(0.4f, "BookFlipRight"));
+    }
+
+    IEnumerator CreditBack(float time, string animationName)
+    {
+        // last page
+        creditsPageUI.gameObject.SetActive(false);
+        disableMenuControl = true;
+
+        // SE
+        AudioManager.Instance.PlaySFX("page");
+        pageAnimator.Play(animationName);
+        yield return new WaitForSecondsRealtime(time);
+
+        disableMenuControl = false;
+        mainPageUI.gameObject.SetActive(true);
+        menuState = MenuState.MAIN_MENU;
     }
 }

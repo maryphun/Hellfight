@@ -149,7 +149,7 @@ MonoBehaviour:
   thunderRayEffect: {fileID: 4683071769413640262, guid: 30399c7a507bce64ea23071abc28df36, type: 3}
   eternalFlameEffect: {fileID: 8307599557492587543, guid: e67179f2bee1d7140bd48aa1fd60d0c5, type: 3}
   illusionOrigin: {fileID: 0}
-  attackChargeEffectInterval: 0.1
+  hpPercentageToCastIllusion: 0.3
   jumpTime: 1
   jumpNumber: 3
   afterImgInterval: 0.2
@@ -173,11 +173,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   enemyName: The Soulreaper
   isBoss: 0
-  maxHp: 200
+  maxHp: 350
   startHpPercentage: 1
   maxStamina: 35
   maxArmor: 20
-  fadeOutAfterDead: 1
+  fadeOutAfterDead: 0
   attackedStopAttack: 0
   mass: 3
   steamAchievementCode: MONSTER_ILLUSION

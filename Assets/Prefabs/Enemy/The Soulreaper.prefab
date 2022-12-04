@@ -111,7 +111,7 @@ Transform:
   m_GameObject: {fileID: 3749304767267310702}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 1.2, y: 1, z: 1}
   m_Children:
   - {fileID: 3749304767680310444}
   - {fileID: 3749304767902553902}
@@ -151,12 +151,13 @@ MonoBehaviour:
   thunderRayEffect: {fileID: 4683071769413640262, guid: 30399c7a507bce64ea23071abc28df36, type: 3}
   eternalFlameEffect: {fileID: 8307599557492587543, guid: e67179f2bee1d7140bd48aa1fd60d0c5, type: 3}
   illusionOrigin: {fileID: 3749304767267310702, guid: a8a0d5f93ebfafa469e25e2d9003e1ed, type: 3}
-  attackChargeEffectInterval: 0.1
+  hpPercentageToCastIllusion: 0.5
   jumpTime: 2
   jumpNumber: 3
   afterImgInterval: 0.2
   illusionColor: {r: 0, g: 0, b: 0.5, a: 0.9}
   isIllusion: 0
+  fastMovementSpeedMultiplier: 10
   afterImgCnt: 0
   statusTimer: 0
   currentAttackType: 0
@@ -176,7 +177,7 @@ MonoBehaviour:
   enemyName: The Soulreaper
   isBoss: 1
   maxHp: 2000
-  startHpPercentage: 0.2
+  startHpPercentage: 1
   maxStamina: 35
   maxArmor: 1000
   fadeOutAfterDead: 1

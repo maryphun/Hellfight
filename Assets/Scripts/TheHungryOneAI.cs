@@ -578,6 +578,9 @@ public class TheHungryOneAI : MonoBehaviour
                 // snap character into the ground
                 transform.localPosition = new Vector2(transform.localPosition.x, -2.334f);
 
+                // jump the player if it's on ground
+                if (!player.IsJumping()) player.ForceJump();
+
                 // visuals and sounds
                 controller.GetGameManager().ScreenImpactGround(0.04f, 0.4f);
                 AudioManager.Instance.PlaySFX("impact", 0.75f);
@@ -587,8 +590,8 @@ public class TheHungryOneAI : MonoBehaviour
                 // deal damage
                 if (!dealDamageAlready
                     &&
-                    Mathf.Abs(player.transform.position.x - transform.position.x) < 
-                    (controller.GetCollider().bounds.size.x * 0.5f) + (player.GetComponent<Collider2D>().bounds.size.x * 0.5f)) //@todo optimization
+                    (Mathf.Abs(player.transform.position.x - transform.position.x) < 
+                    (controller.GetCollider().bounds.size.x * 0.5f) + (player.GetComponent<Collider2D>().bounds.size.x * 0.5f))) //@todo optimization
                 {
                     player.StartJump(false, true);
                     if (player.DealDamage(attackDamageBase + Random.Range(0, attackDamageMax + 1), transform))
@@ -638,14 +641,14 @@ public class TheHungryOneAI : MonoBehaviour
             // deal damage
             if (!dealDamageAlready
                 && 
-                (  Mathf.Abs(player.transform.position.x - transform.position.x) < attackRange * 1.5f
+                ((  Mathf.Abs(player.transform.position.x - transform.position.x) < attackRange * 1.5f
                 && Mathf.Abs(player.transform.position.y - transform.position.y) < 3.5f
                 && controller.IsFacingPlayer()
                 && jumpCount >= jumpNumber)
                 ||
                 ( Mathf.Abs(player.transform.position.x - transform.position.x) < 2.5f
                && Mathf.Abs(player.transform.position.y - transform.position.y) < 3.5f
-               && jumpCount < jumpNumber))
+               && jumpCount < jumpNumber)))
             {
                 player.StartJump(false, true);
                 if (player.DealDamage(attackDamageBase + Random.Range(0, attackDamageMax + 1), transform))

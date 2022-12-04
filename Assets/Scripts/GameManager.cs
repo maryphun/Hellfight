@@ -257,6 +257,9 @@ public class GameManager : MonoBehaviour
                     SetStatusBarVisible(true);
                     StartLevel(currentLevel);
                     SteamworksNetManager.Instance().UpdateLevelStat(currentLevel);
+
+                    levelText.SetText("Level " + currentLevel.ToString());
+                    timerText.gameObject.SetActive(false);
                 }
 
                 // BGM
@@ -889,12 +892,14 @@ public class GameManager : MonoBehaviour
         FBPP.SetInt("LastDeathFlip", boolToInt(player.IsFlip()));
         FBPP.Save();
 
+#if !UNITY_EDITOR
         // SUBMIT NEWGROUNDS SCOREBOARD
         newGroundsAPI.NGSubmitScore(10762, currentLevel);
 
         // SUBMIT LOOTLOCKER SCOREBOARD
-        gameoverText.SetText("Uploading record to server...");
+        gameoverText.SetText(string.Empty);
         int rank = UploadToLeaderBoard(LeaderboardType.Level);
+#endif
     }
     
     IEnumerator WaitForResultScreenFinish()

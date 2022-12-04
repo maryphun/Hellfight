@@ -1709,7 +1709,6 @@ public class Controller : MonoBehaviour
                 break;
             case Skill.BaseDamage:
                 baseDamage += (ProtectedUInt16)value;
-                Debug.Log("player damage gained + " + value.ToString());
                 break;
             case Skill.MaxDamage:
                 maxDamage += (ProtectedUInt16)value;

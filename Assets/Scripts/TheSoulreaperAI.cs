@@ -7,11 +7,21 @@ public class TheSoulreaperAI : MonoBehaviour
 {
     enum AttackType
     {
-        Cast,
+        CastIllusion,
         BackstabAttack,
+        Morph,
         Heal,
+
+        Max,
         Min = 0,
-        Max = Heal + 1,
+    }
+
+    enum MorphType
+    {
+        ChadSlime,
+
+        Max,
+        Min = 0,
     }
 
     [Header("Setting")]
@@ -44,12 +54,13 @@ public class TheSoulreaperAI : MonoBehaviour
     [SerializeField] GameObject illusionOrigin;
 
     [Header("Special Setting")]
-    [SerializeField] private float attackChargeEffectInterval;
+    [SerializeField] private float hpPercentageToCastIllusion = 0.3f;
     [SerializeField] private float jumpTime = 2.0f;
     [SerializeField] private int jumpNumber;
     [SerializeField] private float afterImgInterval = 0.2f;
     [SerializeField] private Color illusionColor = new Color(0.0f, 0.0f, 0.5f, 0.9f);
     [SerializeField] private bool isIllusion = false;
+    [SerializeField] private float fastMovementSpeedMultiplier = 7.0f;
 
     [Header("Debug")]
     [SerializeField] private float afterImgCnt;
@@ -69,9 +80,13 @@ public class TheSoulreaperAI : MonoBehaviour
     bool isBackstabRunning;
     float shockwaveHitPlayerCd;
 
+    TheSoulreaperAI owner;
+    private float targetMovePoint = 0.0f;
 
     private EnemyControl illusionCopy;
     bool isInitialized = false;
+    bool isDealtDamageToOwnerAlready = false;
+    float movedDistance = 0.0f; // after certain distance, he will just move like hellfighter
 
     // Update is called once per frame
     void Start()
@@ -113,6 +128,8 @@ public class TheSoulreaperAI : MonoBehaviour
         switch (controller.GetCurrentStatus())
         {
             case Status.Idle:
+                // choose target move point and move towards
+                targetMovePoint = Mathf.Clamp(-transform.localPosition.x * Random.Range(0.9f, 1.5f), -8f,8f);
                 animator.SetBool("Move", false);
                 IdleCtrl();
                 break;
@@ -140,6 +157,13 @@ public class TheSoulreaperAI : MonoBehaviour
             case Status.SpecialAbility:
                 break;
             case Status.Dying:
+                controller.CreateAfterImage(Time.deltaTime);
+                if (statusTimer <= 0.0f && !isDealtDamageToOwnerAlready)
+                {
+                    isDealtDamageToOwnerAlready = true;
+                    owner.GetController().DealDamage(150);// deal damage to owner
+                    graphic.color = new Color(1, 1, 1, 0);// hide
+                }
                 break;
             default:
                 InitStatus(Status.Idle);
@@ -156,10 +180,21 @@ public class TheSoulreaperAI : MonoBehaviour
                 statusTimer = 0.01f; // a delay before the next action
                 break;
             case Status.Attacking:
-                InitAttack();
+                if (isIllusion && Mathf.Abs(transform.position.x - owner.transform.position.x) < controller.GetCollider().bounds.size.x * 2.0f)
+                {
+                    StartJump();
+                }
+                else
+                {
+                    InitAttack();
+                }
                 break;
             case Status.Attacked:
                 statusTimer = controller.FindAnimation(animator, enemyName + "Hit").length;
+                if (animator.GetBool("Jump") || animator.GetBool("Fall"))
+                {
+                    InitStatus(Status.Fleeing);
+                }
                 break;
             case Status.Turning:
                 if (haveTurnAnimation)
@@ -173,10 +208,13 @@ public class TheSoulreaperAI : MonoBehaviour
                 }
                 break;
             case Status.Chasing:
-                if (!controller.IsFacingPlayer())
                 {
-                    InitStatus(Status.Turning);
-                    return;
+                    movedDistance = 0.0f;
+                    if (!controller.IsFacingPlayer())
+                    {
+                        InitStatus(Status.Turning);
+                        return;
+                    }
                 }
                 animator.Play(enemyName + "Move");
                 animator.SetBool("Move", true);
@@ -189,6 +227,17 @@ public class TheSoulreaperAI : MonoBehaviour
             case Status.Dying:
                 // SE
                 AudioManager.Instance.PlaySFX(enemyName + "Dead");
+
+                if (isIllusion)
+                {
+                    animator.Play(enemyName + "Idle");
+                    animator.speed = 0.0f;
+                    transform.DOMove(owner.transform.position, 1.0f);
+                    graphic.DOColor(Color.white, 1.0f);
+                    graphic.flipX = owner.GetController().GetGraphic().flipX;
+                    statusTimer = 1.0f;
+                    isDealtDamageToOwnerAlready = false;
+                }
                 break;
             default:
                 InitStatus(Status.Idle);
@@ -220,9 +269,14 @@ public class TheSoulreaperAI : MonoBehaviour
                 statusTimer = controller.FindAnimation(animator, enemyName + "Attack").length;
                 break;
 
-            case AttackType.Cast:
+            case AttackType.CastIllusion:
                 animator.Play(enemyName + "Cast");
                 statusTimer = controller.FindAnimation(animator, enemyName + "Cast").length;
+                break;
+
+            case AttackType.Morph:
+                animator.Play("ChadSlimeJump");
+                statusTimer = controller.FindAnimation(animator, enemyName + "ChadSlimeJump").length;
                 break;
             default:
                 break;
@@ -253,16 +307,27 @@ public class TheSoulreaperAI : MonoBehaviour
         // MOVE
         int direction = graphic.flipX ? -1 : 1;
         if (controller.IsStaminaMax() && allowAttack && player.IsAlive()
-            && Mathf.Abs(player.transform.position.x - (transform.position.x + (direction * attackRange / 2f))) < attackRange
+            && (Mathf.Abs(player.transform.position.x - (transform.position.x + (direction * attackRange / 2f))) < attackRange || (!ReferenceEquals(illusionCopy, null) && illusionCopy.IsAlive()))
             && GetComponent<Rigidbody2D>().velocity.y == 0.0f)
         {
+            animator.SetBool("Move", false);
             InitStatus(Status.Attacking);
             return;
         }
         else if (statusTimer == 0.0f && controller.IsStaminaMax() && GetComponent<Rigidbody2D>().velocity.y == 0.0f && player.IsAlive())
         {
+            animator.SetBool("Move", false);
             InitStatus(Status.Chasing);
             return;
+        }
+        else if (GetComponent<Rigidbody2D>().velocity.y == 0.0f && Mathf.Abs(targetMovePoint - transform.localPosition.x) > 0.5f)
+        {
+            animator.SetBool("Move", true);
+            Mathf.MoveTowards(transform.localPosition.x, targetMovePoint, moveSpeed * Time.deltaTime);
+        }
+        else
+        {
+            animator.SetBool("Move", false);
         }
 
         staminaRegenCnt -= Time.deltaTime;
@@ -295,20 +360,49 @@ public class TheSoulreaperAI : MonoBehaviour
         int direction = graphic.flipX ? -1 : 1 ;
 
         // move toward player
-        transform.DOMoveX(transform.position.x + moveSpeed * direction * Time.deltaTime, 0.0f, false);
-        
+        if (movedDistance <= 1.5f)
+        {
+            transform.DOMoveX(transform.position.x + moveSpeed * direction * Time.deltaTime, 0.0f, false);
+            movedDistance += moveSpeed * Time.deltaTime;
+        }
+
+        // fly
+        if (movedDistance > 1.5f)
+        {
+            afterImgCnt += Time.deltaTime;
+            if (afterImgCnt >= afterImgInterval)
+            {
+                controller.CreateAfterImage();
+            }
+
+            controller.GetCollider().enabled = false;
+            controller.GetRigidBody().isKinematic = true;
+
+            float delta = moveSpeed * Time.deltaTime * fastMovementSpeedMultiplier;
+            transform.DOMoveX(Mathf.MoveTowards(transform.position.x, player.transform.position.x, delta), 0.0f, false);
+        }
+           
         // reach destination
         if (Mathf.Abs(player.transform.position.x- transform.position.x ) < attackRange)
         {
+            movedDistance = 0.0f;
+            controller.GetCollider().enabled = true;
+            controller.GetRigidBody().isKinematic = false;
             InitStatus(Status.Attacking);
         }
     }
 
     void AttackCtrl()
     {
-        if (currentAttackType == AttackType.Cast)
+        if (currentAttackType == AttackType.CastIllusion)
         {
             CastIllusionCtrl();
+            return;
+        }
+
+        if (currentAttackType == AttackType.Morph)
+        {
+            CastMorph();
             return;
         }
 
@@ -344,7 +438,15 @@ public class TheSoulreaperAI : MonoBehaviour
                 if (player.DealDamage(calculateDamage, transform))
                 {
                     // heal cultist
-                    if (!isIllusion) controller.Heal(50 + calculateDamage);
+                    if (!isIllusion)
+                    {
+                        controller.Heal(50 + calculateDamage);
+                    }
+                    else
+                    {
+                        // illusion will heal it's owner instead
+                        owner.GetController().Heal(50 + calculateDamage);
+                    }
                     
                     //  cancel previous buff
                     if (!ReferenceEquals(eternalFlameCoroutine, null))
@@ -364,7 +466,7 @@ public class TheSoulreaperAI : MonoBehaviour
                 shockwaveHitPlayerCd = 0.0f;
                 StartCoroutine(Shockwave(-1.65f,
                     transform.position.x + (2.0f * (float)controller.GetDirectionInteger()), 
-                    0.1f, (float)controller.GetDirectionInteger() * 0.6f, 1));
+                    0.1f, (float)controller.GetDirectionInteger() * 0.6f));
             }
 
             // create a circle of effects around it
@@ -415,7 +517,15 @@ public class TheSoulreaperAI : MonoBehaviour
                 GameObject obj = controller.SpawnSpecialEffect(eternalFlameEffect, lastPos, false);
                 if (isIllusion) obj.GetComponent<SpriteRenderer>().color = illusionColor;
 
-                if (!isIllusion) controller.Heal(5);
+                if (!isIllusion)
+                {
+                    controller.Heal(5);
+                }
+                else
+                {
+                    // illusion will heal it's owner instead
+                    owner.GetController().Heal(5);
+                }
 
                 // count time
                 timeElapsed += effectInterval;
@@ -441,7 +551,10 @@ public class TheSoulreaperAI : MonoBehaviour
             currentAttackType = AttackType.Min;
         }
 
-        if (currentAttackType == AttackType.Cast && (controller.GetCurrentHPPercentage() > 0.6f || isIllusion || (!ReferenceEquals(illusionCopy, null) && illusionCopy.IsAlive())))
+        // should cast illusion?
+        if (currentAttackType == AttackType.CastIllusion && 
+            (controller.GetCurrentHPPercentage() > hpPercentageToCastIllusion 
+            || isIllusion || (!ReferenceEquals(illusionCopy, null) && illusionCopy.IsAlive())))
         {
             currentAttackType = currentAttackType + 1; // skip
         }
@@ -458,7 +571,6 @@ public class TheSoulreaperAI : MonoBehaviour
         }
 
         // velocity
-        Debug.Log(gameObject.name + "is trying to jump!");
         controller.GetRigidBody().velocity = new Vector2(0.0f, 10.0f);
         controller.GetRigidBody().AddForce(new Vector2(0.0f, 60f));
 
@@ -543,6 +655,7 @@ public class TheSoulreaperAI : MonoBehaviour
 
             illusionCopy.Initialization(); // force initialize
             illusionCopy.GetComponent<TheSoulreaperAI>().Initialize(); // force initialize
+            illusionCopy.GetComponent<TheSoulreaperAI>().SetOwner(this); // send reference
 
             var illusionGraphic = illusionCopy.GetComponent<EnemyControl>();
 
@@ -556,6 +669,11 @@ public class TheSoulreaperAI : MonoBehaviour
 
             illusionCopy.GetComponent<TheSoulreaperAI>().StartJump();
         }
+    }
+
+    private void CastMorph()
+    {
+
     }
     
     IEnumerator BackStab()
@@ -582,7 +700,7 @@ public class TheSoulreaperAI : MonoBehaviour
 
     }
 
-    IEnumerator Shockwave(float y, float initialPosition, float timeinterval, float rangeinterval, int bounceNumber)
+    IEnumerator Shockwave(float y, float initialPosition, float timeinterval, float rangeinterval)
     {
         // WAIT
         yield return new WaitForSeconds(timeinterval);
@@ -618,21 +736,22 @@ public class TheSoulreaperAI : MonoBehaviour
         }
 
         // LOOP
-        if (initialPosition < -9f || initialPosition > 9f)
+        if (initialPosition > -9f && initialPosition < 9f)
         {
-            if (bounceNumber > 0)
-            {
-                StartCoroutine(Shockwave(y, initialPosition - rangeinterval, timeinterval * 2f, -rangeinterval, bounceNumber - 1));
-            }
-        }
-        else
-        {
-            StartCoroutine(Shockwave(y, initialPosition + rangeinterval, timeinterval, rangeinterval, bounceNumber));
+            StartCoroutine(Shockwave(y, initialPosition + rangeinterval, timeinterval, rangeinterval));
         }
     }
 
     public EnemyControl GetController()
     {
         return controller;
+    }
+
+    // owner of this illusion
+    public void SetOwner(TheSoulreaperAI _owner)
+    {
+        if (!isIllusion) return;
+
+        owner = _owner;
     }
 }

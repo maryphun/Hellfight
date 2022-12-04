@@ -97,6 +97,10 @@ public class ProgressManager : Singleton<ProgressManager>
     {
         return FBPP.GetInt("HighestLevel", 0);
     }
+    public int GetHighestUnlockLevel()
+    {
+        return unlockList.Count;
+    }
 
     public List<UnlockData> GetNewUnlockList()
     {

@@ -3,11 +3,12 @@ Menu.Start,Press any key,按任意鍵開始遊戲,按任意键开始游戏,<font
 Menu.MainGame,Main Game,開始遊戲,开始游戏,Main Game
 Menu.BossRushMode,<color=grey>Boss Rush Mode</color>,<color=grey>魔王模式</color>,<color=grey>魔王模式</color>,<color=grey>Boss Rush Mode</color>
 Menu.Leaderboard,Leaderboard,排行榜,排行榜,ランキング
-Menu.Credits,<color=grey>Credits</color>,<color=grey>感謝名單</color>,<color=grey>感谢名单</color>,<color=grey>Credits</color>
+Menu.Credits,Credits,感謝名單,感谢名单,Credit
 Menu.ResetLocalData,Reset Local Data,清除本地數據,清除本地数据,Reset Local Data
-Menu.Exit,<color=grey>Exit</color>,<color=grey>退出</color>,<color=grey>退出</color>,<color=grey>Exit</color>
+Menu.Exit,Exit,退出,退出,Exit
 Menu.HighestRecord,highest record,最高紀錄,最高纪录,最高記録
 Menu.HighestRecordValue,Level {0:N0},Level {0:N0},Level {0:N0},Level {0:N0}
+Menu.Unlocks,Unlocks,解鎖,解锁,アンロック
 Menu.Comfirmation,Are you sure?,確定嗎?,确定吗?,本当ですか?
 Menu.Setting,Setting,系統設定,系统设定,設定
 Menu.KeyConfig,Key configuration,按鍵設定,按键设定,キー設定

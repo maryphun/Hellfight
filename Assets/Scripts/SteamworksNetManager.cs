@@ -1,12 +1,15 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using Steamworks;
 
+#if DISABLESTEAMWORKS
+using Steamworks;
+#endif
 public class SteamworksNetManager : Singleton<SteamworksNetManager>
 {
     public void UpdateLevelStat(int currentLevel)
     {
+#if DISABLESTEAMWORKS
         if (SteamManager.Initialized)
         {
             SteamUserStats.SetStat("CURRENTLEVEL", currentLevel);
@@ -18,10 +21,12 @@ public class SteamworksNetManager : Singleton<SteamworksNetManager>
             }
             SteamUserStats.StoreStats();
         }
+#endif
     }
 
     public void CheckLevelAchievement(int currentLevel)
     {
+#if DISABLESTEAMWORKS
         if (SteamManager.Initialized)
         {
             // Update level stats
@@ -39,10 +44,12 @@ public class SteamworksNetManager : Singleton<SteamworksNetManager>
                 }
             }
         }
+#endif
     }
 
     public void UnlockAchievement(string code)
     {
+#if DISABLESTEAMWORKS
         if (SteamManager.Initialized)
         {
             // Check Achievement and set
@@ -53,16 +60,19 @@ public class SteamworksNetManager : Singleton<SteamworksNetManager>
                 SteamUserStats.StoreStats();
             }
         }
+#endif
     }
 
     public void ClearSteamAchievement(string code)
     {
+#if DISABLESTEAMWORKS
         if (SteamManager.Initialized)
         {
             SteamUserStats.ClearAchievement(code);
             SteamUserStats.StoreStats();
             Debug.Log("Steam Achievement reset: " + code);
         }
+#endif
     }
 
     public void SteamLeaderboard()
@@ -72,8 +82,10 @@ public class SteamworksNetManager : Singleton<SteamworksNetManager>
             //SteamUserStats.
         }
     }
+
     public bool SetSteamRichPresence(bool isPlaying, int level)
     {
+#if DISABLESTEAMWORKS
         if (SteamManager.Initialized)
         {
             SteamFriends.SetRichPresence("steam_display", "#StatusWithScore");
@@ -81,15 +93,18 @@ public class SteamworksNetManager : Singleton<SteamworksNetManager>
             SteamFriends.SetRichPresence("status", "fighting at level " + level.ToString());
             return true;
         }
+#endif
         return false;
     }
 
     public string GetSteamID()
     {
+#if DISABLESTEAMWORKS
         if (SteamManager.Initialized)
         {
             return SteamFriends.GetPersonaName();
         }
+#endif
         return string.Empty;
     }
 
@@ -103,6 +118,7 @@ public class SteamworksNetManager : Singleton<SteamworksNetManager>
 
     public string GetSteamLanguage(bool convert)
     {
+#if DISABLESTEAMWORKS
         if (SteamManager.Initialized)
         {
             string languageCode = SteamApps.GetCurrentGameLanguage();
@@ -127,11 +143,12 @@ public class SteamworksNetManager : Singleton<SteamworksNetManager>
                 }
             }
         }
+#endif
         return string.Empty;
     }
 
-    public bool IsSteamConnected()
-    {
+     public bool IsSteamConnected()
+     {
 #if !(UNITY_STANDALONE_WIN || UNITY_STANDALONE_LINUX || UNITY_STANDALONE_OSX || STEAMWORKS_WIN || STEAMWORKS_LIN_OSX)
         // unsupported platform.
         return false;
@@ -141,5 +158,6 @@ public class SteamworksNetManager : Singleton<SteamworksNetManager>
             return true;
         }
         return false;
-    }
+     }
 }
+
