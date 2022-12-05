@@ -1913,4 +1913,10 @@ public class Controller : MonoBehaviour
     {
         return graphic.flipX;
     }
+
+
+    public float GetCurrentInputMove()
+    {
+        return input.move;
+    }
 }

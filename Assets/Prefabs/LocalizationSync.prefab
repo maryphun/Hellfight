@@ -49,4 +49,4 @@ MonoBehaviour:
     Id: 0
   - Name: Settings
     Id: 331980525
-  SaveFolder: {fileID: 102900000, guid: c392831e85f928548b8494fefd912562, type: 3}
+  SaveFolder: {fileID: 4900000, guid: 0b554af7502162543b2f878ce9fe5a7c, type: 3}

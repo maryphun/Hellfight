@@ -5,8 +5,6 @@ using UnityEngine.Events;
 
 public class ControlPattern : Singleton<ControlPattern>
 {
-    UnityEvent callback;
-
     public enum CtrlPattern
     {
         NULL = -1,
@@ -29,11 +27,10 @@ public class ControlPattern : Singleton<ControlPattern>
         return controlPattern;
     }
 
-    public void DetectControlPattern(UnityEvent callback)
+    public void DetectControlPattern()
     {
         if (hardSettedControlMethod)
         {
-            callback.Invoke();
             return;
         }
 
@@ -43,8 +40,6 @@ public class ControlPattern : Singleton<ControlPattern>
         {
             controlPattern = option;
             hardSettedControlMethod = true;
-
-            callback.Invoke();
             return;
         }
 
@@ -53,18 +48,16 @@ public class ControlPattern : Singleton<ControlPattern>
         {
             // there are no joystick registered
             controlPattern = CtrlPattern.KEYBOARD;
-            Debug.Log("keyboard!");
-
-            callback.Invoke();
+            Debug.Log("No joystick connected. Assume player use keyboard as main input method.");
             return;
         }
         else
         {
-            StartCoroutine(DetectNextKey(callback));
+            StartCoroutine(DetectNextKey());
         }
     }
 
-    IEnumerator DetectNextKey(UnityEvent callback)
+    IEnumerator DetectNextKey()
     {
         if (!GetJoystickAnyKey())
         {
@@ -73,22 +66,20 @@ public class ControlPattern : Singleton<ControlPattern>
             {
                 // no keyboard input either
                 yield return new WaitForFixedUpdate();
-                StartCoroutine(DetectNextKey(callback));
+                StartCoroutine(DetectNextKey());
             }
             else
             {
                 // keyboard control detected
                 controlPattern = CtrlPattern.KEYBOARD;
-                Debug.Log("KEYBOARD!");
-                callback.Invoke();
+                Debug.Log("Joystick is connected but player use keyboard to control.");
             }
         }
         else
         {
             // player is clicking buttons on joystick
             controlPattern = CtrlPattern.JOYSTICK;
-            Debug.Log("JOYSTICK!");
-            callback.Invoke();
+            Debug.Log("Joystick is connected and player use joystick as control method.");
         }
     }
 

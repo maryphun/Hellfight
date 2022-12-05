@@ -228,6 +228,9 @@ public class ShaddoAI : MonoBehaviour
             float direction = graphic.flipX ? -1 : 1;
             GameObject proj = Instantiate(projectilePrefab, new Vector2(transform.position.x + (direction * GetComponent<Collider2D>().bounds.size.x / 2f), transform.position.y), Quaternion.identity);
             proj.GetComponent<projectile>().Initialize(new Vector2(direction, 0.0f), 10f, attackDamageBase + Random.Range(0, attackDamageMax + 1), player, 1f);
+            
+            // ask game manager to remove this object if the player restart the game.
+            controller.GetGameManager().RegisterExtraStuff(proj);
         }
 
         if (statusTimer <= 0.0f)

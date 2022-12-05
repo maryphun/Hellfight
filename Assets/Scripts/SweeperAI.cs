@@ -331,7 +331,10 @@ public class SweeperAI : MonoBehaviour
                 if (Mathf.Abs(transform.position.x - lastFramePos) >= darkTrackDistance)
                 {
                     lastFramePos = Mathf.MoveTowards(lastFramePos, transform.position.x, darkTrackDistance);
-                    tracks.Add(controller.SpawnSpecialEffect(trackEffect, new Vector2(lastFramePos, darkpactLocationY), false));
+
+                    GameObject track = controller.SpawnSpecialEffect(trackEffect, new Vector2(lastFramePos, darkpactLocationY), false);
+                    tracks.Add(track);
+                    controller.GetGameManager().RegisterExtraStuff(track);
                 }
                 
                 controller.CreateAfterImage(0.15f);

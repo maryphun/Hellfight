@@ -42,6 +42,9 @@ public class LightingBall : MonoBehaviour
 
         // Move to target height
         transform.DOLocalMoveY(1.5f, shootInterval);
+
+        // ask game manager to remove this object if the player restart the game.
+        _gameMng.RegisterExtraStuff(gameObject);
     }
     public void Initialize(GameManager _gameMng, Controller _player, TheHungryOneAI _master, int shoot, float _shootInterval, int damage, int maxDamage)
     {
@@ -58,6 +61,9 @@ public class LightingBall : MonoBehaviour
 
         // Move to target height
         transform.DOLocalMoveY(1.5f, shootInterval);
+
+        // ask game manager to remove this object if the player restart the game.
+        _gameMng.RegisterExtraStuff(gameObject);
     }
 
     public void DestroySelf(float time)

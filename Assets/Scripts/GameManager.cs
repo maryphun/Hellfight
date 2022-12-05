@@ -95,6 +95,7 @@ public class GameManager : MonoBehaviour
     [SerializeField] int currentLevel;
     [SerializeField] int totalNumberOfMonster;
     [SerializeField] List<EnemyControl> monsterList;
+    [SerializeField] List<GameObject> extraStuffList; // object to get rid of when player restart 
     [SerializeField] bool spawnEnded = false;
     [SerializeField] bool levelEnded = false;
     [SerializeField] bool gameOver = false;
@@ -303,7 +304,7 @@ public class GameManager : MonoBehaviour
         NarrativeText.DOFade(1.0f, 2.0f);
 
         string narrative = LocalizationManager.Localize("Text.NewChallenger");
-        if (ProgressManager.Instance().GetUnlockLevel() > 0)
+        if (ProgressManager.Instance().GetHighestLevelRecord() > 0)
         {
             narrative = LocalizationManager.Localize("Text.Retry");
         }
@@ -313,16 +314,22 @@ public class GameManager : MonoBehaviour
         AudioManager.Instance.PlaySFX("doon!");
 
         // check what player use as a input method by detecting his next input and get a call back
-        UnityEvent tmp = new UnityEvent();
-        tmp.AddListener(InputDetected);
-        ControlPattern.Instance().DetectControlPattern(tmp);
+        ControlPattern.Instance().DetectControlPattern();
 
         yield return new WaitForSeconds(2.0f);
         StartLevelCinematic();
 
         yield return new WaitForSeconds(0.2f);
         SetStatusBarVisible(true);
-        StartLevel(currentLevel);
+
+        if (FBPP.GetBool("IsTutorialFinished", false))
+        {
+            StartLevel(currentLevel);
+        }
+        else
+        {
+            StartCoroutine(StartTutorial());
+        }
         SteamworksNetManager.Instance().UpdateLevelStat(currentLevel);
 
         yield return new WaitForSeconds(2.0f);
@@ -566,6 +573,7 @@ public class GameManager : MonoBehaviour
         spawnEnded = false;
         levelEnded = false;
         monsterList.Clear();
+        extraStuffList.Clear();
         enemySpawner.ResetSpawner();
         totalNumberOfMonster = enemySpawner.StartSpawning(level);
         groundCollider.enabled = true;
@@ -588,15 +596,7 @@ public class GameManager : MonoBehaviour
         int record = ProgressManager.Instance().GetHighestLevelRecord();
         if (level == 1 && (record <= level))
         {
-            if (ControlPattern.Instance().IsJoystickConnected())
-            {
-                tipsText.SetText(Input.GetJoystickNames()[0] + "\n<font=pixelinput SDF>4</font> " + LocalizationManager.Localize("Tutorial.Attack") + " <font=pixelinput SDF>6</font> " + LocalizationManager.Localize("Tutorial.Jump") + " <font=pixelinput SDF>7</font> " + LocalizationManager.Localize("Tutorial.Dash"));
-            }
-            else
-            {
-                tipsText.SetText("<font=pixelinput SDF>W</font>\n<font=pixelinput SDF>ASD</font>\n" + LocalizationManager.Localize("Tutorial.Move") + "\n<font=pixelinput SDF>z</font> " + LocalizationManager.Localize("Tutorial.Attack") + " <font=pixelinput SDF>x</font> " + LocalizationManager.Localize("Tutorial.Jump"));
-            }
-            tipsText.DOFade(1.0f, 0.5f);
+            
         }
         else if (level == 2 && record <= level)
         {
@@ -635,9 +635,9 @@ public class GameManager : MonoBehaviour
             tipsText.SetText(LocalizationManager.Localize("Tutorial.TipsLevel25"));
             tipsText.DOFade(1.0f, 0.5f);
         }
-        else if (potionSelected && FBPP.GetInt("TutorialPotion", 0) != 1)
+        else if (potionSelected && !FBPP.GetBool("TutorialPotion", false))
         {
-            FBPP.SetInt("TutorialPotion", 1);
+            FBPP.SetBool("TutorialPotion", true);
             if (ControlPattern.Instance().IsJoystickConnected())
             {
                 tipsText.SetText("\n<font=pixelinput SDF>+</font> " + LocalizationManager.Localize("Tutorial.UseItem"));
@@ -655,26 +655,80 @@ public class GameManager : MonoBehaviour
         }
     }
 
-    private void InputDetected()
+    IEnumerator StartTutorial()
     {
-        int record = ProgressManager.Instance().GetUnlockLevel();
-        if (currentLevel == 1 && record <= currentLevel)
+        // teach player to move
+        bool nextStep = false;
+        if (ControlPattern.Instance().IsJoystickConnected() && ControlPattern.Instance().GetControlPattern() == ControlPattern.CtrlPattern.JOYSTICK)
         {
-            if (ControlPattern.Instance().GetControlPattern() == ControlPattern.CtrlPattern.JOYSTICK)
-            {
-                tipsText.SetText(Input.GetJoystickNames()[0] + "\n<font=pixelinput SDF>4</font> " + LocalizationManager.Localize("Tutorial.Attack") + " <font=pixelinput SDF>6</font> " + LocalizationManager.Localize("Tutorial.Jump") + " <font=pixelinput SDF>7</font> " + LocalizationManager.Localize("Tutorial.Dash"));
-            }
-            else
-            {
-                tipsText.SetText("<font=pixelinput SDF>W</font>\n<font=pixelinput SDF>ASD</font>\n" + LocalizationManager.Localize("Tutorial.Move") + "\n<font=pixelinput SDF>z</font> " + LocalizationManager.Localize("Tutorial.Attack") + " <font=pixelinput SDF>x</font> " + LocalizationManager.Localize("Tutorial.Jump"));
-            }
+           // tipsText.SetText(Input.GetJoystickNames()[0] + "\n<font=pixelinput SDF>4</font> " + LocalizationManager.Localize("Tutorial.Attack") + " <font=pixelinput SDF>6</font> " + LocalizationManager.Localize("Tutorial.Jump") + " <font=pixelinput SDF>7</font> " + LocalizationManager.Localize("Tutorial.Dash"));
+            tipsText.SetText(LocalizationManager.Localize("Tutorial.Jump") + "\n<font=pixelinput SDF>6</font>");
         }
+        else
+        {
+            tipsText.SetText(LocalizationManager.Localize("Tutorial.Move") + "\n<font=pixelinput SDF><size=1> </size>W  <size=11> </size>w \nASD asd </font>");
+        }
+        tipsText.DOFade(1.0f, 0.5f);
+
+        while (!nextStep)
+        {
+            if (player.IsJumping() && ControlPattern.Instance().IsJoystickConnected()) nextStep = true;
+            if (player.GetCurrentInputMove() != 0.0f && !ControlPattern.Instance().IsJoystickConnected()) nextStep = true;
+            yield return new WaitForEndOfFrame();
+        }
+
+        nextStep = false;
+        tipsText.DOFade(0.0f, 0.5f);
+        yield return new WaitForSeconds(1.0f);
+
+        // teach to dash
+        if (ControlPattern.Instance().IsJoystickConnected() && ControlPattern.Instance().GetControlPattern() == ControlPattern.CtrlPattern.JOYSTICK)
+        {
+            tipsText.SetText(LocalizationManager.Localize("Tutorial.Dash") + "\n<font=pixelinput SDF>7</font>");
+        }
+        else
+        {
+            tipsText.SetText(LocalizationManager.Localize("Tutorial.Dash") + "\n<font=pixelinput SDF>x</font>");
+        }
+        tipsText.DOFade(1.0f, 0.5f);
+
+        while (!nextStep)
+        {
+            if (player.IsDashing()) nextStep = true;
+            yield return new WaitForEndOfFrame();
+        }
+        tipsText.DOFade(0.0f, 0.5f);
+
+        nextStep = false;
+        yield return new WaitForSeconds(1.0f);
+        
+        // teach to attack
+        StartLevel(currentLevel);
+        if (ControlPattern.Instance().IsJoystickConnected() && ControlPattern.Instance().GetControlPattern() == ControlPattern.CtrlPattern.JOYSTICK)
+        {
+            tipsText.SetText(LocalizationManager.Localize("Tutorial.Attack") + "\n<font=pixelinput SDF>4</font>");
+        }
+        else
+        {
+            tipsText.SetText(LocalizationManager.Localize("Tutorial.Attack") + "\n<font=pixelinput SDF>z</font>");
+        }
+        tipsText.DOFade(1.0f, 0.5f);
+
+        while (!nextStep)
+        {
+            if (levelEnded) nextStep = true;
+            yield return new WaitForEndOfFrame();
+        }
+        
+        FBPP.SetBool("IsTutorialFinished", true);
+        FBPP.Save();
     }
 
     private void EndLevel()
     {
         monsterSpawnCount = 0;
         monsterList.Clear();
+        extraStuffList.Clear();
         spawnEnded = false;
         levelEnded = true;
         if (isRoundTimerRunning)
@@ -740,6 +794,11 @@ public class GameManager : MonoBehaviour
     public void RregisterBoss(EnemyControl monster)
     {
         bossHPBar.Activate(monster);
+    }
+
+    public void RegisterExtraStuff(GameObject reference)
+    {
+        extraStuffList.Add(reference);
     }
 
     // player reach the botton -> let player pick new powerup -> next level
@@ -1095,6 +1154,10 @@ public class GameManager : MonoBehaviour
             Destroy(enemy.gameObject);
         }
         monsterList.Clear();
+        foreach (GameObject obj in extraStuffList)
+        {
+            Destroy(obj);
+        }
 
         // Reset Player
         player.transform.position = new Vector2(0f, 6.9f);

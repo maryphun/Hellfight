@@ -1,16 +1,17 @@
 fileFormatVersion: 2
-guid: 4d0b472f83a498c4e9e2a142b8988687
+guid: 28cd040ae78549c44a46f99feaa6bdc9
 TrueTypeFontImporter:
   externalObjects: {}
   serializedVersion: 4
-  fontSize: 7
+  fontSize: 16
   forceTextureCase: -2
   characterSpacing: 0
   characterPadding: 1
   includeFontData: 1
   fontNames:
-  - JF Dot Paw 16
-  fallbackFontReferences: []
+  - PixelMplus12
+  fallbackFontReferences:
+  - {fileID: 12800000, guid: 156595d3f3b5e6645b627ca9bdadb82d, type: 3}
   customCharacters: 
   fontRenderingMode: 0
   ascentCalculationMode: 1

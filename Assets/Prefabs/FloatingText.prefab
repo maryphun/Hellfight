@@ -69,7 +69,7 @@ MonoBehaviour:
   m_text: 
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f9bdee57e28c6c4ca07b29565f098bf, type: 2}
-  m_sharedMaterial: {fileID: 583840982053765578, guid: 8f9bdee57e28c6c4ca07b29565f098bf, type: 2}
+  m_sharedMaterial: {fileID: 218203853542026382, guid: 8f9bdee57e28c6c4ca07b29565f098bf, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -147,3 +147,4 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 66fad061e7a1fda42b02dfccb56a2941, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  txt: {fileID: 0}

@@ -540,6 +540,9 @@ public class EnemyControl : MonoBehaviour
         afterImg.GetComponent<Tail>().Initialization(0.5f, tailRenderer, 0.5f);
         //--- done ---
         Destroy(afterImg, time);
+
+        // ask game manager to remove this object if the player restart the game.
+        gameMng.RegisterExtraStuff(gameObject);
     }
 
     public void TurnTowardPlayer()
