@@ -309,11 +309,11 @@ public class ProgressManager : Singleton<ProgressManager>
         }
 
         // localization font
-        if (LocalizationManagerHellFight.Instance().GetCurrentLanguage() == "Japanese")
-        {
-            rtn.skill_name = "<font=JPPixel SDF>" + rtn.skill_name + "</font>";
-            rtn.skill_description = "<font=JPPixel SDF>" + rtn.skill_description + "</font>";
-        }
+        //if (LocalizationManagerHellFight.Instance().GetCurrentLanguage() == "Japanese")
+        //{
+        //    rtn.skill_name = "<font=JP SDF>" + rtn.skill_name + "</font>";
+        //    rtn.skill_description = "<font=JP SDF>" + rtn.skill_description + "</font>";
+        //}
         return rtn;
     }
 

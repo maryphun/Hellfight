@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using DG.Tweening;
 
-public class TheHungryOneAI : MonoBehaviour
+public class TheHungryOneAI : EnemyAI
 {
     enum AttackType
     {

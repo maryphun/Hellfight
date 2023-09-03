@@ -189,6 +189,9 @@ public class AbilityLearnPanel : MonoBehaviour
         InitializeSelection(level);
     }
 
+    /// <summary>
+    /// ‘I‘ğˆ‚ğ‰Šú‰»
+    /// </summary>
     private void InitializeSelection(int level)
     {
         int unlockLevel = ProgressManager.Instance().GetUnlockLevel();

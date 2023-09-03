@@ -22,11 +22,13 @@ public class GameManager : MonoBehaviour
     [SerializeField] Color debug_fixedColor = new Color(1, 1, 1, 1);
 #endif
 
+    [Header("Leaderboard Keys")]
+    [SerializeField] string levelLeaderBoardID = "LevelRank";
+    [SerializeField] string SpeedRun10LeaderBoardID = "Level10";
+    [SerializeField] string SpeedRun20LeaderBoardID = "Level20";
+    [SerializeField] string cheaterLeaderboardID = "CheaterRank";
+
     [Header("References Object")]
-    [SerializeField] int levelLeaderBoardID = 402;
-    [SerializeField] int SpeedRun10LeaderBoardID = 402;
-    [SerializeField] int SpeedRun20LeaderBoardID = 402;
-    [SerializeField] int cheaterLeaderboardID = 434;
     [SerializeField] float musicVolume = 0.7f;
     [SerializeField] int timeCounter;
     [SerializeField] GameObject floatingTextPrefab;
@@ -210,6 +212,9 @@ public class GameManager : MonoBehaviour
         return screenPoint;
     }
 
+    /// <summary>
+    /// ゲーム開始
+    /// </summary>
     public void StartGame()
     {
         // Reset flags
@@ -304,7 +309,7 @@ public class GameManager : MonoBehaviour
         NarrativeText.DOFade(1.0f, 2.0f);
 
         string narrative = LocalizationManager.Localize("Text.NewChallenger");
-        if (ProgressManager.Instance().GetHighestLevelRecord() > 0)
+        if (ProgressManager.Instance().GetHighestLevelRecord() > 1)
         {
             narrative = LocalizationManager.Localize("Text.Retry");
         }
@@ -351,6 +356,10 @@ public class GameManager : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// タイマーの時間を増加
+    /// </summary>
+    /// <param name="time"></param>
     public void TimerAddTime(int time)
     {
         // Extra time
@@ -363,17 +372,29 @@ public class GameManager : MonoBehaviour
             timer += time;
         }
     }
+
+    /// <summary>
+    /// レベル変更時用、タイマーの時間を増加
+    /// </summary>
     public void TimerAddTimeNewLevel()
     {
         TimerAddTime(extraTimePerLevel);
     }
 
+    /// <summary>
+    /// インパクトを表現するためのスクリーンシェイク
+    /// </summary>
+    /// <param name="time"></param>
+    /// <param name="magnitude"></param>
     public void ScreenImpactGround(float time, float magnitude)
     {
         Camera.main.transform.position = new Vector3(Camera.main.transform.position.x, Camera.main.transform.position.y - magnitude, Camera.main.transform.position.z);
         StartCoroutine(ReturnScreenPosition(time));
     }
 
+    /// <summary>
+    /// レベル変更時に背景のテーマと色を設定
+    /// </summary>
     public void ScreenChangeTheme()
     {
         if (currentLevel == 1) return;
@@ -386,6 +407,7 @@ public class GameManager : MonoBehaviour
         if (debugMode && debug_fixedColor_enable) presetColor = debug_fixedColor;
 #endif
 
+        // ボス戦は特定の背景色を設定
         // Boss preset color
         if (currentLevel % 10 == 0)
         {
@@ -402,6 +424,7 @@ public class GameManager : MonoBehaviour
         timerText.color = presetColor;
         countdownText.color = new Color(presetColor.r, presetColor.g, presetColor.b, 0.5f); ;
 
+        // 特定のレベル以外は背景がランダム
         // level specific theme
         if (currentLevel == 5)
         {
@@ -452,6 +475,9 @@ public class GameManager : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// スクリーンポジションを初期化
+    /// </summary>
     IEnumerator ReturnScreenPosition(float delay)
     {
         yield return new WaitForSeconds(delay);
@@ -459,6 +485,9 @@ public class GameManager : MonoBehaviour
         Camera.main.transform.position = new Vector3(0, 0, -10);
     }
 
+    /// <summary>
+    /// シナリオ開始
+    /// </summary>
     public void StartLevelCinematic()
     {
         screenAlpha.DOFade(0.0f, 1.0f);
@@ -750,7 +779,6 @@ public class GameManager : MonoBehaviour
         if (currentLevel == 9) NarrativeText.SetText(LocalizationManager.Localize("Text.Proceedlvl9"));
         if (currentLevel == 19) NarrativeText.SetText(LocalizationManager.Localize("Text.Proceedlvl19"));
         if (currentLevel == 29) NarrativeText.SetText(LocalizationManager.Localize("Text.Proceedlvl29"));
-        if (LocalizationManagerHellFight.Instance().GetCurrentLanguage() == "Japanese") NarrativeText.SetText("<font=JPPixel SDF>" + NarrativeText.text + "</font>");
         // TIPS TEXT
         if (currentLevel == 1)
         {
@@ -951,16 +979,16 @@ public class GameManager : MonoBehaviour
         FBPP.SetInt("LastDeathFlip", boolToInt(player.IsFlip()));
         FBPP.Save();
 
-#if !UNITY_EDITOR
+#if UNITY_WEBGL
         // SUBMIT NEWGROUNDS SCOREBOARD
         newGroundsAPI.NGSubmitScore(10762, currentLevel);
-
+#else
         // SUBMIT LOOTLOCKER SCOREBOARD
         gameoverText.SetText(string.Empty);
         int rank = UploadToLeaderBoard(LeaderboardType.Level);
 #endif
     }
-    
+
     IEnumerator WaitForResultScreenFinish()
     {
         while (!resultScreenUI.IsFinished())
@@ -1006,34 +1034,36 @@ public class GameManager : MonoBehaviour
 
         // name only
         string memberID = playerName;
-        int leaderboardID;
+        string leaderboardID;
         int data;
         switch (type)
         {
             case LeaderboardType.Level:
-                leaderboardID = GetLeaderboardID(type);
+                leaderboardID = GetLeaderboardKey(type);
                 data = currentLevel;
                 break;
             case LeaderboardType.SpeedRunLevel10:
-                leaderboardID = SpeedRun10LeaderBoardID;
+                leaderboardID = SpeedRun10LeaderBoardID.ToString();
                 data = Mathf.RoundToInt(FBPP.GetFloat("SpeedRunLevel10", 7200f));
                 break;
             case LeaderboardType.SpeedRunLevel20:
-                leaderboardID = SpeedRun20LeaderBoardID;
+                leaderboardID = SpeedRun20LeaderBoardID.ToString();
                 data = Mathf.RoundToInt(FBPP.GetFloat("SpeedRunLevel20", 7200f));
                 break;
             default:
                 Debug.Log("<color=red>LEADERBOARD TYPE NOT FOUND</color>");
                 data = 0;
-                leaderboardID = 0;
+                leaderboardID = string.Empty;
                 return rank;
         }
 
         // record leaderboard
         LootLockerSDKManager.SubmitScore(memberID, data, leaderboardID, (response) =>
         {
+            Debug.Log("ハイスコア提出中");
             if (response.success)
             {
+                Debug.Log("リーダーボード更新成功");
                 rank = response.rank;
                 data = response.score;
 
@@ -1044,7 +1074,7 @@ public class GameManager : MonoBehaviour
             }
             else
             {
-                Debug.Log("Failed to connect server");
+                Debug.Log("リーダーボード　サーバー接続失敗！！");
                 gameoverText.SetText("");
                 rank = -1;
             }
@@ -1056,24 +1086,33 @@ public class GameManager : MonoBehaviour
     private void SetGameOverText(LeaderboardType type, int rank, int data)
     {
         int min, sec;
+        string extraString = string.Empty;
         switch (type)
         {
             case LeaderboardType.Level:
-                gameoverText.SetText("You've ranked <color=#ff0000ff>#" + rank.ToString() + "</color> in the global leaderboard. (level " + data.ToString() + ")");
+                gameoverText.SetText(LocalizationManager.Localize("Result.LevelRank"), rank, data);
                 break;
             case LeaderboardType.SpeedRunLevel10:
                 min = data / 60;
                 sec = data % 60;
-                gameoverText.SetText(gameoverText.text + "\n<color=#ff0000ff>#" + rank.ToString() + "</color> fastest person to beat level 10. (" + min.ToString() + "m" + sec.ToString() + "s)");
+                extraString = string.Format(LocalizationManager.Localize("Result.Level10Rank"), rank, min, sec);
+                gameoverText.SetText(gameoverText.text + "\n" + extraString);
                 break;
             case LeaderboardType.SpeedRunLevel20:
                 min = data / 60;
                 sec = data % 60;
-                gameoverText.SetText(gameoverText.text + "\n<color=#ff0000ff>#" + rank.ToString() + "</color> fastest person to beat level 20. (" + min.ToString() + "m" + sec.ToString() + "s)");
+                extraString = string.Format(LocalizationManager.Localize("Result.Level20Rank"), rank, min, sec);
+                gameoverText.SetText(gameoverText.text + "\n" + extraString);
                 break;
             default:
                 Debug.Log("<color=red>LEADERBOARD TYPE NOT FOUND</color>");
                 break;
+        }
+
+        //　日本語の行替えを別で設定
+        if (LocalizationManagerHellFight.Instance().GetCurrentLanguage() == "Japanese")
+        {
+            gameoverText.lineSpacing = -9.0f;
         }
     }
 
@@ -1521,23 +1560,23 @@ public class GameManager : MonoBehaviour
         }
     }
 
-    public int GetLeaderboardID(LeaderboardType type)
+    public string GetLeaderboardKey(LeaderboardType type)
     {
-        int rtn;
+        string rtn;
 
         switch (type)
         {
             case LeaderboardType.Level:
-                rtn = levelLeaderBoardID;
+                rtn = levelLeaderBoardID.ToString();
                 break;
             case LeaderboardType.SpeedRunLevel10:
-                rtn = SpeedRun10LeaderBoardID;
+                rtn = SpeedRun10LeaderBoardID.ToString();
                 break;
             case LeaderboardType.SpeedRunLevel20:
-                rtn = SpeedRun20LeaderBoardID;
+                rtn = SpeedRun20LeaderBoardID.ToString();
                 break;
             default:
-                rtn = -1;
+                rtn = string.Empty;
                 Debug.Log("<color=red>LEADERBOARD TYPE NOT FOUND</color>");
                 break;
         }

@@ -149,6 +149,10 @@ public class SteamworksNetManager : Singleton<SteamworksNetManager>
 
      public bool IsSteamConnected()
      {
+#if DISABLE_STEAM
+        return false;
+#endif
+
 #if !(UNITY_STANDALONE_WIN || UNITY_STANDALONE_LINUX || UNITY_STANDALONE_OSX || STEAMWORKS_WIN || STEAMWORKS_LIN_OSX)
         // unsupported platform.
         return false;

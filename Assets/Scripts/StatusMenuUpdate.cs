@@ -5,6 +5,7 @@ using TMPro;
 
 public class StatusMenuUpdate : MonoBehaviour
 {
+    [Header("Data")]
     [SerializeField] TMP_Text hp;
     [SerializeField] TMP_Text stamina;
     [SerializeField] TMP_Text movespeed;
@@ -20,6 +21,10 @@ public class StatusMenuUpdate : MonoBehaviour
 
     [SerializeField] Controller player;
 
+    /// <summary>
+    /// ステータスメニューを更新
+    /// </summary>
+    /// <param name="time"></param>
     public void UpdateValue(int time)
     {
         hp.SetText(player.GetMaxHP().ToString() + " + " + player.GetHPRegen().ToString());

@@ -20,6 +20,7 @@ public enum LeaderboardType
 
 public class Menu : MonoBehaviour
 {
+    // メニューシーンの流れ
     enum MenuState
     {
         NONE,
@@ -31,6 +32,7 @@ public class Menu : MonoBehaviour
         CREDITS,
     }
 
+    // タイトルメニューの選択肢
     enum MenuSelection
     {
         MainGame,
@@ -43,6 +45,7 @@ public class Menu : MonoBehaviour
         MaxIndex
     }
 
+    // 言語選択
     enum LanguageSelection
     {
         English,
@@ -81,13 +84,17 @@ public class Menu : MonoBehaviour
     [SerializeField] MenuState menuState;
     [SerializeField] LeaderboardType leaderboardType;
 
-    bool disableMenuControl = false;
-    bool leaderboardDataLoading = false;
-    
+    // シーン遷移・管理
+    List<MenuState> menuQueue = new List<MenuState>();
 
+    // リーダーボード
     [SerializeField] Dictionary<string, string>[] leaderboardRankList;
     int leaderBoardTotalEntry;
-    public PlayerAction _input;
+    bool leaderboardDataLoading = false;
+
+    // 入力関連
+    public PlayerAction input;
+    bool disableMenuControl = false;
 
     private void Start()
     {
@@ -96,6 +103,7 @@ public class Menu : MonoBehaviour
         disableMenuControl = true;
         leaderboardDataLoading = true;
 
+        // セーブデータを初期化
         // INITIALIZE GAME SAVE FILE (https://github.com/richardelms/FileBasedPlayerPrefs)
         // configuration
         var config = new FBPPConfig()
@@ -107,29 +115,36 @@ public class Menu : MonoBehaviour
             SaveFilePath = Application.persistentDataPath
         };
 
-        Debug.Log(Application.persistentDataPath);
+        Debug.Log("ローカルセーブデータ位置：" + Application.persistentDataPath);
         FBPP.Start(config);
 
+        // セーブデータを存在しているならロードする
         // LOAD SAVE DATA
         ProgressManager.Instance().Initialization();
         ProgressManager.Instance().LoadProgress();
 
+        // ローカライズシステムを初期化
         // INITIALIZE LOCALIZATION
         string language = FBPP.GetString("Language", string.Empty);
         LocalizationManagerHellFight.Instance().Initialization(Application.systemLanguage);
         LocalizationManagerHellFight.Instance().SetCurrentLanguage(language);
 
+        // プレイヤー名をロード
         // LOCAL NAME SAVED
         playerNameText.text = FBPP.GetString("PlayerName", string.Empty); ;
 
+        // バージョン名を設定
         // UPDATE VERSION NAME
         versionText.SetText("ver. " + Application.version + "(beta)");
 
+        // リーダーボードに接続
         // CONNECT TO LEADERBOARD
-        LootLockerSDKManager.StartSession("Player", (response) =>
+        LootLockerSDKManager.StartAndroidSession("Player", (response) =>
         {
+            Debug.Log("リーダーボード接続開始...");
             if (response.success)
             {
+                Debug.Log("リーダーボード接続成功");
                 leaderboardRankList = new Dictionary<string, string>[20];
                 for (int i = 0; i < 20; i++)
                 {
@@ -142,12 +157,18 @@ public class Menu : MonoBehaviour
             }
         });
 
+        // オーディオシステムを初期化
         // MUSIC MANAGER
         AudioManager.Instance.SetMusicVolume(0.7f);
         AudioManager.Instance.SetSEMasterVolume(0.25f);
 
         // INIT
-        menuState = MenuState.START;
+        menuQueue.Clear();
+        menuQueue.Add(MenuState.START);
+        menuQueue.Add(MenuState.LANGUAGE_SELECT);
+        menuQueue.Add(MenuState.NAME_INPUT);
+        menuQueue.Add(MenuState.MAIN_MENU);
+        NextMenu();
     }
 
     private void Awake()
@@ -161,22 +182,22 @@ public class Menu : MonoBehaviour
 #endif
 
         // INPUT SYSTEM
-        _input = new PlayerAction();
-        _input.MenuControls.Move.performed += ctx => SelectUpDown(ctx.ReadValue<float>());
-        _input.MenuControls.AnyKey.performed += ctx =>   StartMenu();
-        _input.MenuControls.Confirm.performed += ctx =>  FinishNameInput();
-        _input.MenuControls.Confirm.performed += ctx =>  SelectSelection();
-        _input.MenuControls.Cancel.performed += ctx =>   HideLeaderBoard();
+        input = new PlayerAction();
+        input.MenuControls.Move.performed += ctx => SelectUpDown(ctx.ReadValue<float>());
+        input.MenuControls.AnyKey.performed += ctx =>   StartMenu();
+        input.MenuControls.Confirm.performed += ctx =>  FinishNameInput();
+        input.MenuControls.Confirm.performed += ctx =>  SelectSelection();
+        input.MenuControls.Cancel.performed += ctx =>   HideLeaderBoard();
     }
 
     private void OnEnable()
     {
-        _input.Enable();
+        input.Enable();
     }
 
     private void OnDisable()
     {
-        _input.Disable();
+        input.Disable();
     }
 
     private void StartMenu()
@@ -210,6 +231,9 @@ public class Menu : MonoBehaviour
         StartCoroutine(StartMenuAnimation(playerNameText_UI.gameObject, new Vector2(-391.0f, -265.0f), 1.5f));
     }
 
+    /// <summary>
+    /// メニュー上のアニメーション再生
+    /// </summary>
     IEnumerator StartMenuAnimation(GameObject obj, Vector2 endPos, float animTime)
     {
         // play animation as requested
@@ -239,6 +263,83 @@ public class Menu : MonoBehaviour
         }
         obj.transform.position = originalPos;
 
+        // 次のメニューシーンへ遷移
+        NextMenu();
+    }
+
+    /// <summary>
+    /// 次のメニューを表示
+    /// </summary>
+    private void NextMenu()
+    {
+        // 次のメニューを表示
+        if (menuQueue.Count > 0)
+        {
+            menuState = menuQueue[0];
+            menuQueue.Remove(menuState);
+        }
+        else
+        {
+            // とりあえずメインメニューを表示
+            menuState = MenuState.MAIN_MENU;
+        }
+
+        switch (menuState)
+        {
+            case MenuState.START:
+            {
+                 break;
+            }
+            case MenuState.LANGUAGE_SELECT:
+            {
+                if (GetCurrentLanguageSetting() != string.Empty)
+                {
+                    // すでに設定されている
+                    NextMenu();
+                    break;
+                }
+
+                languageSelectionParent.gameObject.SetActive(true);
+                languageSelectIndex = GetDefaultLanguageSelection();
+
+                // Default selection choice
+                ChangeLanguageSelection(languageSelectIndex, 160f);
+                break;
+            }
+            case MenuState.NAME_INPUT:
+            {
+                if (playerNameText.text != string.Empty)
+                {
+                    // 名前はすでに設定されている
+                    NextMenu();
+                    break;
+                }
+
+                playerNameText.characterValidation = TMP_InputField.CharacterValidation.Alphanumeric;
+                playerNameText_UI.gameObject.SetActive(true);
+                playerNameText.interactable = true;
+                playerNameText.Select();
+                break;
+            }
+            case MenuState.MAIN_MENU:
+            {
+                StartCoroutine(StartMainMenu());
+                break;
+            }
+            default:
+            {
+                Debug.Log("次のシーンがない");
+            }
+                break;
+        }
+    }
+
+    /// <summary>
+    /// 現在のゲーム言語設定を取得する
+    /// 設定されていなければ空欄(Empty)を返す
+    /// </summary>
+    private string GetCurrentLanguageSetting()
+    {
         string language = string.Empty;
 
         // STEAM
@@ -256,73 +357,12 @@ public class Menu : MonoBehaviour
             language = FBPP.GetString("Language", string.Empty);
         }
 
-        if (language == string.Empty)
-        {
-            menuState = MenuState.LANGUAGE_SELECT;
-        }
-        else if (playerNameText.text == string.Empty)
-        {
-            menuState = MenuState.NAME_INPUT;
-        }
-        else
-        {
-            menuState = MenuState.MAIN_MENU;
-        }
-
-        switch (menuState)
-        {
-            case MenuState.LANGUAGE_SELECT:
-                languageSelectionParent.gameObject.SetActive(true);
-                languageSelectIndex = GetDefaultLanguageSelection();
-
-                // Default selection choice
-                ChangeLanguageSelection(languageSelectIndex, 160f);
-                break;
-            case MenuState.MAIN_MENU:
-                // ACTIVE UI COMPONENT
-                logo.gameObject.SetActive(true);
-                mainMenuUI.gameObject.SetActive(true);
-                selectIndex = MenuSelection.MainGame;
-
-                // SE
-                AudioManager.Instance.PlaySFX("decide");
-                AudioManager.Instance.PlayMusicWithFade("The March", 2.0f);
-
-                // Setup Text
-                SetupMainMenuUI();
-                // Default selection choice
-                ChangeSelection(MenuSelection.MainGame, 107.375f);
-
-                // Animation
-                float mainMenuAnimTime = 2.0f;
-                AudioManager.Instance.PlaySFX("stamp", 0.7f);
-                mainMenuUI.GetComponent<CanvasGroup>().alpha = 0.0f;
-                mainMenuUI.GetComponent<CanvasGroup>().DOFade(1.0f, mainMenuAnimTime);
-                mainMenuUI.localScale = new Vector3(3.0f,3.0f,1.0f);
-
-                mainMenuUI.DOScale(1.0f, mainMenuAnimTime * 0.25f);
-                yield return new WaitForSeconds(mainMenuAnimTime * 0.25f);
-                mainMenuUI.DOShakePosition(0.5f, 9, 20, 90);
-
-
-                Color backgroundColor = background.color;
-                background.color = new Color(0.3f, 0.1f, 0.1f, 1.0f);
-                background.DOColor(backgroundColor, 0.75f);
-
-                // FLAG
-                disableMenuControl = false;
-
-                break;
-            case MenuState.NAME_INPUT:
-                playerNameText.characterValidation = TMP_InputField.CharacterValidation.Alphanumeric;
-                playerNameText_UI.gameObject.SetActive(true);
-                playerNameText.interactable = true;
-                playerNameText.Select();
-                break;
-        }
-        
+        return language;
     }
 
+    /// <summary>
+    /// デフォルトのシステム言語を取得
+    /// </summary>
     private LanguageSelection GetDefaultLanguageSelection()
     {
         switch (Application.systemLanguage)
@@ -339,6 +379,49 @@ public class Menu : MonoBehaviour
         return LanguageSelection.English;
     }
 
+    /// <summary>
+    /// メインメニューを初期化
+    /// </summary>
+    private IEnumerator StartMainMenu()
+    {
+        // ACTIVE UI COMPONENT
+        logo.gameObject.SetActive(true);
+        mainMenuUI.gameObject.SetActive(true);
+        selectIndex = MenuSelection.MainGame;
+
+        // SE
+        AudioManager.Instance.PlaySFX("decide");
+        AudioManager.Instance.PlayMusicWithFade("The March", 2.0f);
+
+        // Setup Text
+        SetupMainMenuUI();
+        // Default selection choice
+        ChangeSelection(MenuSelection.MainGame, 107.375f);
+
+        // アニメーション再生
+        // Animation
+        float mainMenuAnimTime = 2.0f;
+        AudioManager.Instance.PlaySFX("stamp", 0.7f);
+        mainMenuUI.GetComponent<CanvasGroup>().alpha = 0.0f;
+        mainMenuUI.GetComponent<CanvasGroup>().DOFade(1.0f, mainMenuAnimTime);
+        mainMenuUI.localScale = new Vector3(3.0f, 3.0f, 1.0f);
+
+        mainMenuUI.DOScale(1.0f, mainMenuAnimTime * 0.25f);
+        yield return new WaitForSeconds(mainMenuAnimTime * 0.25f);
+        mainMenuUI.DOShakePosition(0.5f, 9, 20, 90);
+
+        // 背景の色を設定
+        Color backgroundColor = background.color;
+        background.color = new Color(0.3f, 0.1f, 0.1f, 1.0f);
+        background.DOColor(backgroundColor, 0.75f);
+
+        // FLAG
+        disableMenuControl = false;
+    }
+
+    /// <summary>
+    /// メインメニューの選択制御
+    /// </summary>
     private void ChangeSelection(MenuSelection index, float offset = -1)
     {
         selectIcon.anchoredPosition = new Vector2(0f, choiceText[(int)index].GetComponent<RectTransform>().anchoredPosition.y);
@@ -365,6 +448,9 @@ public class Menu : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// 言語選択制御
+    /// </summary>
     private void ChangeLanguageSelection(LanguageSelection index, float offset = -1)
     {
         languageSelectIcon.anchoredPosition = new Vector2(0f, languageChoiceText[(int)index].GetComponent<RectTransform>().anchoredPosition.y);
@@ -650,11 +736,17 @@ public class Menu : MonoBehaviour
         StartCoroutine(LeaderboardNextPage(0.4f, animName));
     }
 
+    /// <summary>
+    /// 今表示されているリーダーボードを取得
+    /// </summary>
     public LeaderboardType GetLeaderboardType()
     {
         return leaderboardType;
     }
 
+    /// <summary>
+    /// リーダーボードを表示する
+    /// </summary>
     public void ShowLeaderBoard(bool refreshData)
     {
         menuState = MenuState.LEADERBOARD;
@@ -675,6 +767,9 @@ public class Menu : MonoBehaviour
         leaderboardPageUI.GetComponent<LeaderboardPage>().SetLeaderboardType(leaderboardType);
     }
 
+    /// <summary>
+    /// リーダーボードのデータをサーバーから取得
+    /// </summary>
     private void GetLeaderboardData(LeaderboardType type, bool setupUIAfterSuccess)
     {
         if (!ReferenceEquals(leaderboardRankList, null))
@@ -687,7 +782,7 @@ public class Menu : MonoBehaviour
 
         leaderboardDataLoading = true;
 
-        LootLockerSDKManager.GetScoreList(gameMng.GetLeaderboardID(leaderboardType), 20, (response) =>
+        LootLockerSDKManager.GetScoreList(gameMng.GetLeaderboardKey(leaderboardType), 20, (response) =>
         {
             if (response.success)
             {
@@ -784,17 +879,19 @@ public class Menu : MonoBehaviour
         AudioManager.Instance.StopMusicWithFade(1.0f);
 
         // Back to start menu
-        menuState = MenuState.START;
         StartCoroutine(SetActiveDelay(startGameText.gameObject, true, 1.1f));
         StartCoroutine(SetActiveDelay(logo.gameObject, false, 1.1f));
         StartCoroutine(SetActiveDelay(mainMenuUI.gameObject, false, 1.1f));
 
-        StartCoroutine(RestartFromStartMenu(1.15f));
-    }
+        // シーン遷移を初期化
+        // INIT
+        menuQueue.Clear();
+        menuQueue.Add(MenuState.START);
+        menuQueue.Add(MenuState.LANGUAGE_SELECT);
+        menuQueue.Add(MenuState.NAME_INPUT);
+        menuQueue.Add(MenuState.MAIN_MENU);
 
-    IEnumerator RestartFromStartMenu(float time)
-    {
-        yield return new WaitForSecondsRealtime(time);
+        NextMenu();
     }
 
     public void OpenResetDataMenu()

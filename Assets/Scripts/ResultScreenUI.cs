@@ -254,11 +254,12 @@ public class ResultScreenUI : MonoBehaviour
             progressBarFill.DOFillAmount(1.0f, totalTime * 0.3f).SetUpdate(true);
 
             yield return new WaitForSecondsRealtime(totalTime * 0.3f);
-            //progressBarFill.GetComponent<Image>().do
+
             progressBar.DOShakePosition(0.5f, 3, 100, 90, false, true).SetUpdate(true);
             Color col = progressBarFill.color;
             progressBarFill.DOColor(new Color(col.r,col.g,col.b,0), totalTime * 0.2f).SetUpdate(true);
             AudioManager.Instance.PlaySFX("UnlockLevelUp", 1.5f);
+
             yield return new WaitForSecondsRealtime(totalTime * 0.2f);
 
             progressBarFill.DOComplete();
@@ -268,6 +269,9 @@ public class ResultScreenUI : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// 入力待ち
+    /// </summary>
     IEnumerator WaitForInput()
     {
         while (!gameMng.IsConfirmKeyPressed())
@@ -277,7 +281,7 @@ public class ResultScreenUI : MonoBehaviour
         gameMng.ResetConfirmKey(); // reset input
 
         // FADE OUT
-
+        // TODO: リザルトシーンをフェイドアウトさせる
 
         ResetUI();
         isFinished = true;
@@ -288,6 +292,9 @@ public class ResultScreenUI : MonoBehaviour
         gameObject.SetActive(false);
     }
 
+    /// <summary>
+    /// アニメーション完了か
+    /// </summary>
     public bool IsFinished()
     {
         return isFinished;

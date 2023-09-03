@@ -5,19 +5,29 @@ using DG.Tweening;
 using UnityEngine.UI;
 using TMPro;
 
+/// <summary>
+/// スタミナバーを管理するクラス
+/// </summary>
 public class StaminaBar : MonoBehaviour
 {
-    [SerializeField] Controller player;
-    [SerializeField] Image fill;
-    [SerializeField] TMP_Text heal;
+    [Header("Reference")]
+    [SerializeField] private Controller player;
+    [SerializeField] private Image fill;
+    [SerializeField] private TMP_Text heal;
     [SerializeField] private Image delayfill;
     [SerializeField] private float maxSize = 1.0f;
-    SpriteRenderer sprite;
-    RectTransform rectTransform;
 
-    [SerializeField] Color normalColor;
-    [SerializeField] Color slowedColor;
-    [SerializeField] Color lowColor;
+    [Header("Setting")]
+    [SerializeField] private Color normalColor;
+    [SerializeField] private Color slowedColor;
+    [SerializeField] private Color lowColor;
+    [SerializeField, Range(0.0f, 1.0f)] private float lowThreshold = 0.20f;
+    [SerializeField, Range(0.0f, 1.0f)] private float colorChangetime = 0.50f;
+    [SerializeField, Range(0.0f, 1.0f)] private float fillTime = 0.50f;
+
+    private SpriteRenderer sprite;
+    private RectTransform rectTransform;
+
 
     private void Start()
     {
@@ -27,33 +37,36 @@ public class StaminaBar : MonoBehaviour
 
     void FixedUpdate()
     {
+        //　MAXスタミナ量によってバーの長さを変化させる
         SetRectTransformLeft(rectTransform, Mathf.MoveTowards(rectTransform.offsetMin.x, 400f - Mathf.Min((float)player.GetMaxStamina() * 1.5f, 300.0f), 100.0f * Time.fixedDeltaTime));
         SetRectTransformRight(rectTransform, Mathf.MoveTowards(-rectTransform.offsetMax.x, 400f - Mathf.Min((float)player.GetMaxStamina() * 1.5f, 300.0f), 100.0f * Time.fixedDeltaTime));
-        fill.DOFillAmount((float)player.GetCurrentStamina() / (float)player.GetMaxStamina(), 0.5f);
-        delayfill.DOFillAmount(fill.fillAmount, 0.5f);
+
+        // スタミナを反映
+        fill.DOFillAmount((float)player.GetCurrentStamina() / (float)player.GetMaxStamina(), fillTime);
+        delayfill.DOFillAmount(fill.fillAmount, fillTime);
 
         bool isSlowed = player.IsStaminaRegenerateSlowed();
-        bool isLowColor = (float)player.GetCurrentStamina() / (float)player.GetMaxStamina() < 0.20f;
+        bool isLowColor = (float)player.GetCurrentStamina() / (float)player.GetMaxStamina() < lowThreshold;
         if (isLowColor)
         {
-            fill.DOColor(lowColor, 0.5f);
+            fill.DOColor(lowColor, colorChangetime);
         }
         else if (isSlowed)
         {
-            fill.DOColor(slowedColor, 0.5f);
+            fill.DOColor(slowedColor, colorChangetime);
         }
         else
         {
-            fill.DOColor(normalColor, 0.5f);
+            fill.DOColor(normalColor, colorChangetime);
         }
 
-        //heal.rectTransform.DOAnchorPosX(Mathf.Min((-rectTransform.offsetMax.x/2f) - 10f, 400.0f), 0.8f);
         if (isSlowed)
         {
             heal.SetText(string.Empty);
         }
         else
         {
+            // スタミナ増加中は　+　サインを表示する
             heal.SetText("+");
         }
     }

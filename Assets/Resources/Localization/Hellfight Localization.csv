@@ -1,15 +1,15 @@
 Key,English,ChineseTraditional,ChineseSimplified,Japanese
-Menu.Start,Press any key,按任意鍵開始遊戲,按任意键开始游戏,<font=JPPixel SDF>ボタン押してスタート
+Menu.Start,Press any key,按任意鍵開始遊戲,按任意键开始游戏,ボタン押してスタート
 Menu.MainGame,Main Game,開始遊戲,开始游戏,Main Game
 Menu.BossRushMode,<color=grey>Boss Rush Mode</color>,<color=grey>魔王模式</color>,<color=grey>魔王模式</color>,<color=grey>Boss Rush Mode</color>
-Menu.Leaderboard,Leaderboard,排行榜,排行榜,ランキング
-Menu.Credits,Credits,感謝名單,感谢名单,Credit
-Menu.ResetLocalData,Reset Local Data,清除本地數據,清除本地数据,Reset Local Data
+Menu.Leaderboard,Leaderboard,排行榜,排行榜,Ranking
+Menu.Credits,Credits,感謝名單,感谢名单,Credits
+Menu.ResetLocalData,Reset Local Data,清除本地數據,清除本地数据,Reset Data
 Menu.Exit,Exit,退出,退出,Exit
 Menu.HighestRecord,highest record,最高紀錄,最高纪录,最高記録
 Menu.HighestRecordValue,Level {0:N0},Level {0:N0},Level {0:N0},Level {0:N0}
 Menu.Unlocks,Unlocks,解鎖,解锁,アンロック
-Menu.Comfirmation,Are you sure?,確定嗎?,确定吗?,本当ですか?
+Menu.Comfirmation,Are you sure?,確定嗎?,确定吗?,<size=30>本当によろしいですか？ </size>
 Menu.Setting,Setting,系統設定,系统设定,設定
 Menu.KeyConfig,Key configuration,按鍵設定,按键设定,キー設定
 Menu.Attack,Attack,攻擊,攻击,攻撃
@@ -36,90 +36,107 @@ PowerupDescription.MaxDamage,"Increase your extra random damage output on top of
 <color=grey>スタミナコストも{0:N0}点増加</color>"
 PowerupName.Vitality,Vitality,生命力,生命力,生命力
 PowerupDescription.Vitality,Increase your max health by <color=#00ff00ff>{0:N0}</color>.,增加<color=#00ff00ff>{0:N0}</color>點生命值,增加<color=#00ff00ff>{0:N0}</color>点生命值,ライフ<color=#00ff00ff>{0:N0}</color>点増加
-PowerupName.DashCooldown,Dash Cooldown,衝刺冷卻,冲刺冷却,ダッシュ
+PowerupName.DashCooldown,Dash Cooldown,衝刺冷卻,冲刺冷却,ダッシュクールダウン
 PowerupDescription.DashCooldown,Decrease dash cooldown time by <color=#ffff00ff>{0:N0}%</color>.,衝刺冷卻時間減少<color=#ffff00ff>{0:N0}%</color>,冲刺冷却时间减少<color=#ffff00ff>{0:N0}%</color>,ダッシュのクールタイム<color=#ffff00ff>{0:N0}%</color>短縮
-PowerupName.DashDamage,Dash Damage,衝刺傷害,冲刺伤害,<font=JF-Dot-Paw16 SDF>衝</font>撃
-PowerupDescription.DashDamage,Dashing deal <color=#008080ff>{0:N0} damage</color>. The effect can stack.,衝刺對敵人造成<color=#008080ff>{0:N0}點傷害</color>,冲刺对敌人造成<color=#008080ff>{0:N0}点伤害</color>,ダッシュがモンスターに<color=#008080ff>{0:N0}ダメージ</color>を与えるが
+PowerupName.DashDamage,Dash Damage,衝刺傷害,冲刺伤害,衝撃
+PowerupDescription.DashDamage,Dashing deal <color=#008080ff>{0:N0} damage</color>. The effect can stack.,衝刺對敵人造成<color=#008080ff>{0:N0}點傷害</color>,冲刺对敌人造成<color=#008080ff>{0:N0}点伤害</color>,"ダッシュがモンスターに<color=#008080ff>{0:N0}ダメージ</color>を与える
+<color=grey>効果は重複する</color>"
 PowerupName.MaxStamina,Max Stamina,體力,体力,スタミナ
 PowerupDescription.MaxStamina,Gives <color=blue>{0:N0}</color> more stamina point to spend.,增加<color=blue>{0:N0}</color>點體力值,增加<color=blue>{0:N0}</color>點体力值,スタミナ<color=blue>{0:N0}</color>点増加
 PowerupName.StaminaRecoverSpeed,Stamina Recover,體力恢復,体力恢复,体力回復
 PowerupDescription.StaminaRecoverSpeed,Increase stamina regenerate per tick by <color=#00ff00ff>{0:N0}</color>.,體力恢復速度增加,体力恢复速度增加,スタミナ回復速度増加
-PowerupName.HPRegen,HP Regen,生命力恢復,生命力恢复,回復力
+PowerupName.HPRegen,HP Regen,生命力恢復,生命力恢复,ライフ値回復
 PowerupDescription.HPRegen,Heal <color=#ff2222ff>{0:N0}</color> hp when proceeding to next level.,前往下一層時恢復<color=#ff2222ff>{0:N0}</color>點生命值,前往下一楼时回复<color=#ff2222ff>{0:N0}</color>点生命值,次のステージに進む時ライフ<color=#ff2222ff>{0:N0}</color>点回復
 PowerupName.LightningLash,Lightning Lash,閃電鞭,闪电鞭,霹靂斬撃
 PowerupDescription.LightningLash,Performing a dash attack deal critical damage and heals <color=#800080ff>{0:N0}%</color> of your damage dealt into HP.,"衝刺時使用攻擊以發動特殊技能, 造成暴擊傷害, 同時造成的傷害的<color=#800080ff>{0:N0}%</color>變換為生命值","冲刺时攻击以发动特殊效果, 造成暴击伤害, 同时造成的伤害的<color=#800080ff>{0:N0}%</color>变换为生命值","ダッシュ攻撃に特殊効果を付ける, ダメージ倍増で与えたダメージの<color=#800080ff>{0:N0}%</color>がライフに変換する"
 PowerupName.LifeDrain,Life Drain,生命汲取,生命汲取,ライフドレイン
-PowerupDescription.LifeDrain,Heal <color=#800000ff>{0:N0}</color> hp when you kill an enemy. The effect can stack.,打倒敵人時恢復<color=#800000ff>{0:N0}</color>點生命值,打到敌人时恢復<color=#800000ff>{0:N0}</color>点生命值,敵を倒す時ライフ<color=#800000ff>{0:N0}</color>点回復する
+PowerupDescription.LifeDrain,Heal <color=#800000ff>{0:N0}</color> hp when you kill an enemy. The effect can stack.,打倒敵人時恢復<color=#800000ff>{0:N0}</color>點生命值,打到敌人时恢復<color=#800000ff>{0:N0}</color>点生命值,"敵を倒すとライフ<color=#800000ff>{0:N0}</color>点回復する
+<color=grey>効果は重複する</color>"
 PowerupName.Survivor,Survivor,生存者,生存者,サバイバー
-PowerupDescription.Survivor,Gives you a second chance when you're dead.,獲得一次復活機會,获得一次复活机会,復活チャンス一回貰える
+PowerupDescription.Survivor,Gives you a second chance when you're dead.,獲得一次復活機會,获得一次复活机会,復活チャンス一回獲得できる
 PowerupName.ComboMaster,Combo Master,連擊大師,连击大师,連撃達人
 PowerupDescription.ComboMaster,"Gain <color=#afe1afff>{0:N0}</color> stamina per combo when combo ended.
 <color=grey>The effect can stack</color>","連擊結束後瞬間恢復體力值, 每一連擊增加<color=#afe1afff>{0:N0}</color>點體力
 <color=grey>效果會叠加</color>","连击结束后瞬间回复体力值, 每一连击增加<color=#afe1afff>{0:N0}</color>点体力
-<color=grey>效果会叠加</color>","コンボが終わった瞬間, コンボ数ごとに<color=#afe1afff>{0:N0}</color>点スタミナを回復する"
+<color=grey>效果会叠加</color>","コンボが終わった瞬間, コンボ数ごとに<color=#afe1afff>{0:N0}</color>点スタミナを回復する
+<color=grey>効果は重複する</color>"
 PowerupName.Break-Fall,Break-Fall,蓄勢待發,蓄势待发,力返し
-PowerupDescription.Break-Fall,Crouching block attack by the cost of <color=#008080ff>{0:N0}</color> stamina.,"蹲下時可以抵擋傷害, 消耗<color=#008080ff>{0:N0}</color>點體力值","蹲下时可以抵挡伤害, 消耗<color=#008080ff>{0:N0}</color>点体力值",しゃがむとダメージをスタミナ<color=#008080ff>{0:N0}</color>点で完全に防げる
+PowerupDescription.Break-Fall,Crouching block attack by the cost of <color=#008080ff>{0:N0}</color> stamina.,"蹲下時可以抵擋傷害, 消耗<color=#008080ff>{0:N0}</color>點體力值","蹲下时可以抵挡伤害, 消耗<color=#008080ff>{0:N0}</color>点体力值",しゃがむとダメージをスタミナ<color=#008080ff>{0:N0}</color>点で完全に防ぐことができる
 PowerupName.Windrunner,Windrunner,風行者,风行者,風行者
 PowerupDescription.Windrunner,Gain <color=#00ffffff>60</color> movement speed and attack cost half stamina after dash for <color=#00ffffff>{0:N0}</color> second. The time can stack.,"衝刺後<color=#00ffffff>{0:N2}</color>秒內增加<color=#00ffffff>60</color>點移動速度和攻擊體力消耗減半, 持續時間可以疊加","冲刺后<color=#00ffffff>{0:N2}</color>秒內增加<color=#00ffffff>60</color>点移动速度和攻击消耗减半, 持续时间可以叠加","ダッシュ後<color=#00ffffff>{0:N2}</color>秒內<color=#00ffffff>60</color>点移動速度増加して攻撃のスタミナコスト半減する, 複数回選ぶと時間が増える"
 PowerupName.Deflect,Deflect,彈反,弹反,ディフレクション
 PowerupDescription.Deflect,"Restore <color=#800080ff>50% used stamina</color> back if you dash through an enemy in attack animation.
 <color=grey>Slime is excluded.</color>","在敵人攻擊動作間衝刺穿透對手時瞬間恢復<color=#800080ff>50% 被消耗掉的體力值</color>
 <color=grey>對史萊姆無效</color>","在敌人攻击动作间冲刺穿透对手时回复<color=#800080ff>50%被消耗掉的体力值</color>
-<color=grey>对史莱姆无效</color>","敵の攻撃アニメーション中に相手に向けてダッシュするとスタミナ<color=#800080ff>50%回復</color>する
-<color=grey>スライムに無効</color>"
+<color=grey>对史莱姆无效</color>","敵の攻撃アクション中に相手に向けてダッシュするとスタミナ<color=#800080ff>50%回復</color>する
+<color=grey>スライムには無効</color>"
 PowerupName.Berserker,Berserk,狂暴,狂暴,バーサーカー
-PowerupDescription.Berserker,"When you have less than 34% HP, your attack heals <color=#a52a2aff>{0:N0} HP</color>. The effect can stack.","生命值低於34%時每次攻擊恢復<color=#a52a2aff>{0:N0}點</color>生命值, 數字可以疊加","生命值低於34%時每次攻击回复<color=#a52a2aff>{0:N0}點</color>生命值, 数字可以叠加",ライフが34%より低い場合攻撃ごとに<color=#a52a2aff>{0:N0}点</color>ライフ回復する
+PowerupDescription.Berserker,"When you have less than 34% HP, your attack heals <color=#a52a2aff>{0:N0} HP</color>. The effect can stack.","生命值低於34%時每次攻擊恢復<color=#a52a2aff>{0:N0}點</color>生命值, 數字可以疊加","生命值低於34%時每次攻击回复<color=#a52a2aff>{0:N0}點</color>生命值, 数字可以叠加","ライフが34%より低い場合攻撃ごとに<color=#a52a2aff>{0:N0}点</color>ライフ回復する
+<color=grey>効果は重複する</color>"
 PowerupName.Battlecry,Battlecry,戰吼,战吼,雄叫び
 PowerupDescription.Battlecry,Gain stamina <color=#00ffffff>{0:N0}% faster </color> when there are enemy nearby.,當敵人在附近時體力增速提升<color=#00ffffff>{0:N0}%,当敌人在附近时体力增速提升<color=#00ffffff>{0:N0}%</color>,敵が近くにいる時スタミナ回復速度が<color=#00ffffff>{0:N0}%</color>増加
 PowerupName.HealingSalve,Healing Salve,治療藥膏,治愈药膏,治療薬
-PowerupDescription.HealingSalve,Gain a consumables potion that recharge every level. Grants <color=#00ffffff>{0:N0}%</color> health back.,"獲得一個消耗式的治療藥, 每層可以使用一次, 恢復<color=#00ffffff>{0:N0}%</color>生命值","获得一个消耗式的治愈药, 每楼可以使用一次, 恢复<color=#00ffffff>{0:N0}%</color>生命值","<color=#00ffffff>{0:N0}%</color>のHPを回復するアイテムを獲得する, ステージごとに一回使える"
+PowerupDescription.HealingSalve,Gain a consumables potion that recharge every level. Grants <color=#00ffffff>{0:N0}%</color> health back.,"獲得一個消耗式的治療藥, 每層可以使用一次, 恢復<color=#00ffffff>{0:N0}%</color>生命值","获得一个消耗式的治愈药, 每楼可以使用一次, 恢复<color=#00ffffff>{0:N0}%</color>生命值","<color=#00ffffff>{0:N0}%</color>のライフを回復するアイテムを獲得する, ステージごとに一回使える"
 PowerupName.Echo,Echo,回音,回音,エコー
-PowerupDescription.Echo,"Gain a chance to summon an illusion that duplicate your attack, deal <color=#ffa500ff>{0:N0}%</color> of your damage. The number can stack.",有几率複製你的攻擊，對敵人造成本體<color=#ffa500ff>{0:N0}%</color>的攻擊力,有几率复制你的攻击，对敌人造成本体<color=#ffa500ff>{0:N0}%</color>的攻击力,たまにキャラクターの攻撃を複製する。分身体は本体の<color=#ffa500ff>{0:N0}%</color>の攻撃力を持っている。
+PowerupDescription.Echo,"Gain a chance to summon an illusion that duplicate your attack, deal <color=#ffa500ff>{0:N0}%</color> of your damage. The number can stack.",有几率複製你的攻擊，對敵人造成本體<color=#ffa500ff>{0:N0}%</color>的攻擊力,有几率复制你的攻击，对敌人造成本体<color=#ffa500ff>{0:N0}%</color>的攻击力,一定の確率で行なった攻撃をコピーする分身体を生成することがある。分身体は本体の<color=#ffa500ff>{0:N0}%</color>の攻撃力を持っている。
 PowerupName.Juggernaut,Juggernaut,主宰,主宰,ジャガーノート
-PowerupDescription.Juggernaut,Attack cost no stamina start from <color=#4c00b0ff>{0:N0}</color>th combo.,第<color=#4c00b0ff>{0:N0}</color>次連擊的攻擊開始不消耗體力,第<color=#4c00b0ff>{0:N0}</color>次连击的攻击开始不消耗体力,<color=#4c00b0ff>{0:N0}</color>コンボからの攻撃にはスタミナの消耗はない
+PowerupDescription.Juggernaut,Attack cost no stamina start from <color=#4c00b0ff>{0:N0}</color>th combo.,第<color=#4c00b0ff>{0:N0}</color>次連擊的攻擊開始不消耗體力,第<color=#4c00b0ff>{0:N0}</color>次连击的攻击开始不消耗体力,<color=#4c00b0ff>{0:N0}</color>コンボからの攻撃はスタミナを消耗しない
 TUTORIALS,,,,
-Tutorial.Attack,ATTACK,<font=LanaPixel SDF>攻擊</font>,<font=LanaPixel SDF>攻击</font>,<font=JPPixel SDF>攻撃</font>
-Tutorial.Jump,JUMP,<font=LanaPixel SDF>跳躍</font>,<font=LanaPixel SDF>跳跃</font>,<font=JPPixel SDF>ジャンプ</font>
-Tutorial.Dash,DASH,<font=LanaPixel SDF>衝刺</font>,<font=LanaPixel SDF>冲刺</font>,<font=JPPixel SDF>ダッシュ</font>
-Tutorial.Status,STATUS,<font=LanaPixel SDF>狀態欄</font>,<font=LanaPixel SDF>状态栏</font>,<font=JPPixel SDF>ステータス</font>
-Tutorial.UseItem,USE ITEM,<font=LanaPixel SDF>物品</font>,<font=LanaPixel SDF>物品</font>,<font=JPPixel SDF>アイテム</font>
-Tutorial.Move,MOVE,<font=LanaPixel SDF>移動</font>,<font=LanaPixel SDF>移动</font>,<font=JPPixel SDF>移動</font>
-Tutorial.TipsLevel5,First Trial,<font=LanaPixel SDF>最初的試煉,<font=LanaPixel SDF>最初的试炼,<font=JF-Dot-Paw16 SDF>最初の試練
-Tutorial.TipsLevel8,Third attack combo deal more damage,<font=LanaPixel SDF>第三連擊造成的傷害較高,<font=LanaPixel SDF>第三连击的伤害较高,<font=JPPixel SDF>
-Tutorial.TipsLevel10,"Find his weakness, try to jump!",<font=LanaPixel SDF>請攻擊頭部!,<font=LanaPixel SDF>请攻击头部!,<font=JPPixel SDF>頭を狙え
-Tutorial.TipsLevel15,They're adorable,<font=LanaPixel SDF>可愛的家伙们,<font=LanaPixel SDF>可爱的家伙们,<font=JPPixel SDF>可愛い奴らだ！
-Tutorial.TipsLevel25,Break his defense!,<font=LanaPixel SDF>突破他的防守!,<font=LanaPixel SDF>突破他的防守!,<font=JPPixel SDF>ガードを突破せよ
+Tutorial.Attack,ATTACK,<font=LanaPixel SDF>攻擊</font>,<font=LanaPixel SDF>攻击</font>,攻撃
+Tutorial.Jump,JUMP,<font=LanaPixel SDF>跳躍</font>,<font=LanaPixel SDF>跳跃</font>,ジャンプ
+Tutorial.Dash,DASH,<font=LanaPixel SDF>衝刺</font>,<font=LanaPixel SDF>冲刺</font>,ダッシュ
+Tutorial.Status,STATUS,<font=LanaPixel SDF>狀態欄</font>,<font=LanaPixel SDF>状态栏</font>,ステータス
+Tutorial.UseItem,USE ITEM,<font=LanaPixel SDF>物品</font>,<font=LanaPixel SDF>物品</font>,アイテム
+Tutorial.Move,MOVE,<font=LanaPixel SDF>移動</font>,<font=LanaPixel SDF>移动</font>,移動
+Tutorial.TipsLevel5,First Trial,<font=LanaPixel SDF>最初的試煉,<font=LanaPixel SDF>最初的试炼,最初の試練
+Tutorial.TipsLevel8,Third attack combo deal more damage,<font=LanaPixel SDF>第三連擊造成的傷害較高,<font=LanaPixel SDF>第三连击的伤害较高, 
+Tutorial.TipsLevel10,"Find his weakness, try to jump!",<font=LanaPixel SDF>請攻擊頭部!,<font=LanaPixel SDF>请攻击头部!,頭を狙え
+Tutorial.TipsLevel15,They're adorable,<font=LanaPixel SDF>可愛的家伙们,<font=LanaPixel SDF>可爱的家伙们,可愛い奴らだ！
+Tutorial.TipsLevel25,Break his defense!,<font=LanaPixel SDF>突破他的防守!,<font=LanaPixel SDF>突破他的防守!,ガードを突破せよ
 OTHER,,,,
-Text.Proceedlvl9,Proceed to Boss Fight - <color=#ff00ffff>Broyon</color>,頭目戰  - <color=#ff00ffff>布羅恩</color>,头目战 - <color=#ff00ffff>布罗恩</color>,<font=JPPixel SDF>ボス戦 - <color=#ff00ffff>ブロヨン</color>
+Text.Proceedlvl9,Proceed to Boss Fight - <color=#ff00ffff>Broyon</color>,頭目戰  - <color=#ff00ffff>布羅恩</color>,头目战 - <color=#ff00ffff>布罗恩</color>,ボス戦 - <color=#ff00ffff>ブロヨン</color>
 Text.Proceedlvl19,Proceed to Boss Fight - <color=#550000ff>Hell Fighter</color>,頭目戰  - <color=#550000ff>冥獄使者</color>,头目战  - <color=#550000ff>冥狱使者</color>,ボス戦 - <color=#550000ff>冥界使者</color>
 Text.Proceedlvl29,Proceed to Boss Fight - <color=#550000ff>The Hungry One</color>,頭目戰  - <color=#550000ff>飢餓魔</color>,头目战  - <color=#550000ff>饥饿魔</color>,ボス戦  - <color=#550000ff>古き物</color>
-Text.Proceed,Jump and proceed to the next level,<font=LanaPixel SDF>向下跳跃,<font=LanaPixel SDF>向下跳跃,<font=JPPixel SDF>次のステージへジャンプ</font>
+Text.Proceed,Jump and proceed to the next level,<font=LanaPixel SDF>向下跳跃,<font=LanaPixel SDF>向下跳跃,ジャンプで次のステージへ
 Text.NewChallenger,Welcome our new challenger,<font=LanaPixel SDF>新的挑戰者,<font=LanaPixel SDF>新的挑战者,New challenger!
-Text.Retry,Welcome back!,<font=LanaPixel SDF>重新挑戰,<font=LanaPixel SDF>重新挑战,<font=JF-Dot-Paw16 SDF>再戦
+Text.Retry,Welcome back!,<font=LanaPixel SDF>重新挑戰,<font=LanaPixel SDF>重新挑战,リトライ
 Text.GrownStronger,You have grown stronger!,你通過戰鬥變強了!,你通过战斗变强了!,戦うことであなたは強くなった!
 Text.SelectBonus,select your bonus,選擇天賦,选择天赋,パワーアップを選べ
 Text.NewBonus,New Powerup Unlocked!,解鎖新力量!,解锁新力量!,新なパワーアップを開放!
 Text.NewBonusDescription,New upgrades will be available in next playthrough.,下次挑戰時將有更多選擇,下次挑战时将有更多选择,次の挑戦から選べるようになる
 Text.ResetConfirm,Sure?,確定嗎?,确定吗?,本当か?
+Text.Restart,Restart,Restart,Restart,再戦
+Text.Leaderboard,Leaderboard,排行榜,排行榜,<size=30>リーダーボード</size=30>
+Text.Status,Status,狀態欄,状态栏,<size=30>ステータス</size=30>
 LEADERBOARD,,,,
 Leaderboard.Level,LEVEL,LEVEL,LEVEL,LEVEL
 Leaderboard.Time,TIME,TIME,TIME,TIME
 Leaderboard.BestLevel,Best Record,Best Record,Best Record,Best Record
-Leaderboard.BestLevelDescription,adventurer who explored the deepest,往最深處探索的探險者,往最深处探索的探险者,ダンジョンの一番深くまで探検した者
+Leaderboard.BestLevelDescription,adventurer who explored the deepest,往最深處探索的探險者,往最深处探索的探险者,ダンジョンの最も奥まで到達した者
 Leaderboard.Speedrun10,Speedrun Level10,Speedrun Level10,Speedrun Level10,Speedrun Level10
-Leaderboard.Speedrun10Description,who slayed Broyon the fastest,以最快的速度擊倒布靈幽的戰士,以最快的速度击倒布灵幽的战士,ブロヨンを最速の方法で倒した者
+Leaderboard.Speedrun10Description,who slayed Broyon the fastest,以最快的速度擊倒布靈幽的戰士,以最快的速度击倒布灵幽的战士,ブロヨンを最速で倒した者
 Leaderboard.Speedrun20,Speedrun Level20,Speedrun Level20,Speedrun Level20,Speedrun Level20
-Leaderboard.Speedrun20Description,who bested Hell Fighter the fastest,以最快的速度擊倒地獄使者的戰士,以最快的速度击倒地狱使者的战士,地獄審判を最速の方法で倒した者
-Leaderboard.Legacy,LEGACY LEGENDS,遠古傳說,远古传说,伝説
-Leaderboard.LegacyDescription,The old time glory from the player in version 1.1.1beta (speedrun lvl20),1.1.1版前的傳說人物 (速通20層),1.1.1版以前的传说人物 (速通20层),1.1.1バージョンに名残した昔の伝説達 (ステージ20をスピードラン)
+Leaderboard.Speedrun20Description,who bested Hell Fighter the fastest,以最快的速度擊倒地獄使者的戰士,以最快的速度击倒地狱使者的战士,地獄審判を最速で倒した者
+Leaderboard.Legacy,LEGACY LEGENDS,遠古傳說,远古传说,いにしえ の 伝説
+Leaderboard.LegacyDescription,The old time glory from the player in version 1.1.1beta (speedrun lvl20),1.1.1版前的傳說人物 (速通20層),1.1.1版以前的传说人物 (速通20层),バージョン1.1.1より以前に名を残した昔の伝説達 (ステージ20をスピードラン)
 UNLOCKS,,,,
-UnlockDescription.LightningLash,Perform a special attack if you attack during dash. Deal extra damage and convert part of dealt damage into heal.,衝刺時攻擊會促發特別效果，造成暴擊傷害，並恢復自身血量。,冲刺时攻击会促发特别效果，造成暴击伤害，并恢复自身血量。,ダッシュ途中で攻撃すると、特殊攻撃が発動される、ダメージを増やし、HPを回復する。
-UnlockDescription.Battlecry,Gain stamina faster when there are enemy nearby.,靠近敵人時體力恢復速度會加快。,靠近敌人时体力恢复速度会加快。,敵が近くにいる時スタミナの回復速度を増加。
-UnlockDescription.ComboMaster,"Recover stamina at end of your attack, base on your combo.",攻擊結束時立刻恢復體力。連擊數越多，恢復量也越大。,攻击结束时立刻恢复体力。连击数越多，恢复量也越大。,攻撃が終わったらコンボ数によってスタミナを即回復する。
+UnlockDescription.LightningLash,Perform a special attack if you attack during dash. Deal extra damage and convert part of dealt damage into heal.,衝刺時攻擊會促發特別效果，造成暴擊傷害，並恢復自身血量。,冲刺时攻击会促发特别效果，造成暴击伤害，并恢复自身血量。,ダッシュ中に攻撃すると、スキル効果が発動し、敵に会心の一撃を与え、ライフ値を回復する
+UnlockDescription.Battlecry,Gain stamina faster when there are enemy nearby.,靠近敵人時體力恢復速度會加快。,靠近敌人时体力恢复速度会加快。,敵が近くにいる時スタミナの回復速度が増加。
+UnlockDescription.ComboMaster,"Recover stamina at end of your attack, base on your combo.",攻擊結束時立刻恢復體力。連擊數越多，恢復量也越大。,攻击结束时立刻恢复体力。连击数越多，恢复量也越大。,攻撃が終わった時にコンボ数が多いほどスタミナの回復速度が上がる。
 UnlockDescription.BreakFall,Block incoming attack by crouching.,蹲下可以抵擋傷害。,蹲下可以抵挡伤害。,しゃがむことで敵の攻撃を防御できる。
-UnlockDescription.Potion,Gain a potion you can use during battle.,獲得一個可以在戰鬥中使用的藥劑。,获得一个可以在战斗中使用的药剂。,戦闘中に使えるポーションをもらえる。
-UnlockDescription.Windrunner,Receive a temporary buff after dash. Increase movement speed and attacking cost only half of the actual stamina cost.,衝刺后獲得一個暫時的buff，期間移動速度大增，而且攻擊的體力消耗減半。,冲刺后获得一个暂时的buff，期间移动速度大增，而且攻击的体力消耗减半。,ダッシュ後にBUFFをもらえる。移動速度を大幅増加し、攻撃のスタミナ消耗を半減する。
-UnlockDescription.Deflect,Recover huge amount of stamina when you dash through an enemy during it's attack animation.,在敵人攻擊時通過衝刺穿過對方，瞬間恢復大量體力值。,在敌人攻击时通过冲刺穿过对方，瞬间恢复大量体力值。,モンスターの攻撃途中にダッシュで相手を抜かすことでスタミナを回復できる。
-UnlockDescription.Berserker,Attack heals you if your current HP is under a certain threshold.,血量少於一定量時，攻擊敵人會恢復自身血量。,血量少于一定量时，攻击敌人会恢复自身血量。,HPが少ない時発動する効果。モンスターを攻撃するとHPを回復できる。
-UnlockDescription.Echo,Gain a chance to summon an illusion that duplicate your attack.,偶爾會生成一個分身，複製你剛剛的攻擊。,偶尔会生成一个分身，复制你刚刚的攻击。,たまに分身を生成し、攻撃を複製する。
-UnlockDescription.Juggernaut,Your attack cost no stamina anymore after you reach a specific combo.,超過一定的連擊數后，攻擊不再消耗體力。,超过一定的连击数后，攻击不再消耗体力。,ある程度のコンボ数を貯めた後、攻撃にスタミナを消耗しない。
+UnlockDescription.Potion,Gain a potion you can use during battle.,獲得一個可以在戰鬥中使用的藥劑。,获得一个可以在战斗中使用的药剂。,戦闘中に使えるポーションを獲得できる。
+UnlockDescription.Windrunner,Receive a temporary buff after dash. Increase movement speed and attacking cost only half of the actual stamina cost.,衝刺后獲得一個暫時的buff，期間移動速度大增，而且攻擊的體力消耗減半。,冲刺后获得一个暂时的buff，期间移动速度大增，而且攻击的体力消耗减半。,BUFFを付与される。移動速度が大幅に増加し、攻撃のスタミナ消耗を半減する。
+UnlockDescription.Deflect,Recover huge amount of stamina when you dash through an enemy during it's attack animation.,在敵人攻擊時通過衝刺穿過對方，瞬間恢復大量體力值。,在敌人攻击时通过冲刺穿过对方，瞬间恢复大量体力值。,敵の攻撃中にダッシュで敵を通過することでスタミナを回復できる
+UnlockDescription.Berserker,Attack heals you if your current HP is under a certain threshold.,血量少於一定量時，攻擊敵人會恢復自身血量。,血量少于一定量时，攻击敌人会恢复自身血量。,ライフ値がある程度減少すると発動。敵を攻撃する度にライフ値を回復できる。
+UnlockDescription.Echo,Gain a chance to summon an illusion that duplicate your attack.,偶爾會生成一個分身，複製你剛剛的攻擊。,偶尔会生成一个分身，复制你刚刚的攻击。,一定の確率で行なった攻撃をコピーする分身体を生成することがある。
+UnlockDescription.Juggernaut,Your attack cost no stamina anymore after you reach a specific combo.,超過一定的連擊數后，攻擊不再消耗體力。,超过一定的连击数后，攻击不再消耗体力。,一定のコンボ数を超えると、攻撃はスタミナを消耗しない。
+RESULT SCENE,,,,
+Result.Title,Adventure Log,冒險者記錄,冒险者记录,冒険者ログ
+Result.LevelReached,Final level reached:,抵達深度：,抵达深度：,到達した深度：
+Result.TotalMonsterSlayed,Total monster slayed:,敵人擊殺數：,敌人击杀数：,敵の撃殺数：
+Result.TotalBossSlayed,Total boss slayed:,Boss擊殺數：,Boss击杀数：,ボスの撃殺数：
+Result.TotalTime,Total time:,攻略時間：,攻略时间：,攻略時間：
+Result.AverageTimePerLevel,Average time per level:,平均每層耗費時間：,平均每层耗费时间：,一レベルの平均時間：
+Result.LevelRank,You've ranked <color=#ff0000ff>{0}</color> in the global leaderboard. (level {1}),您在世界排行榜是第<color=#ff0000ff>{0}</color>名. ({1}層),您在世界排行榜是第<color=#ff0000ff>{0}</color>名. ({1}层),あなたのリーダーボード上の攻略ランキングは第<color=#ff0000ff>{0}</color>位です。 (レベル{1})
+Result.Level10Rank,<color=#ff0000ff># {0} </color> fastest person to beat level 10. ({1}m{2}s),<color=#ff0000ff># {0} </color> fastest person to beat level 10. ({1}m{2}s),<color=#ff0000ff># {0} </color> fastest person to beat level 10. ({1}m{2}s),<color=#ff0000ff>#{0}</color>の早さでレベル10を到達する者です ({1}m{2}s)
+Result.Level20Rank,<color=#ff0000ff># {0} </color> fastest person to beat level 20. ({1}m{2}s),<color=#ff0000ff># {0} </color> fastest person to beat level 20. ({1}m{2}s),<color=#ff0000ff># {0} </color> fastest person to beat level 20. ({1}m{2}s),<color=#ff0000ff>#{0}</color>の早さでレベル20を到達する者です ({1}m{2}s)

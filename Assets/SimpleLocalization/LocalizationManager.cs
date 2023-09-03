@@ -107,12 +107,19 @@ namespace Assets.SimpleLocalization
 
 	        var missed = !Dictionary[Language].ContainsKey(localizationKey) || string.IsNullOrEmpty(Dictionary[Language][localizationKey]);
 
+			// 翻訳されていない物
 	        if (missed)
 	        {
-		        Debug.LogWarningFormat("Translation not found: {localizationKey} ({0}).", Language);
+		        Debug.LogWarningFormat("Translation not found: " + localizationKey + " [" +  Language + "]");
 		        return Dictionary["English"].ContainsKey(localizationKey) ? Dictionary["English"][localizationKey] : localizationKey;
 	        }
 
+			// 日本語の場合は特定のフォントを指定
+			if (Language == "Japanese")
+			{
+				return ("<font=JP SDF>" + Dictionary[Language][localizationKey] + "</font>");
+			}
+			
 	        return Dictionary[Language][localizationKey];
 		}
 

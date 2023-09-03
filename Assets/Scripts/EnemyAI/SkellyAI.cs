@@ -3,12 +3,14 @@ using System.Collections.Generic;
 using UnityEngine;
 using DG.Tweening;
 
-public class CultistAI : MonoBehaviour
+public class SkellyAI : EnemyAI
 {
     [Header("Setting")]
     [SerializeField] private bool haveTurnAnimation;
     [SerializeField] private int attackDamageBase;
     [SerializeField] private int attackDamageMax;
+    [SerializeField] private int attackDamageBaseScaleCap = 40;
+    [SerializeField] private int attackDamageMaxScaleCap = 15;
     [SerializeField] private bool allowAttack;
     [SerializeField] private float moveSpeed;
     [SerializeField] private float attackRange;
@@ -25,8 +27,6 @@ public class CultistAI : MonoBehaviour
     private SpriteRenderer graphic;
     private string enemyName;
     private Controller player;
-    [SerializeField] private GameObject burstEffect;
-    [SerializeField] private GameObject fireBurstHitEffect;
 
     [Header("Debug")]
     [SerializeField] private float statusTimer;
@@ -57,12 +57,24 @@ public class CultistAI : MonoBehaviour
 
     private void SetScalingRule(int level)
     {
-        // cultist's damage doesn't scale.
+        attackDamageBase += level * 2;
+        attackDamageMax += level * (1 / 5);
+        attackDamageBase = Mathf.Min(attackDamageBase, attackDamageBaseScaleCap);   // Cap
+        attackDamageMax = Mathf.Min(attackDamageMax, attackDamageMaxScaleCap);   // Cap
+        moveSpeed += Random.Range(-0.5f, 0.5f); ;
+        staminaRegenInterval = staminaRegenInterval / ((float)level/2);
 
-        controller.AddMaxHp(level * 4);
-        if (level > 30)
+        controller.AddMaxHp(level * 5);
+
+        if (level > 10)
         {
-            controller.AddMaxHp(50);
+            controller.AddMaxHp(25);
+            attackDamageBase += Random.Range(1, 3);
+        }
+        if (level > 20)
+        {
+            controller.AddMaxHp(35);
+            attackDamageBase += Random.Range(1, 3);
         }
     }
 
@@ -120,7 +132,7 @@ public class CultistAI : MonoBehaviour
                 statusTimer = 0.01f; // a delay before the next action
                 break;
             case Status.Attacking:
-                //AudioManager.Instance.PlaySFX("heartbeat");
+                AudioManager.Instance.PlaySFX("heartbeat");
                 animator.Play(enemyName + "Attack");
                 statusTimer = controller.FindAnimation(animator, enemyName + "Attack").length;
                 dealDamageCnt = 0.0f;
@@ -156,7 +168,7 @@ public class CultistAI : MonoBehaviour
             case Status.SpecialAbility:
                 break;
             case Status.Dying:
-                AudioManager.Instance.PlaySFX("dead");
+                AudioManager.Instance.PlaySFX(enemyName + "Dead");
                 break;
             default:
                 InitStatus(Status.Idle);
@@ -184,7 +196,7 @@ public class CultistAI : MonoBehaviour
         int direction = graphic.flipX ? -1 : 1;
         if (controller.IsStaminaMax() && allowAttack && player.IsAlive()
             && Mathf.Abs(player.transform.position.x - (transform.position.x + (direction * attackRange / 2f))) < attackRange
-            && GetComponent<Rigidbody2D>().velocity.y == 0.0f && controller.IsInScreen())
+            && GetComponent<Rigidbody2D>().velocity.y == 0.0f)
         {
             InitStatus(Status.Attacking);
             return;
@@ -228,8 +240,7 @@ public class CultistAI : MonoBehaviour
         transform.DOMoveX(transform.position.x + moveSpeed * direction * Time.deltaTime, 0.0f, false);
 
         // reach destination
-        if (Mathf.Abs(player.transform.position.x- transform.position.x ) < attackRange
-            && controller.IsInScreen())
+        if (Mathf.Abs(player.transform.position.x- transform.position.x ) < attackRange)
         {
             InitStatus(Status.Attacking);
         }
@@ -239,9 +250,17 @@ public class CultistAI : MonoBehaviour
     {
         dealDamageCnt += Time.deltaTime;
 
-        if (!dealDamageAlready && statusTimer < dealDamageDelay)
+        if (dealDamageCnt > dealDamageDelay && !dealDamageAlready)
         {
-            StartCoroutine(HeavensFury());
+            // deal damage 
+            float direction = graphic.flipX ? -1 : 1;
+            if (Mathf.Abs(player.transform.position.x -  (transform.position.x + (direction * attackRange / 2f))) < attackRange
+                && Mathf.Abs(player.transform.position.y - transform.position.y) < attackRange/2f
+                && ((player.transform.position.x > transform.position.x && !graphic.flipX) || (player.transform.position.x < transform.position.x && graphic.flipX)))
+            {
+                player.DealDamage(attackDamageBase + Random.Range(0, attackDamageMax+1), transform);
+            }
+            AudioManager.Instance.PlaySFX("wind");
             dealDamageAlready = true;
         }
 
@@ -251,62 +270,28 @@ public class CultistAI : MonoBehaviour
         }
     }
 
-    IEnumerator HeavensFury()
+    public void CreateAfterImage()
     {
-        GameObject effect = controller.SpawnSpecialEffect(burstEffect, new Vector2(player.transform.position.x, -3.09f), false);
-
-        AudioManager.Instance.PlaySFX("helljump");
-        yield return new WaitForSeconds(0.6f);
-        AudioManager.Instance.PlaySFX("burst");
-
-        // calculate dealt damage and heal cultist
-        int dealtDamage = 0;
-
-        // deal damage to player
-        if (Mathf.Abs(player.transform.position.x - effect.transform.position.x) < 1.9f)
-        {
-            int calculatedDamage = attackDamageBase + Random.Range(0, attackDamageMax + 1);
-            if (player.DealDamage(calculatedDamage, transform))
-            {
-                dealtDamage += calculatedDamage;
-                player.StartJump(false, true);
-                GameObject tmp = Instantiate(fireBurstHitEffect, player.transform.position, Quaternion.identity);
-                tmp.transform.SetParent(player.transform.parent);
-            }
-        }
-
-        // deal damage to enemy
-        List<EnemyControl> enemyList = controller.GetGameManager().GetMonsterList();
-
-        if (enemyList.Count > 0)
-        {
-            foreach (EnemyControl enemy in enemyList)
-            {
-                if (Mathf.Abs(enemy.transform.position.x - effect.transform.position.x) < 1.9f + enemy.GetCollider().bounds.size.x / 2f
-                        && enemy.transform.position.y < 2f && enemy.GetName() != "Cultist")
-                {
-                    int calculatedDamage = attackDamageBase / 2 + Random.Range(0, attackDamageMax / 2 + 1);
-                    if (enemy.DealDamage(calculatedDamage))
-                    {
-                        dealtDamage += calculatedDamage;
-
-                        GameObject tmp = Instantiate(fireBurstHitEffect, enemy.transform.position, Quaternion.identity);
-                        tmp.transform.SetParent(enemy.transform.parent);
-
-                        Vector2 randomize = new Vector2(Random.Range(-enemy.GetComponent<Collider2D>().bounds.size.x / 2f, enemy.GetComponent<Collider2D>().bounds.size.x / 2f), Random.Range(-0.5f, 0.5f));
-                        Vector2 floatDirection = new Vector2(0.0f, 1.0f);
-                        controller.GetGameManager().SpawnFloatingText(new Vector2(enemy.transform.position.x, enemy.transform.position.y + enemy.GetComponent<Collider2D>().bounds.size.y * 0.75f) + randomize
-                                                     , 2f + Random.Range(0.0f, 1.0f), 25f + Random.Range(0.0f, 25.0f),
-                                                     calculatedDamage.ToString(), Color.white, floatDirection.normalized, 50f);
-                    }
-                }
-            }
-        }
-
-        if (dealtDamage > 0)
-        {
-            // heal cultist
-            controller.Heal(dealtDamage * 2);
-        }
+        //--- spawning new empty object, copying tranform ---
+        GameObject afterImg = new GameObject("afterImg");
+        afterImg.transform.position = graphic.transform.position;
+        afterImg.transform.rotation = graphic.transform.rotation;
+        afterImg.transform.localScale = graphic.transform.localScale;
+        afterImg.gameObject.layer = 0;
+        //--- copying spriterenderer ---
+        SpriteRenderer tailRenderer = afterImg.AddComponent<SpriteRenderer>();
+        SpriteRenderer originalRenderer = graphic.GetComponent<SpriteRenderer>();
+        tailRenderer.sortingOrder = originalRenderer.sortingOrder - 1;
+        tailRenderer.sortingLayerID = originalRenderer.sortingLayerID;
+        tailRenderer.sprite = originalRenderer.sprite;
+        tailRenderer.color = originalRenderer.color;
+        tailRenderer.flipX = originalRenderer.flipX;
+        tailRenderer.material = originalRenderer.material;
+        //tailRenderer.material = originalMaterial;
+        //--- initiating tail ---
+        afterImg.AddComponent<Tail>();
+        afterImg.GetComponent<Tail>().Initialization(0.5f, tailRenderer, 0.5f);
+        //--- done ---
+        Destroy(afterImg, 0.5f);
     }
 }

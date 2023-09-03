@@ -23,7 +23,10 @@ public class Result
     public int totalTime;
 }
 
-// Class that use to calculate the result of this run. Reset everytime a run start!!
+/// <summary>
+/// リザルト計算用クラス
+/// Class that use to calculate the result of this run. Reset everytime a run start!!
+/// </summary>
 public class ResultManager : Singleton<ResultManager>
 {
     Result m_result;
