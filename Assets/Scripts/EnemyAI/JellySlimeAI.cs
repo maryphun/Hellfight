@@ -81,7 +81,7 @@ public class JellySlimeAI : EnemyAI
 
     private void FixedUpdate()
     {
-        if (controller.IsPaused()) return;
+        if (controller.IsPaused()) return;  // ƒQ[ƒ€’â~’†‚Í§Œä‚µ‚È‚¢
 
         if (controller.IsStatusChanged())
         {

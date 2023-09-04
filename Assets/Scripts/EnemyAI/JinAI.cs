@@ -77,7 +77,7 @@ public class JinAI : EnemyAI
 
     private void FixedUpdate()
     {
-        if (controller.IsPaused()) return;
+        if (controller.IsPaused()) return;  // ƒQ[ƒ€’â~’†‚Í§Œä‚µ‚È‚¢
         CheckFlags();
 
         statusTimer = Mathf.Max(statusTimer - Time.deltaTime, 0.0f);

@@ -78,8 +78,8 @@ public class KobrodAI : EnemyAI
 
     private void FixedUpdate()
     {
-        if (controller.IsPaused()) return;
-        CheckFlags();
+        if (controller.IsPaused()) return;  // ゲーム停止中は制御しない
+        CheckFlags(); // フラグ更新
 
         statusTimer = Mathf.Max(statusTimer - Time.deltaTime, 0.0f);
         switch (controller.GetCurrentStatus())
@@ -116,7 +116,6 @@ public class KobrodAI : EnemyAI
 
     void CheckFlags()
     {
-
         if (controller.IsCriticalHitted())
         {
             // critical hit detected
@@ -129,7 +128,6 @@ public class KobrodAI : EnemyAI
             InitStatus(controller.GetCurrentStatus());
             controller.ResetStatusChanged();
         }
-
     }
 
     private void InitStatus(Status newStatus)
@@ -141,23 +139,7 @@ public class KobrodAI : EnemyAI
                 statusTimer = idleDelay; // a delay before the next action
                 break;
             case Status.Attacking:
-                // turn to target
-                if ((transform.position.x > player.transform.position.x
-                    && !graphic.flipX)
-                    ||
-                    (transform.position.x < player.transform.position.x
-                    && graphic.flipX))
-                {
-                    graphic.flipX = !graphic.flipX;
-                }
-                animator.Play(enemyName + "Attack");
-                AudioManager.Instance.PlaySFX(enemyName + "Charging", 1f);
-                SpawnSpecialEffect();
-                statusTimer = controller.FindAnimation(animator, enemyName + "Attack").length + Time.deltaTime;
-                dealDamageCnt = 0.0f;
-                startedCharge = false;
-                dealDamageAlready = false;
-                controller.UseAllStamina();
+                InitAttacking();
                 break;
             case Status.Attacked:
                 statusTimer = controller.FindAnimation(animator, enemyName + "Hit").length;
@@ -185,6 +167,27 @@ public class KobrodAI : EnemyAI
                 InitStatus(Status.Idle);
                 break;
         }
+    }
+
+    void InitAttacking()
+    {
+        // turn to target
+        if ((transform.position.x > player.transform.position.x
+            && !graphic.flipX)
+            ||
+            (transform.position.x < player.transform.position.x
+            && graphic.flipX))
+        {
+            graphic.flipX = !graphic.flipX;
+        }
+        animator.Play(enemyName + "Attack");
+        AudioManager.Instance.PlaySFX(enemyName + "Charging", 1f);
+        SpawnSpecialEffect();
+        statusTimer = controller.FindAnimation(animator, enemyName + "Attack").length + Time.deltaTime;
+        dealDamageCnt = 0.0f;
+        startedCharge = false;
+        dealDamageAlready = false;
+        controller.UseAllStamina();
     }
 
     void IdleCtrl()

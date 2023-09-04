@@ -68,6 +68,7 @@ public class Controller : MonoBehaviour
     [SerializeField, Range(0.0f, 1.0f)] private float initialTailAlpha = 0.5f;
     [SerializeField] private ProtectedFloat afterEffectInterval = 0.05f;
     [SerializeField] private ProtectedFloat comboResetTime = 1.0f;
+    [SerializeField] private ProtectedInt16 maxAttackComboPattern = 3;
     [SerializeField] private Vector2 combatModeRange = new Vector2(3f, 1.5f);
     [SerializeField] private ProtectedFloat potionCooldown = 0.5f;
     [SerializeField, Range(0.0f, 1.5f)] float windrunnerBuffTimer;
@@ -424,12 +425,11 @@ public class Controller : MonoBehaviour
             if (isAttacking && IsAlive())
             {
                 // 今回の攻撃がダメージを与えているのか
-                // dealt damage
                 if (!alreadyDealDamage)
                 {
                     attackDealDamageTimer += Time.deltaTime;
 
-                    if ( attackDealDamageTimer >= attackDealTiming[(Mathf.Max((attackCombo-1), 0) % 3)] )
+                    if ( attackDealDamageTimer >= attackDealTiming[(Mathf.Max((attackCombo-1), 0) % maxAttackComboPattern)] )
                     {
                         alreadyDealDamage = true;
                         CheckHitEnemy();
@@ -437,34 +437,27 @@ public class Controller : MonoBehaviour
                 }
 
                 // 攻撃終了
-                // end attack
                 attackEndAttackTimer = Mathf.Max(attackEndAttackTimer - Time.deltaTime, 0.0f);
 
-                // collision check
+                // 当たり判定
                 RaycastHit2D hit = Physics2D.Raycast(transform.position, new Vector2(dashDirection, 0.0f), collider.bounds.size.x, frameLayer);
                 if (hit)
                 {
                     transform.DOMoveX(transform.position.x, dashTime, false);
                 }
 
-                // valocity restriction
-                rigidbody.velocity = new Vector2(0.0f, Mathf.Clamp(rigidbody.velocity.y, -0.01f, 0.01f));
+                // ジャンプ中に攻撃するとしばらく空中に浮かせる
+                rigidbody.velocity = new Vector2(0.0f, Mathf.Clamp(rigidbody.velocity.y, -0.00f, 0.00f));
 
                 // 攻撃アニメーション終了
-                // determine if attack animation is ended
-                if (   !animator.GetCurrentAnimatorStateInfo(0).IsName("Attack0")
-                    && !animator.GetCurrentAnimatorStateInfo(0).IsName("Attack1")
-                    && !animator.GetCurrentAnimatorStateInfo(0).IsName("Attack2")
-                    && IsAlive())
+                if (!IsInAttackAnimation() && IsAlive())
                 {
                     // アニメーション途中で攻撃ボタンが押されたら即次の攻撃開始
-                    // start next attack immediately if attack button was pressed
                     isAttacking = false;
                     if (attackPressed && !attackDisabled)
                     {
                         StartAttack();
                     }
-
                 }
 
                 // 攻撃ボタンが押されていた
@@ -480,7 +473,7 @@ public class Controller : MonoBehaviour
                 // 前の攻撃アニメーションはすでに終わっていた
                 if (attackEndAttackTimer == 0.0f)
                 {
-                    // allow attack
+                    // 攻撃を許可する
                     if (input.attack)
                     {
                         StartAttack();
@@ -489,19 +482,17 @@ public class Controller : MonoBehaviour
             }
 
             // コンボ数をリセットする
-            // countdown combo time
             if (attackCombo > 0)
             {
                 comboTimer = Mathf.Clamp(comboTimer - Time.deltaTime, 0.0f, comboTimeLast);
                 if (comboTimer == 0.0f)
                 {
-                    // reset combo
+                    // コンボをリセット
                     attackCombo = 0;
                 }
             }
 
-            // 攻撃ボタンが押された
-            // input detected
+            // 攻撃ボタンが検出された
             if (input.attack)
             {
                 if (!isAttacking && !attackDisabled)
@@ -510,11 +501,12 @@ public class Controller : MonoBehaviour
                 }
                 else if (IsAlive())
                 {
+                    // 既に攻撃中
                     attackPressed = true;
                     attackPressMemoryDelay = attackPressMemoryTime;
                 }
 
-                // reset input
+                // 入力をリセット
                 input.attack = false;
             }
         }
@@ -1142,6 +1134,13 @@ public class Controller : MonoBehaviour
             comboResetTimer = comboResetTime;
             gameMng.SetCombo(currentCombo);
         }
+    }
+
+    bool IsInAttackAnimation()
+    {
+        return (animator.GetCurrentAnimatorStateInfo(0).IsName("Attack0")
+             || animator.GetCurrentAnimatorStateInfo(0).IsName("Attack1")
+             || animator.GetCurrentAnimatorStateInfo(0).IsName("Attack2"));
     }
 
     void CheckDeflectEnemy()

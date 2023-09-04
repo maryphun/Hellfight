@@ -37,22 +37,31 @@ public class EnemySpawner : MonoBehaviour
         RANDOM_LEFT_RIGHT,
     }
 
-
+    [Header("Setting")]
     [SerializeField] GameManager gameMng;
     [SerializeField] Transform world;
     [SerializeField] LevelInfo[] levelInfo;
     [SerializeField] RandomInfo[] randomList;
     [SerializeField] List<Coroutine> spawningList = new List<Coroutine>();
 
+    // ランダムで敵を生成する場合の設定
+    [Header("Random Setting")]
+    [SerializeField] int randomSpawnCountMin = 2;
+    [SerializeField] int randomSpawnCountMax = 4;
+    [SerializeField] float randomSpawnTimeMin = 1.5f;
+    [SerializeField] float randomSpawnTimeMax = 2.5f;
 
+    /// <summary>
+    /// 敵生成開始
+    /// </summary>
     public int StartSpawning(int level)
     {
-        if (level > levelInfo.Length || !levelInfo[level - 1].activate)
+        if (level > levelInfo.Length || !levelInfo[level - 1].activate) // 設定されていないレベルはランダムでモンスターを生成する
         {
-            // random spawn
-            int number = Random.Range(2, 4);
-            for (int i = 0; i < number; i++)
+            int totalCount = Random.Range(randomSpawnCountMin, randomSpawnCountMax); // 敵数を決定
+            for (int i = 0; i < totalCount; i++)
             {
+                // 合理的な範囲内で、現在レベルで強すぎるキャラを出さないようにする
                 bool randomed = false;
                 GameObject prefab = randomList[0].monster;
                 while (!randomed)
@@ -65,19 +74,22 @@ public class EnemySpawner : MonoBehaviour
                     }
                 }
 
-                float time = Random.Range(1.5f, i * 2.5f);
-                if (i > (number-1) /2)
+                float time = Random.Range(randomSpawnTimeMin, i * randomSpawnTimeMax);
+                if (i > (totalCount - 1) /2)
                 {
-                    time *= 1.5f;
+                    // キャラが一気に生成されると難しすぎるので、生成時間に間を空ける
+                    time *= randomSpawnTimeMin;
                 }
                 
+                // 設定完了
                 spawningList.Add(StartCoroutine(SpawnMonster(prefab, SpawnDirection.RANDOM, time, level)));
             }
 
-            return number;
+            return totalCount;
         }
 
-        foreach (SpawnInfo spwnInfo in levelInfo[level-1].spawnInfo)
+        
+        foreach (SpawnInfo spwnInfo in levelInfo[level - 1].spawnInfo) // レベルデザインデータあるならそれをしたがって敵キャラを生成する
         {
             spawningList.Add(StartCoroutine(SpawnMonster(spwnInfo.monster, spwnInfo.direction, spwnInfo.timing, level)));
         }
@@ -85,15 +97,22 @@ public class EnemySpawner : MonoBehaviour
         return levelInfo[level - 1].spawnInfo.Length;
     }
 
+    /// <summary>
+    /// レベル初期化
+    /// </summary>
     public void ResetSpawner()
     {
-        foreach( Coroutine spawner in spawningList)
+        foreach(Coroutine spawner in spawningList)
         {
             StopCoroutine(spawner);
         }
         spawningList.Clear();
     }
 
+    /// <summary>
+    /// 敵キャラ生成
+    /// </summary>
+    /// <returns></returns>
     IEnumerator SpawnMonster(GameObject monsterPrefab, SpawnDirection direction, float timing, int level)
     {
         yield return new WaitForSeconds(timing);
@@ -113,6 +132,9 @@ public class EnemySpawner : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// 指定方向に対して敵の初期位置を設定
+    /// </summary>
     Vector2 DirectionToVector(SpawnDirection direction)
     {
         Vector2 rtn;

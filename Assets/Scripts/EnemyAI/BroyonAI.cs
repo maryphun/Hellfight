@@ -70,7 +70,7 @@ public class BroyonAI : EnemyAI
 
     private void FixedUpdate()
     {
-        if (controller.IsPaused()) return;
+        if (controller.IsPaused()) return;  // ÉQÅ[ÉÄí‚é~íÜÇÕêßå‰ÇµÇ»Ç¢
         CheckFlags();
 
         jumpCdTimer = Mathf.Max(jumpCdTimer - Time.deltaTime, 0.0f);
